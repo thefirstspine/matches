@@ -1,0 +1,6 @@
+[submodule "src/@shared/env-shared"]
+	path = src/@shared/env-shared
+	url = https://github.com/thefirstspine/env-shared
+[submodule "src/@shared/auth-shared"]
+	path = src/@shared/auth-shared
+	url = https://github.com/thefirstspine/auth-shared
