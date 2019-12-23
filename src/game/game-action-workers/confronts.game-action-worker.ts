@@ -4,7 +4,7 @@ import { IGameInstance,
          IGameCard,
          ISubActionMoveCardOnBoardPossibility,
          ISubActionSelectCoupleOnBoard} from '../game.service';
-import { ICardCoords, cardSide } from 'src/libraries/generic.library';
+import { ICardCoords, cardSide } from '../libraries/generic.library';
 import { GameEvents } from '../game-subscribers/game-events';
 
 /**

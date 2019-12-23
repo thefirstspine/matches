@@ -2,7 +2,7 @@ import { GameActionWorker } from './game-action-worker';
 import { IGameInstance, IGameAction, IGameCard, ISubActionMoveCardToDiscard } from '../game.service';
 import { isArray } from 'util';
 import { GameEvents } from '../game-subscribers/game-events';
-import curseOfMaraCard from 'src/libraries/cards/curse-of-mara.card';
+import curseOfMaraCard from '../libraries/cards/curse-of-mara.card';
 
 /**
  * At the beggining of his turn, the player can throw to the discard one or more cards.
