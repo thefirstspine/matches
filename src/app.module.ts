@@ -14,6 +14,7 @@ import { WizzardController } from './wizzard/wizzard.controller';
 import { ShopController } from './shop/shop.controller';
 import { ShopService } from './shop/shop.service';
 import { LogService } from './log/log.service';
+import { AuthService } from './@shared/auth-shared/auth.service';
 
 @Module({
   imports: [],
@@ -29,6 +30,7 @@ import { LogService } from './log/log.service';
     WizzardsStorageService,
     ShopService,
     LogService,
+    AuthService,
   ],
 })
 export class AppModule {}
