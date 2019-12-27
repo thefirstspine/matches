@@ -33,15 +33,6 @@ export class QueueService {
     private readonly wizzardService: WizzardService,
     private readonly restService: RestService,
   ) {
-    this.initialize();
-  }
-
-  protected async initialize() {
-    const gameTypes: IGameType[] = await this.restService.gameTypes();
-    this.queue = gameTypes.reduce((acc: IQueue, current: IGameType) => {
-      acc[current.id] = [];
-      return acc;
-    }, {});
   }
 
   /**
@@ -73,13 +64,13 @@ export class QueueService {
       throw new Error('User does not own the style.');
     }
 
-    // Check queue availability
-    if (!Array.isArray(this.queue[gameTypeId])) {
-      throw new Error('Queue not available. Check the game type ID or retry in a few minutes.');
-    }
-
     // Load game type
     const gameType: IGameType = await this.restService.gameType(gameTypeId);
+
+    // Check game type availability
+    if (!gameType) {
+      throw new Error('Queue not available. Check the game type ID or retry in a few minutes.');
+    }
 
     // Check destiny
     if (!gameType.destinies.includes(destiny)) {
@@ -92,6 +83,7 @@ export class QueueService {
     }
 
     // Add the user in the queue
+    this.queue[gameTypeId] = this.queue[gameTypeId] ? this.queue[gameTypeId] : [];
     this.queue[gameTypeId].push({
       user,
       destiny,
