@@ -18,10 +18,7 @@ export class MessagingService {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization':
-          `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.` +
-          `eyJ1c2VybmFtZSI6InRlc3QiLCJzdWIiOjEsImlhdCI6MTU2ODEwNzU1NiwiZXhwIjoxNjk0MzM3OTU2fQ.` +
-          `fhG27r-mjxcOv-guWyWVCvWQy6dNguhpHAinL8Wxv6w`,
+        'Authorization': `Bearer ${env.config.ARENA_MESSAGING_TOKEN}`,
       },
     });
     const jsonResponse = await response.json();
