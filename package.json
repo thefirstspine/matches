@@ -16,9 +16,7 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json",
-    "doc:workers": "jsdoc2md --files ./src/game/game-action-workers/*.ts --configure ./jsdoc2md.json > ./doc/workers.md",
-    "doc:subscribers": "jsdoc2md --files ./src/game/game-subscribers/*.ts --configure ./jsdoc2md.json > ./doc/subscribers.md"
+    "test:e2e": "jest --config ./test/jest-e2e.json"
   },
   "dependencies": {
     "@nestjs/common": "^6.10.12",
@@ -52,8 +50,6 @@
     "@types/node": "^11.15.3",
     "@types/supertest": "2.0.7",
     "jest": "24.7.1",
-    "jsdoc-babel": "^0.5.0",
-    "jsdoc-to-markdown": "^5.0.3",
     "prettier": "1.17.0",
     "supertest": "4.0.2",
     "ts-jest": "24.0.2",
