@@ -293,6 +293,9 @@ export interface IJoinQueueParams {
   style: string|undefined;
 }
 
+/**
+ * Interface representing parameters for the "respondToAction" method
+ */
 export interface IRespondToActionParams {
   response: any;
   actionType: string;
@@ -336,6 +339,9 @@ export interface IGetUsersResponse {
   }>;
 }
 
+/**
+ * Interface representing a response to the "respondToAction" method
+ */
 export interface IRespondToActionResponse {
   sent: boolean;
 }

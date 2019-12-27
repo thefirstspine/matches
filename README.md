@@ -2,6 +2,10 @@
   <a href="http://nestjs.com/" target="blank"><img src="platform.png" width="320" alt="Platform Logo" /></a>
 </p>
 
+## About
+
+The `arena` service is the service that will manage all the games & wizzards accounts in the Arena products.
+
 ## Installation
 
 ```bash
