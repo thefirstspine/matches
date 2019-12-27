@@ -1,5 +1,6 @@
 import { LogService } from '../../@shared/log-shared/log.service';
 import { IGameInstance, IGameAction } from '../../@shared/arena-shared/game';
+import { Injectable } from '@nestjs/common';
 
 /**
  * This is a game action. A game action is divided by simple subactions.
@@ -7,6 +8,7 @@ import { IGameInstance, IGameAction } from '../../@shared/arena-shared/game';
  * a general hook for all instances (yep, with that, a game instance can
  * influate on another one!)
  */
+@Injectable()
 export class GameActionWorker {
 
   private static registeredActions: {[identifier: string]: GameActionWorker} = {};

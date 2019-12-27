@@ -1,19 +1,21 @@
 import { Controller, Post, Body, UseGuards, Req } from '@nestjs/common';
 import { ShopService } from './shop.service';
 import { AuthGuard } from '../@shared/auth-shared/auth.guard';
-import { IShopItem } from '../@shared/rest-shared/types';
+import { IShopItem } from '../@shared/rest-shared/entities';
+import { RestService } from '../rest/rest.service';
 
 @Controller('shop')
 export class ShopController {
 
   constructor(
     private shopService: ShopService,
+    private restService: RestService,
   ) {}
 
   @UseGuards(AuthGuard)
   @Post('exchange')
   async exchange(@Req() request): Promise<IExchangeResult> {
-    const item: IShopItem|undefined = ShopItemsLibrary.find(request.body.shopItemId);
+    const item: IShopItem|undefined = await this.restService.shopItem(request.body.shopItemId);
     if (!item || item.price.currency !== 'shards') {
       return {
         status: false,
@@ -42,7 +44,7 @@ export class ShopController {
   @UseGuards(AuthGuard)
   @Post('purchase')
   async purchase(@Req() request): Promise<IPurchaseResult> {
-    const item: IShopItem|undefined = ShopItemsLibrary.find(request.body.shopItemId);
+    const item: IShopItem|undefined = await this.restService.shopItem(request.body.shopItemId);
     if (!item || item.price.currency !== 'eur') {
       return {
         status: false,

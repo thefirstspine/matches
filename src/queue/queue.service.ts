@@ -5,6 +5,8 @@ import { WizzardService } from '../wizzard/wizzard.service';
 import { destiny, origin } from '../@shared/rest-shared/base';
 import { IGameUser, IGameInstance } from '../@shared/arena-shared/game';
 import { IWizzardItem } from '../@shared/arena-shared/wizzard';
+import { IGameType } from '../@shared/rest-shared/entities';
+import { RestService } from '../rest/rest.service';
 
 /**
  * Service to manage the game queue
@@ -29,8 +31,14 @@ export class QueueService {
     private readonly messagingService: MessagingService,
     private readonly gameService: GameService,
     private readonly wizzardService: WizzardService,
+    private readonly restService: RestService,
   ) {
-    this.queue = GamesTypesLibrary.all().reduce((acc: IQueue, current: IGameType) => {
+    this.initialize();
+  }
+
+  protected async initialize() {
+    const gameTypes: IGameType[] = await this.restService.gameTypes();
+    this.queue = gameTypes.reduce((acc: IQueue, current: IGameType) => {
       acc[current.id] = [];
       return acc;
     }, {});
@@ -42,13 +50,13 @@ export class QueueService {
    * @param user
    * @returns {IGameUser[]}
    */
-  join(
+  async join(
     gameTypeId: string,
     user: number,
     destiny: destiny,
     origin: origin|undefined,
     style: string|undefined,
-  ): IGameUser[] {
+  ): Promise<IGameUser[]> {
     // Exit method if user is in a queue
     if (this.isUserInAllQueues(user)) {
       throw new Error('User already in a queue.');
@@ -70,20 +78,16 @@ export class QueueService {
       throw new Error('Queue not available. Check the game type ID or retry in a few minutes.');
     }
 
+    // Load game type
+    const gameType: IGameType = await this.restService.gameType(gameTypeId);
+
     // Check destiny
-    if (!GamesTypesLibrary.find(gameTypeId).destinies.includes(destiny)) {
+    if (!gameType.destinies.includes(destiny)) {
       throw new Error('Destiny not allowed in that game type.');
     }
 
     // Check origin
-    if (
-      (
-        GamesTypesLibrary.find(gameTypeId).destinies.length === 0 &&
-        origin !== undefined
-      ) || (
-        GamesTypesLibrary.find(gameTypeId).origins.includes(origin)
-      )
-    ) {
+    if ((gameType.destinies.length === 0 && origin !== undefined) || (gameType.origins.includes(origin))) {
       throw new Error('Origin not allowed in that game type.');
     }
 
@@ -102,7 +106,7 @@ export class QueueService {
       MessagingService.SUBJECT__QUEUE,
       {
         event: 'joined',
-        gameType: GamesTypesLibrary.find(gameTypeId),
+        gameType,
         queue: this.queue[gameTypeId].length,
       },
     );
@@ -159,10 +163,8 @@ export class QueueService {
   }
 
   async processFullQueueFor(gameTypeId: string): Promise<void> {
-    const gameType = GamesTypesLibrary.find(gameTypeId);
-    if (!gameTypeId) {
-      return;
-    }
+    // Load game type
+    const gameType: IGameType = await this.restService.gameType(gameTypeId);
 
     const queueUsers: IGameUser[] = this.getUsersInQueue(gameType.id);
     if (queueUsers.length >= gameType.players.length) {
@@ -191,6 +193,9 @@ export class QueueService {
   }
 
   async processQueueExpirationFor(gameTypeId: string) {
+    // Load game type
+    const gameType: IGameType = await this.restService.gameType(gameTypeId);
+
     this.queue[gameTypeId] = this.queue[gameTypeId].filter((queueUser: IQueueUser) => {
       if (queueUser.queueExpiresAt < Date.now()) {
         this.messagingService.sendMessage(
@@ -198,7 +203,7 @@ export class QueueService {
           MessagingService.SUBJECT__QUEUE,
           {
             event: 'expired',
-            gameType: GamesTypesLibrary.find(gameTypeId),
+            gameType,
             queue: this.queue[gameTypeId].length,
           },
         );

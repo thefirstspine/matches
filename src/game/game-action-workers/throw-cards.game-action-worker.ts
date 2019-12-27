@@ -8,7 +8,7 @@ import { GameEvents } from '../game-subscribers/game-events';
  */
 export class ThrowCardsGameActionWorker extends GameActionWorker {
 
-  static readonly TYPE: 'throw-cards';
+  static readonly TYPE: string = 'throw-cards';
 
   /**
    * @inheritdoc

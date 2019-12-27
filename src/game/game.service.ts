@@ -24,8 +24,10 @@ import { ConfrontsGameActionWorker } from './game-action-workers/confronts.game-
 import turnEndedGameSubscriber from './game-subscribers/turn-ended.game-subscriber';
 import { LogService } from '../@shared/log-shared/log.service';
 import { IGameInstance, IGameUser, IGameCard, IGameAction } from '../@shared/arena-shared/game';
-import { IGameType } from '../@shared/rest-shared/types';
 import { IWizzardItem } from '../@shared/arena-shared/wizzard';
+import { RestService } from '../rest/rest.service';
+import { ICard } from 'src/@shared/rest-shared/card';
+import { IGameType, IDeck } from 'src/@shared/rest-shared/entities';
 
 /**
  * Service to manage game instances
@@ -51,6 +53,7 @@ export class GameService {
     private readonly messagingService: MessagingService,
     private readonly logService: LogService,
     private readonly wizzardService: WizzardService,
+    private readonly restService: RestService,
   ) {
     // Get base data
     this.gameInstances = {};
@@ -92,10 +95,12 @@ export class GameService {
     }
 
     // Create the decks
-    const gameType: IGameType = GamesTypesLibrary.find(gameTypeId);
+    const decks: IDeck[] = await this.restService.decks();
+    const gameType: IGameType = await this.restService.gameType(gameTypeId);
     const cards: IGameCard[] = [];
     users.forEach((gameUser: IGameUser, index: number) => {
-      DecksLibrary.find(gameUser.destiny).cards.map((card: ICard) => {
+      const origin: IDeck = decks.find((d: IDeck) => d.id === gameUser.destiny);
+      origin.cards.map((card: ICard) => {
         const randomId: number = randBetween(0, Number.MAX_SAFE_INTEGER);
         cards.push({
           user: gameUser.user,
@@ -110,6 +115,9 @@ export class GameService {
     // Shuffle cards
     const shuffledCards: IGameCard[] = shuffle(cards);
 
+    // Get curse card
+    const curseCard: ICard = await this.restService.card('curse-of-mara');
+
     users.forEach((gameUser: IGameUser, index: number) => {
       // Add the cursed cards
       const wizzard = this.wizzardService.getWizzard(gameUser.user);
@@ -118,7 +126,7 @@ export class GameService {
         for (let i = 0; i < curseItem.num; i ++) {
           const randomId: number = randBetween(0, Number.MAX_SAFE_INTEGER);
           shuffledCards.unshift({
-            card: CardsLibrary.find('curse-of-mara'),
+            card: JSON.parse(JSON.stringify(curseCard)),
             user: gameUser.user,
             location: 'deck',
             id: `${this.nextId}_${randomId}`,
@@ -156,9 +164,6 @@ export class GameService {
     const action: IGameAction = await GameActionWorker.getActionWorker(ThrowCardsGameActionWorker.TYPE)
       .create(gameInstance, {user: users[firstUserToPlay].user});
     gameInstance.actions.current.push(action);
-
-    // Call the init hook
-    GamesTypesLibrary.callHook(gameTypeId, 'initialize', gameInstance);
 
     // Save it
     this.gameInstances[this.nextId] = gameInstance;

@@ -4,7 +4,7 @@ import { QueueService } from './../queue/queue.service';
 import { GameService } from '../game/game.service';
 import { WizzardService } from '../wizzard/wizzard.service';
 import { IGameUser, IGameInstance, IGameCard, IGameAction } from '../@shared/arena-shared/game';
-import { destiny, origin } from '../@shared/rest-shared/types';
+import { destiny, origin } from '../@shared/rest-shared/base';
 import { IWizzard } from '../@shared/arena-shared/wizzard';
 
 /**
@@ -24,12 +24,12 @@ export class ApiService {
    * Join a queue in the queue service
    * @param request
    */
-  joinQueue(request: IApiRequest<IJoinQueueParams>): IQueueResponse {
+  async joinQueue(request: IApiRequest<IJoinQueueParams>): Promise<IQueueResponse> {
     if (!isJoinQueueParams(request.params)) {
       throw new ApiError('Invalid method parameter(s).', ApiError.CODE_INVALID_PARAMS);
     }
 
-    const queue: IGameUser[] = this.queueService.join(
+    const queue: IGameUser[] = await this.queueService.join(
       request.params.gameType,
       request.user,
       request.params.destiny,
@@ -47,7 +47,7 @@ export class ApiService {
    * Join a queue in the queue service
    * @param request
    */
-  refreshQueueAsk(request: IApiRequest<IRefreshQueueAskParams>): IQueueResponse {
+  async refreshQueueAsk(request: IApiRequest<IRefreshQueueAskParams>): Promise<IQueueResponse> {
     if (!isRefreshAskQueueParams(request.params)) {
       throw new ApiError('Invalid method parameter(s).', ApiError.CODE_INVALID_PARAMS);
     }
@@ -67,7 +67,7 @@ export class ApiService {
    * Quit a queue in the queue service
    * @param request
    */
-  quitQueue(request: IApiRequest<IQuitQueueParams>): IQueueResponse {
+  async quitQueue(request: IApiRequest<IQuitQueueParams>): Promise<IQueueResponse> {
     if (!isQuitQueueParams(request.params)) {
       throw new ApiError('Invalid method parameter(s).', ApiError.CODE_INVALID_PARAMS);
     }
@@ -84,7 +84,7 @@ export class ApiService {
    * Get the current game instance for the player
    * @param request
    */
-  getCurrentGame(request: IApiRequest<undefined>): IGetGameResponse {
+  async getCurrentGame(request: IApiRequest<undefined>): Promise<IGetGameResponse> {
     const gameInstance: IGameInstance|undefined = this.gameService.getGameInstances().find(
       (g: IGameInstance) => g.users.find((u: IGameUser) => u.user === request.user) !== undefined);
 
@@ -101,7 +101,7 @@ export class ApiService {
    * Get cards
    * @param request
    */
-  getGame(request: IApiRequest<undefined>): IGetGameResponse {
+  async getGame(request: IApiRequest<undefined>): Promise<IGetGameResponse> {
     // Get the ID of the game
     const id: number|undefined = request.id;
     if (!id) {
@@ -145,7 +145,7 @@ export class ApiService {
    * Get cards
    * @param request
    */
-  getCards(request: IApiRequest<undefined>): any {
+  async getCards(request: IApiRequest<undefined>): Promise<IGameCard[]> {
     // Get the ID of the game
     const id: number|undefined = request.id;
     if (!id) {
@@ -175,7 +175,7 @@ export class ApiService {
    * Get actions
    * @param request
    */
-  getActions(request: IApiRequest<undefined>): IGameAction[] {
+  async getActions(request: IApiRequest<undefined>): Promise<IGameAction[]> {
     // Get the ID of the game
     const id: number|undefined = request.id;
     if (!id) {
@@ -205,7 +205,7 @@ export class ApiService {
    * Get users
    * @param request
    */
-  getUsers(request: IApiRequest<undefined>): IGetUsersResponse {
+  async getUsers(request: IApiRequest<undefined>): Promise<IGetUsersResponse> {
     // Get the ID of the game
     const id: number|undefined = request.id;
     if (!id) {
@@ -233,7 +233,7 @@ export class ApiService {
    * Get users
    * @param request
    */
-  respondToAction(request: IApiRequest<IRespondToActionParams>): IRespondToActionResponse {
+  async respondToAction(request: IApiRequest<IRespondToActionParams>): Promise<IRespondToActionResponse> {
     if (!isRespondToActionParams(request.params)) {
       throw new ApiError('Invalid method parameter(s).', ApiError.CODE_INVALID_PARAMS);
     }

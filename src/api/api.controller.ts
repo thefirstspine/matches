@@ -18,7 +18,7 @@ export class ApiController {
    */
   @Post()
   @UseGuards(AuthGuard)
-  api(@Req() request: any): IJsonRpcResponse|IJsonRpcError {
+  async api(@Req() request: any): Promise<IJsonRpcResponse|IJsonRpcError> {
     // Try to decode request
     if (!isJsonRpcRequest(request.body)) {
       return this.outputError(new ApiError('The JSON sent is not a valid Request object', ApiError.CODE_INVALID_REQUEST));
@@ -31,7 +31,7 @@ export class ApiController {
 
     try {
       // Try to execute the method on the service
-      const result: any = this.apiService[request.body.method]({
+      const result: any = await this.apiService[request.body.method]({
         params: request.body.params,
         id: request.body.id,
         user: request.user,

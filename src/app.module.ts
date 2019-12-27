@@ -7,7 +7,6 @@ import { TickerController } from './ticker/ticker.controller';
 import { TickerService } from './ticker/ticker.service';
 import { MessagingService } from './messaging/messaging.service';
 import { GamesStorageService } from './storage/games.storage.service';
-import { RestController } from './rest/rest.controller';
 import { WizzardService } from './wizzard/wizzard.service';
 import { WizzardsStorageService } from './storage/wizzards.storage.service';
 import { WizzardController } from './wizzard/wizzard.controller';
@@ -15,10 +14,11 @@ import { ShopController } from './shop/shop.controller';
 import { ShopService } from './shop/shop.service';
 import { AuthService } from './@shared/auth-shared/auth.service';
 import { LogService } from './@shared/log-shared/log.service';
+import { RestService } from './rest/rest.service';
 
 @Module({
   imports: [],
-  controllers: [ApiController, TickerController, RestController, WizzardController, ShopController],
+  controllers: [ApiController, TickerController, WizzardController, ShopController],
   providers: [
     ApiService,
     GameService,
@@ -29,8 +29,9 @@ import { LogService } from './@shared/log-shared/log.service';
     WizzardService,
     WizzardsStorageService,
     ShopService,
-    LogService,
     AuthService,
+    {provide: LogService, useValue: new LogService('arena')},
+    RestService,
   ],
 })
 export class AppModule {}
