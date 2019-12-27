@@ -1,9 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { ApiError } from './api.error';
 import { QueueService } from './../queue/queue.service';
-import { destiny, origin } from '../libraries/generic.library';
-import { IGameUser, GameService, IGameInstance, IGameCard, IGameAction } from '../game/game.service';
-import { WizzardService, IWizzard } from '../wizzard/wizzard.service';
+import { GameService } from '../game/game.service';
+import { WizzardService } from '../wizzard/wizzard.service';
+import { IGameUser, IGameInstance, IGameCard, IGameAction } from '../@shared/arena-shared/game';
+import { destiny, origin } from '../@shared/rest-shared/types';
+import { IWizzard } from '../@shared/arena-shared/wizzard';
 
 /**
  * All the methods of the API are mapped here. The controller will call that

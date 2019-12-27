@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { WizzardsStorageService } from '../storage/wizzards.storage.service';
 import { randBetween } from '../utils/maths.utils';
+import { IWizzard } from '../@shared/arena-shared/wizzard';
 
 @Injectable()
 export class WizzardService {
@@ -114,28 +115,4 @@ export class WizzardService {
     return dict[randBetween(0, dict.length - 1)];
   }
 
-}
-
-export interface IWizzard {
-  id: number;
-  version: 0.6;
-  name: string;
-  items: IWizzardItem[];
-  history: IHistoryItem[];
-  purchases: string[];
-  avatar: string;
-  title: string;
-  triumphs: string[];
-}
-
-export interface IWizzardItem {
-  name: string;
-  num: number;
-}
-
-export interface IHistoryItem {
-  gameId: number;
-  victory: boolean;
-  gameTypeId: string;
-  timestamp: number;
 }

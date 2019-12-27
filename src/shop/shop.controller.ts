@@ -1,7 +1,7 @@
 import { Controller, Post, Body, UseGuards, Req } from '@nestjs/common';
 import { ShopService } from './shop.service';
-import { IShopItem, ShopItemsLibrary } from '../libraries/shop-items.library';
 import { AuthGuard } from '../@shared/auth-shared/auth.guard';
+import { IShopItem } from '../@shared/rest-shared/types';
 
 @Controller('shop')
 export class ShopController {

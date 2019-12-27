@@ -1,4 +1,4 @@
-import { IGameInstance, IGameCard } from '../game.service';
+import { IGameInstance, IGameCard } from '../../@shared/arena-shared/game';
 import { GameEvents } from './game-events';
 
 /**

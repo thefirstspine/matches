@@ -1,9 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { IGameType, GamesTypesLibrary } from './../libraries/games-types.library';
-import { destiny, origin } from './../libraries/generic.library';
 import { MessagingService } from '../messaging/messaging.service';
-import { IGameUser, GameService, IGameInstance } from '../game/game.service';
-import { WizzardService, IWizzardItem } from '../wizzard/wizzard.service';
+import { GameService } from '../game/game.service';
+import { WizzardService } from '../wizzard/wizzard.service';
+import { destiny, origin } from '../@shared/rest-shared/base';
+import { IGameUser, IGameInstance } from '../@shared/arena-shared/game';
+import { IWizzardItem } from '../@shared/arena-shared/wizzard';
 
 /**
  * Service to manage the game queue

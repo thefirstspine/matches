@@ -1,4 +1,4 @@
-import { IGameInstance, IGameCard, IGameAction } from '../game.service';
+import { IGameInstance, IGameCard, IGameAction } from '../../@shared/arena-shared/game';
 
 /**
  * This subscriber is executed once a 'card:spell:used' event is thrown. It wil delete old spells actions.

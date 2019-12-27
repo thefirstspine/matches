@@ -1,4 +1,4 @@
-import { IGameInstance } from '../game.service';
+import { IGameInstance } from '../../@shared/arena-shared/game';
 
 /**
  * The game events is an event-based model for capture what is occuring in the game. It has

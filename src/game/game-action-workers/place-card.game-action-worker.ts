@@ -2,9 +2,9 @@ import { GameActionWorker } from './game-action-worker';
 import { IGameInstance,
          IGameAction,
          IGameCard,
-         ISubActionPutCardOnBoard } from '../game.service';
-import { ICardCoords } from '../../libraries/generic.library';
+         ISubActionPutCardOnBoard } from '../../@shared/arena-shared/game';
 import { GameEvents } from '../game-subscribers/game-events';
+import { ICardCoords } from '../../@shared/rest-shared/card';
 
 /**
  * The "place a card" action game worker. During his turn, the player can put one card on the board.

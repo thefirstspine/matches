@@ -1,5 +1,5 @@
 import { ExceptionFilter, Catch, HttpException, ArgumentsHost, HttpStatus } from '@nestjs/common';
-import { LogService } from './log/log.service';
+import { LogService } from './@shared/log-shared/log.service';
 
 @Catch()
 export class ErrorFilter implements ExceptionFilter {

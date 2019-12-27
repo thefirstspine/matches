@@ -2,7 +2,7 @@ import { GameActionWorker } from './game-action-worker';
 import { IGameInstance,
          IGameAction,
          IGameCard,
-         ISubActionPutCardOnBoard} from '../game.service';
+         ISubActionPutCardOnBoard} from '../../@shared/arena-shared/game';
 import { GameEvents } from '../game-subscribers/game-events';
 
 export class SpellThunderGameActionWorker extends GameActionWorker {

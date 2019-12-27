@@ -13,8 +13,8 @@ import { WizzardsStorageService } from './storage/wizzards.storage.service';
 import { WizzardController } from './wizzard/wizzard.controller';
 import { ShopController } from './shop/shop.controller';
 import { ShopService } from './shop/shop.service';
-import { LogService } from './log/log.service';
 import { AuthService } from './@shared/auth-shared/auth.service';
+import { LogService } from './@shared/log-shared/log.service';
 
 @Module({
   imports: [],

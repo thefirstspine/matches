@@ -1,8 +1,8 @@
 import { Controller, Get, UseGuards, Req, Post } from '@nestjs/common';
-import { WizzardService, IWizzard } from './wizzard.service';
-import { AvatarsLibrary } from '../libraries/avatars.library';
+import { WizzardService } from './wizzard.service';
 import { WizzardsStorageService } from '../storage/wizzards.storage.service';
 import { AuthGuard } from '../@shared/auth-shared/auth.guard';
+import { IWizzard } from '../@shared/arena-shared/wizzard';
 
 @Controller('wizzard')
 export class WizzardController {

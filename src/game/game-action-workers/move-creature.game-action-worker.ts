@@ -3,9 +3,9 @@ import { IGameInstance,
          IGameAction,
          ISubActionMoveCardOnBoard,
          ISubActionMoveCardOnBoardPossibility,
-         IGameCard} from '../game.service';
-import { ICardCoords } from '../../libraries/generic.library';
+         IGameCard} from '../../@shared/arena-shared/game';
 import { GameEvents } from '../game-subscribers/game-events';
+import { ICardCoords } from '../../@shared/rest-shared/card';
 
 /**
  * The creature movin' game worker. Only allowed during the "actions" phase. The player can move

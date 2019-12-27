@@ -1,7 +1,7 @@
 import { GameActionWorker } from './game-action-worker';
 import { IGameInstance,
          IGameAction,
-         ISubActionSelectCoupleOnBoard} from '../game.service';
+         ISubActionSelectCoupleOnBoard} from '../../@shared/arena-shared/game';
 import { GameEvents } from '../game-subscribers/game-events';
 import { ConfrontsGameActionWorker } from './confronts.game-action-worker';
 

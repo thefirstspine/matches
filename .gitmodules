@@ -4,3 +4,12 @@
 [submodule "src/@shared/auth-shared"]
 	path = src/@shared/auth-shared
 	url = https://github.com/thefirstspine/auth-shared
+[submodule "src/@shared/log-shared"]
+	path = src/@shared/log-shared
+	url = https://github.com/thefirstspine/log-shared
+[submodule "src/@shared/arena-shared"]
+	path = src/@shared/arena-shared
+	url = https://github.com/thefirstspine/arena-shared
+[submodule "src/@shared/rest-shared"]
+	path = src/@shared/rest-shared
+	url = https://github.com/thefirstspine/rest-shared

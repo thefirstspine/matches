@@ -1,6 +1,6 @@
 import { StorageService } from './storage.service';
 import { Injectable } from '@nestjs/common';
-import { IWizzard } from '../wizzard/wizzard.service';
+import { IWizzard } from '../@shared/arena-shared/wizzard';
 
 /**
  * The storage service for the "IWizzard" objects.

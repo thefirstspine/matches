@@ -1,11 +1,12 @@
 import { GameActionWorker } from './game-action-worker';
-import { IGameInstance,
-         IGameAction,
-         IGameCard,
-         ISubActionMoveCardOnBoardPossibility,
-         ISubActionSelectCoupleOnBoard} from '../game.service';
-import { ICardCoords, cardSide } from '../../libraries/generic.library';
 import { GameEvents } from '../game-subscribers/game-events';
+import { IGameAction,
+         IGameInstance,
+         ISubActionMoveCardOnBoardPossibility,
+         ISubActionSelectCoupleOnBoard,
+         IGameCard } from '../../@shared/arena-shared/game';
+import { cardSide } from '../../@shared/rest-shared/base';
+import { ICardCoords } from '../../@shared/rest-shared/card';
 
 /**
  * The main confrontation game worker. Normally a confrontation is closing the turn of the player. This worker

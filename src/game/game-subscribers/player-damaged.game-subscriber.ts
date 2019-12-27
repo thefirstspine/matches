@@ -1,4 +1,4 @@
-import { IGameInstance, IGameCard } from '../game.service';
+import { IGameInstance, IGameCard } from '../../@shared/arena-shared/game';
 
 /**
  * This subscriber is executed once a 'game:card:lifeChanged:damaged:{player}' event is thrown and look for dead

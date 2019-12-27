@@ -1,8 +1,7 @@
 import { GameActionWorker } from './game-action-worker';
-import { IGameInstance, IGameAction, IGameCard, ISubActionMoveCardToDiscard } from '../game.service';
+import { IGameInstance, IGameAction, IGameCard, ISubActionMoveCardToDiscard } from '../../@shared/arena-shared/game';
 import { isArray } from 'util';
 import { GameEvents } from '../game-subscribers/game-events';
-import curseOfMaraCard from '../../libraries/cards/curse-of-mara.card';
 
 /**
  * At the beggining of his turn, the player can throw to the discard one or more cards.
@@ -111,7 +110,7 @@ export class ThrowCardsGameActionWorker extends GameActionWorker {
       .filter((card: IGameCard) => {
         return card.user === user && card.location === 'hand';
       })
-      .map((card: IGameCard, index: number) => card.id !== curseOfMaraCard.id ? index : null)
+      .map((card: IGameCard, index: number) => card.id !== 'curse-of-mara' ? index : null)
       .filter((i) => i !== null);
   }
 

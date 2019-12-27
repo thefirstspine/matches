@@ -1,5 +1,5 @@
-import { IGameInstance, IGameAction } from '../game.service';
-import { LogService } from '../../log/log.service';
+import { LogService } from '../../@shared/log-shared/log.service';
+import { IGameInstance, IGameAction } from '../../@shared/arena-shared/game';
 
 /**
  * This is a game action. A game action is divided by simple subactions.

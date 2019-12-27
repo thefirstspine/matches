@@ -1,4 +1,4 @@
-import { IGameInstance, IGameCard, IGameAction } from '../game.service';
+import { IGameInstance, IGameCard, IGameAction } from '../../@shared/arena-shared/game';
 import { GameActionWorker } from '../game-action-workers/game-action-worker';
 import { MoveCreatureGameActionWorker } from '../game-action-workers/move-creature.game-action-worker';
 import { PlaceCardGameActionWorker } from '../game-action-workers/place-card.game-action-worker';

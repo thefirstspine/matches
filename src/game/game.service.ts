@@ -1,15 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { origin, destiny, ICardCoords, cardLocation, ILocalized } from '../libraries/generic.library';
-import { ICard, CardsLibrary } from '../libraries/cards.library';
-import { DecksLibrary } from '../libraries/decks.library';
 import { shuffle } from '../utils/array.utils';
 import { randBetween } from '../utils/maths.utils';
-import { GamesTypesLibrary, IGameType } from '../libraries/games-types.library';
 import { GamesStorageService } from '../storage/games.storage.service';
 import { GameActionWorker } from './game-action-workers/game-action-worker';
 import { MessagingService } from '../messaging/messaging.service';
 import { ThrowCardsGameActionWorker } from './game-action-workers/throw-cards.game-action-worker';
-import { LogService } from '../log/log.service';
 import { PlaceCardGameActionWorker } from './game-action-workers/place-card.game-action-worker';
 import { StartConfrontsGameActionWorker } from './game-action-workers/start-confronts.game-action-worker';
 import { MoveCreatureGameActionWorker } from './game-action-workers/move-creature.game-action-worker';
@@ -24,9 +19,13 @@ import spellUsedGameSubscriber from './game-subscribers/spell-used.game-subscrib
 import { SpellHealGameActionWorker } from './game-action-workers/spell-heal.game-action-worker';
 import cardHealedGameSubscriber from './game-subscribers/card-healed.game-subscriber';
 import { SpellReconstructGameActionWorker } from './game-action-workers/spell-reconstruct.game-action-worker';
-import { WizzardService, IWizzardItem } from '../wizzard/wizzard.service';
+import { WizzardService } from '../wizzard/wizzard.service';
 import { ConfrontsGameActionWorker } from './game-action-workers/confronts.game-action-worker';
 import turnEndedGameSubscriber from './game-subscribers/turn-ended.game-subscriber';
+import { LogService } from '../@shared/log-shared/log.service';
+import { IGameInstance, IGameUser, IGameCard, IGameAction } from '../@shared/arena-shared/game';
+import { IGameType } from '../@shared/rest-shared/types';
+import { IWizzardItem } from '../@shared/arena-shared/wizzard';
 
 /**
  * Service to manage game instances
@@ -310,127 +309,4 @@ export class GameService {
     return Promise.all(this.getGameInstances().map(this.processActionsFor.bind(this)));
   }
 
-}
-
-/**
- * Represents a game instance
- */
-export interface IGameInstance {
-  id: number;
-  status: 'active'|'ended'|'closed';
-  users: IGameUser[];
-  gameTypeId: string;
-  cards: IGameCard[];
-  actions: {
-    current: IGameAction[],
-    previous: IGameActionPassed[],
-  };
-}
-
-/**
- * A user in a game instance
- */
-export interface IGameUser {
-  user: number;
-  destiny: destiny;
-  origin: origin|undefined;
-  style: string|undefined;
-}
-
-/**
- * A card in a game instance
- */
-export interface IGameCard {
-  id: string;
-  coords?: ICardCoords;
-  user: number;
-  location: cardLocation;
-  card: ICard;
-}
-
-/**
- * A pending action in a game instance
- */
-export interface IGameAction {
-  type: string;
-  description: ILocalized;
-  createdAt: number;
-  expiresAt?: number;
-  user: number;
-  priority: number;
-  subactions: Array<ISubActionPass |
-                    ISubActionChoseCardInHand |
-                    ISubActionChoseCardOnBoard |
-                    ISubActionMoveCardOnBoard |
-                    ISubActionPutCardOnBoard |
-                    ISubActionMoveCardToDiscard |
-                    ISubActionSelectCoupleOnBoard>;
-  responses?: any[];
-}
-
-/**
- * A passed & closed action
- */
-export interface IGameActionPassed extends IGameAction {
-  passedAt: number;
-}
-
-export interface ISubAction {
-  description: ILocalized;
-}
-
-export interface ISubActionPass extends ISubAction {
-  type: 'pass';
-  params: {
-  };
-}
-
-export interface ISubActionChoseCardInHand extends ISubAction {
-  type: 'choseCardInHand';
-  params: {
-    handIndexes: number[],
-  };
-}
-
-export interface ISubActionChoseCardOnBoard extends ISubAction {
-  type: 'choseCardOnBoard';
-  params: {
-    boardCoords: string[],
-  };
-}
-
-export interface ISubActionPutCardOnBoard extends ISubAction {
-  type: 'putCardOnBoard';
-  params: {
-    handIndexes: number[],
-    boardCoords: string[],
-  };
-}
-
-export interface ISubActionMoveCardOnBoard extends ISubAction {
-  type: 'moveCardOnBoard';
-  params: {
-    possibilities: ISubActionMoveCardOnBoardPossibility[],
-  };
-}
-
-export interface ISubActionSelectCoupleOnBoard extends ISubAction {
-  type: 'selectCoupleOnBoard';
-  params: {
-    possibilities: ISubActionMoveCardOnBoardPossibility[],
-  };
-}
-
-export interface ISubActionMoveCardOnBoardPossibility {
-  boardCoordsFrom: string;
-  boardCoordsTo: string[];
-}
-
-export interface ISubActionMoveCardToDiscard extends ISubAction {
-  type: 'moveCardsToDiscard';
-  params: {
-    min: number,
-    max: number,
-    handIndexes: number[],
-  };
 }

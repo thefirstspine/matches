@@ -1,5 +1,5 @@
-import { IGameInstance, IGameCard } from '../game.service';
-import { ICard, CardsLibrary } from '../../libraries/cards.library';
+import { IGameInstance, IGameCard } from '../../@shared/arena-shared/game';
+import { ICard } from '../../@shared/rest-shared/card';
 
 /**
  * This subscriber is executed once a 'game:card:lifeChanged:healed' event is thrown. It will look for cards that

@@ -3,7 +3,7 @@ import { QueueService } from './../queue/queue.service';
 import { GameService } from '../game/game.service';
 import { MessagingService } from '../messaging/messaging.service';
 import { ShopService } from '../shop/shop.service';
-import { LogService } from '../log/log.service';
+import { LogService } from '../@shared/log-shared/log.service';
 
 /**
  * The ticker service will handle all the async operations, such as
