@@ -22,7 +22,7 @@ export class QueueService {
   /**
    * The games queues
    */
-  private queue: IQueue;
+  private queue: IQueue = {};
 
   /**
    * Construtor. Initialize the queue property.
