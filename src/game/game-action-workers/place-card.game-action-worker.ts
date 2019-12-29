@@ -141,6 +141,9 @@ export class PlaceCardGameActionWorker extends GameActionWorker {
         if (coords.x < 0 || coords.y < 0) {
           return;
         }
+        if (coords.x > 6 || coords.y > 6) {
+          return;
+        }
         // Skip already taken coords
         if (gameInstance.cards.find(
           (c: IGameCard) => c.location === 'board' && c.coords.x === coords.x  && c.coords.y === coords.y)) {
