@@ -4,9 +4,10 @@ import { GameService } from '../game/game.service';
 import { WizzardService } from '../wizzard/wizzard.service';
 import { destiny, origin } from '../@shared/rest-shared/base';
 import { IGameUser, IGameInstance } from '../@shared/arena-shared/game';
-import { IWizzardItem } from '../@shared/arena-shared/wizzard';
+import { IWizzardItem, IWizzard, IHistoryItem } from '../@shared/arena-shared/wizzard';
 import { IGameType } from '../@shared/rest-shared/entities';
 import { RestService } from '../rest/rest.service';
+import { getScore } from '../utils/game.utils';
 
 /**
  * Service to manage the game queue
@@ -82,6 +83,8 @@ export class QueueService {
       throw new Error('Origin not allowed in that game type.');
     }
 
+    // TODO: guard here to check for max games & shields
+
     // Add the user in the queue
     this.queue[gameTypeId] = this.queue[gameTypeId] ? this.queue[gameTypeId] : [];
     this.queue[gameTypeId].push({
@@ -154,13 +157,41 @@ export class QueueService {
     return this.queue[gameTypeId];
   }
 
-  async processFullQueueFor(gameTypeId: string): Promise<void> {
+  /**
+   * Process matchmackings for all the available game types.
+   */
+  async processMatchmakings() {
+    return Promise.all(Object.keys(this.queue).map(this.processMatchmakingFor.bind(this)));
+  }
+
+  /**
+   * Process the matchmaking for a given game type
+   * @param gameTypeId
+   */
+  async processMatchmakingFor(gameTypeId: string): Promise<void> {
     // Load game type
     const gameType: IGameType = await this.restService.gameType(gameTypeId);
 
+    // Get users in queue
     const queueUsers: IGameUser[] = this.getUsersInQueue(gameType.id);
+    const queueWizzards: IWizzard[] = queueUsers.map((u: IGameUser) => {
+      return this.wizzardService.getWizzard(u.user);
+    });
+
     if (queueUsers.length >= gameType.players.length) {
-      // TODO: we have to ran the users here in a ranked matchmaking type
+      // We have to sort the users here in a ranked matchmaking type
+      if (gameType.matchmakingMode === 'ranked') {
+        queueUsers.sort((a: IGameUser, b: IGameUser) => {
+          const aIndex: number = queueUsers.findIndex((u) => u === a);
+          const aScore: number = getScore(queueWizzards[aIndex].history.filter((h: IHistoryItem) => h.gameTypeId === gameTypeId));
+          const bIndex: number = queueUsers.findIndex((u) => u === b);
+          const bScore: number = getScore(queueWizzards[bIndex].history.filter((h: IHistoryItem) => h.gameTypeId === gameTypeId));
+          if (aScore === bScore) {
+            return 0;
+          }
+          return aScore > bScore ? 1 : -1;
+        });
+      }
       // Extract the users needed from the queue
       const queueUsersNeeded: IGameUser[] = queueUsers.splice(0, gameType.players.length);
       // Create a game
@@ -180,10 +211,18 @@ export class QueueService {
     }
   }
 
-  async lookForFullQueues() {
-    return Promise.all(Object.keys(this.queue).map(this.processFullQueueFor.bind(this)));
+  /**
+   * Looks for expired queue asks. A queue ask is expired when the delay of QUEUE__EXPIRATION_TIME
+   * is passed.
+   */
+  async lookForExpiredQueueAsks() {
+    return Promise.all(Object.keys(this.queue).map(this.processQueueExpirationFor.bind(this)));
   }
 
+  /**
+   * Manages expired queue asks for a given game type.
+   * @param gameTypeId
+   */
   async processQueueExpirationFor(gameTypeId: string) {
     // Load game type
     const gameType: IGameType = await this.restService.gameType(gameTypeId);
@@ -203,10 +242,6 @@ export class QueueService {
       }
       return true;
     });
-  }
-
-  async lookForExpiredQueueAsks() {
-    return Promise.all(Object.keys(this.queue).map(this.processQueueExpirationFor.bind(this)));
   }
 
   /**

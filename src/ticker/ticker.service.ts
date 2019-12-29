@@ -12,6 +12,8 @@ import { LogService } from '../@shared/log-shared/log.service';
 @Injectable()
 export class TickerService {
 
+  protected tickCount: number = 0;
+
   constructor(
     private readonly queueService: QueueService,
     private readonly gameService: GameService,
@@ -20,37 +22,43 @@ export class TickerService {
     private readonly logService: LogService,
   ) {}
 
+  /**
+   * Main ticker method.
+   * @param tickNumber
+   */
   async tick(): Promise<void> {
+    // Increase tick count
+    this.tickCount ++;
+
+    // Check expired queue asks every tick
     try {
-      await this.checkQueue();
+      await this.queueService.lookForExpiredQueueAsks();
     } catch (e) {
-      this.logService.error(`[Ticker] [Error] Ticker queue error`, {name: e.name, message: e.message, stack: e.stack});
+      this.logService.error(`Ticker queue expiration error`, {name: e.name, message: e.message, stack: e.stack});
     }
 
-    try {
-      await this.checkGameActions();
-    } catch (e) {
-      this.logService.error(`[Ticker] [Error] Ticker game actions error`, {name: e.name, message: e.message, stack: e.stack});
+    // Manages matchmaking every 60 ticks
+    if (this.tickCount % 60 === 0) {
+      try {
+        await this.queueService.processMatchmakings();
+      } catch (e) {
+        this.logService.error(`Ticker matchmaking error`, {name: e.name, message: e.message, stack: e.stack});
+      }
     }
 
+    // Look for pending actions every tock
     try {
-      await this.checkShopPurchases();
+      await this.gameService.lookForPendingActions();
     } catch (e) {
-      this.logService.error(`[Ticker] [Error] Ticker shop purshases error`, {name: e.name, message: e.message, stack: e.stack});
+      this.logService.error(`Ticker game actions error`, {name: e.name, message: e.message, stack: e.stack});
     }
-  }
 
-  async checkQueue() {
-    await this.queueService.lookForExpiredQueueAsks();
-    await this.queueService.lookForFullQueues();
-  }
-
-  async checkGameActions() {
-    await this.gameService.lookForPendingActions();
-  }
-
-  async checkShopPurchases() {
-    await this.shopService.lookForCompletePurchases();
+    // Manages purshases from shop service every tick
+    try {
+      await this.shopService.lookForCompletePurchases();
+    } catch (e) {
+      this.logService.error(`Ticker shop purshases error`, {name: e.name, message: e.message, stack: e.stack});
+    }
   }
 
 }
