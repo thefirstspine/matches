@@ -4,8 +4,19 @@ import { QueueService } from './../queue/queue.service';
 import { GameService } from '../game/game.service';
 import { WizzardService } from '../wizzard/wizzard.service';
 import { IGameUser, IGameInstance, IGameCard, IGameAction } from '../@shared/arena-shared/game';
-import { destiny, origin } from '../@shared/rest-shared/base';
-import { IWizzard } from '../@shared/arena-shared/wizzard';
+import { IRespondToActionParams,
+         IRespondToActionResponse,
+         IGetUsersResponse,
+         IApiRequest,
+         IGetGameResponse,
+         IQueueResponse,
+         IRefreshQueueAskParams,
+         IJoinQueueParams,
+         IQuitQueueParams } from 'src/@shared/arena-shared/api';
+import { isRespondToActionParams,
+         isQuitQueueParams,
+         isRefreshAskQueueParams,
+         isJoinQueueParams } from 'src/@shared/arena-shared/api.types';
 
 /**
  * All the methods of the API are mapped here. The controller will call that
@@ -265,111 +276,4 @@ export class ApiService {
     };
   }
 
-}
-
-/**
- * Represents a request from the API
- */
-export interface IApiRequest<T> {
-  params: T;
-  user: number;
-  id?: number;
-}
-
-/**
- * Interface representing parameters for the "quitQueue" method
- */
-export interface IQuitQueueParams {
-  gameType: string;
-}
-
-/**
- * Interface representing parameters for the "joinQueue" method
- */
-export interface IJoinQueueParams {
-  gameType: string;
-  destiny: destiny;
-  origin: origin|undefined;
-  style: string|undefined;
-}
-
-/**
- * Interface representing parameters for the "respondToAction" method
- */
-export interface IRespondToActionParams {
-  response: any;
-  actionType: string;
-}
-
-/**
- * Interface representing parameters for the "refreshQueueAsk" method
- */
-export interface IRefreshQueueAskParams {
-  gameType: string;
-}
-
-/**
- * Interface representing a queue status response
- */
-export interface IQueueResponse {
-  gameType: string;
-  queue: IGameUser[];
-}
-
-/**
- * Interface representing a getGame* response
- */
-export interface IGetGameResponse {
-  gameType: string;
-  id: number;
-  status: 'active'|'ended'|'closed';
-  stats: {
-    cardsInHand: {[key: number]: number},
-    cardsInDeck: {[key: number]: number},
-  };
-}
-
-/**
- * Interface representing a players request response
- */
-export interface IGetUsersResponse {
-  users: Array<{
-    account: IWizzard,
-    game: IGameUser,
-  }>;
-}
-
-/**
- * Interface representing a response to the "respondToAction" method
- */
-export interface IRespondToActionResponse {
-  sent: boolean;
-}
-
-/**
- * Type guard for ICreateGameParams
- */
-export function isJoinQueueParams(toBeDetermined: any): toBeDetermined is IJoinQueueParams {
-  return toBeDetermined.gameType && toBeDetermined.destiny;
-}
-
-/**
- * Type guard for IQuitQueueParams
- */
-export function isQuitQueueParams(toBeDetermined: any): toBeDetermined is IQuitQueueParams {
-  return toBeDetermined.gameType;
-}
-
-/**
- * Type guard for IQuitQueueParams
- */
-export function isRefreshAskQueueParams(toBeDetermined: any): toBeDetermined is IRefreshQueueAskParams {
-  return toBeDetermined.gameType;
-}
-
-/**
- * Type guard for IRespondToActionParams
- */
-export function isRespondToActionParams(toBeDetermined: any): toBeDetermined is IRespondToActionParams {
-  return toBeDetermined.response && toBeDetermined.actionType;
 }
