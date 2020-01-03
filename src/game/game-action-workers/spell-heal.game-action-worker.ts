@@ -104,7 +104,7 @@ export class SpellHealGameActionWorker extends GameActionWorker {
 
     // Dispatch event
     await GameEvents.dispatch(gameInstance, `card:spell:used:${cardUsed.card.id}`, {gameCard: cardUsed});
-    await GameEvents.dispatch(gameInstance, `game:card:lifeChanged:healed:${cardDamaged.card.id}`, {gameCard: cardDamaged});
+    await GameEvents.dispatch(gameInstance, `game:card:lifeChanged:healed:${cardDamaged.card.id}`, {gameCard: cardDamaged, lifeChanged: 2});
 
     return true;
   }

@@ -101,7 +101,7 @@ export class SpellThunderGameActionWorker extends GameActionWorker {
 
     // Dispatch event
     await GameEvents.dispatch(gameInstance, `card:spell:used:${cardUsed.card.id}`, {gameCard: cardUsed});
-    await GameEvents.dispatch(gameInstance, `game:card:lifeChanged:damaged:${cardDamaged.card.id}`, {gameCard: cardDamaged});
+    await GameEvents.dispatch(gameInstance, `game:card:lifeChanged:damaged:${cardDamaged.card.id}`, {gameCard: cardDamaged, lifeChanged: -4});
 
     return true;
   }

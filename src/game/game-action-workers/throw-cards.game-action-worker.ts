@@ -83,7 +83,9 @@ export class ThrowCardsGameActionWorker extends GameActionWorker {
         await GameEvents.dispatch(gameInstance, `game:card:picked:${card.card.id}`);
       } else {
         currentPlayerCard.card.stats.life -= 1;
-        await GameEvents.dispatch(gameInstance, `game:card:lifeChanged:damaged:${currentPlayerCard.card.id}`, {gameCard: currentPlayerCard});
+        await GameEvents.dispatch(
+          gameInstance,
+          `game:card:lifeChanged:damaged:${currentPlayerCard.card.id}`, {gameCard: currentPlayerCard, lifeChanged: -1});
       }
     }
 
@@ -91,7 +93,9 @@ export class ThrowCardsGameActionWorker extends GameActionWorker {
     const damages: number = responseHandIndexes.length - 1;
     if (damages > 0) {
       currentPlayerCard.card.stats.life -= damages;
-      await GameEvents.dispatch(gameInstance, `game:card:lifeChanged:damaged:${currentPlayerCard.card.id}`, {gameCard: currentPlayerCard});
+      await GameEvents.dispatch(
+        gameInstance,
+        `game:card:lifeChanged:damaged:${currentPlayerCard.card.id}`, {gameCard: currentPlayerCard, lifeChanged: -damages});
     }
 
     // Dispatch event

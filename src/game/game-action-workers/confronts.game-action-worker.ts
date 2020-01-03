@@ -123,11 +123,15 @@ export class ConfrontsGameActionWorker extends GameActionWorker {
     // Apply damages
     if (lifeLostTo > 0) {
       cardTo.card.stats.life -= lifeLostTo;
-      await GameEvents.dispatch(gameInstance, `game:card:lifeChanged:damaged:${cardTo.card.id}`, {gameCard: cardTo});
+      await GameEvents.dispatch(
+        gameInstance,
+        `game:card:lifeChanged:damaged:${cardTo.card.id}`, {gameCard: cardTo, lifeChanged: -lifeLostTo});
     }
     if (lifeLostFrom > 0) {
       cardFrom.card.stats.life -= lifeLostFrom;
-      await GameEvents.dispatch(gameInstance, `game:card:lifeChanged:damaged:${cardFrom.card.id}`, {gameCard: cardFrom});
+      await GameEvents.dispatch(
+        gameInstance,
+        `game:card:lifeChanged:damaged:${cardFrom.card.id}`, {gameCard: cardFrom, lifeChanged: -lifeLostFrom});
     }
 
     // Get the old confronts based on the last 50 actions (+ this one)
