@@ -193,11 +193,18 @@ export class GameService {
   }
 
   /**
-   * Get an instance by id in hot memory
+   * Get an instance by id
    * @param user
    */
   getGameInstance(id: number): IGameInstance|null {
-    return this.gameInstances[id] ? this.gameInstances[id] : null;
+    // Get instance in hot memory
+    const game: IGameInstance|null = this.gameInstances[id] ? this.gameInstances[id] : null;
+    if (game) {
+      return game;
+    }
+
+    // Get instance in cold memory
+    return this.gamesStorageService.get(id);
   }
 
   /**

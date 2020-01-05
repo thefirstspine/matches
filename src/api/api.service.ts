@@ -199,6 +199,11 @@ export class ApiService {
       throw new ApiError('Unknown game instance.', ApiError.CODE_METHOD_NOT_FOUND);
     }
 
+    // Wipe all the actions for a non active game
+    if (gameInstance.status !== 'active') {
+      throw new ApiError('Non-opened game instance.', ApiError.CODE_INVALID_REQUEST);
+    }
+
     // Get the max priority of the pending actions
     const maxPriority = gameInstance.actions.current.reduce((acc: number, action: IGameAction) => {
       return action.priority > acc ? action.priority : acc;
@@ -259,6 +264,11 @@ export class ApiService {
     const gameInstance: IGameInstance|null = this.gameService.getGameInstance(id);
     if (!gameInstance) {
       throw new ApiError('Unknown game instance.', ApiError.CODE_METHOD_NOT_FOUND);
+    }
+
+    // Cannot respond to a non-opened game instance
+    if (gameInstance.status !== 'active') {
+      throw new ApiError('Non active game instance.', ApiError.CODE_INVALID_REQUEST);
     }
 
     // Store the response in the instance
