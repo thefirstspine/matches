@@ -69,6 +69,7 @@ function registerResult(
   wizzardService: WizzardService,
   wizzardsStorageService: WizzardsStorageService,
 ) {
+  // Create loot
   const loot: ILoot[] = victory ? [
     {name: 'shard', num: 30},
     {name: 'victory-mark', num: 1},
@@ -76,15 +77,39 @@ function registerResult(
     {name: 'shard', num: 30},
     {name: 'defeat-mark', num: 1},
   ];
+
+  // Get wizard's account
   const wizzard: IWizzard = wizzardService.getWizzard(gameUser.user);
+
+  // Register data in wizard's history
   wizzard.history.push({
     gameId: gameInstance.id,
     gameTypeId: gameInstance.gameTypeId,
     victory,
     timestamp: Date.now(),
   });
+
+  // Add loot
   mergeLootsInItems(wizzard.items, loot);
+
+  if (!victory) {
+    // Register the triumph "spirit"
+    if (!wizzard.triumphs.includes('spirit')) {
+      wizzard.triumphs.push('spirit');
+    }
+  } else {
+    // Register the triumphs for the destiny & the origin
+    if (!wizzard.triumphs.includes(gameUser.destiny)) {
+      wizzard.triumphs.push(gameUser.destiny);
+    }
+    if (!wizzard.triumphs.includes(gameUser.origin)) {
+      wizzard.triumphs.push(gameUser.origin);
+    }
+  }
+
+  // Save wizard
   wizzardsStorageService.save(wizzard);
+
   result.push({
     user: gameUser.user,
     result: victory ? 'win' : 'lose',
