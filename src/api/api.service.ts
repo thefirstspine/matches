@@ -148,6 +148,7 @@ export class ApiService {
       gameType: gameInstance.gameTypeId,
       id: gameInstance.id,
       status: gameInstance.status,
+      result: gameInstance.result,
       stats,
     };
   }
