@@ -87,7 +87,7 @@ function registerResult(
   wizzardsStorageService.save(wizzard);
   result.push({
     user: gameUser.user,
-    result: 'win',
+    result: victory ? 'win' : 'lose',
     loot,
   });
 }
