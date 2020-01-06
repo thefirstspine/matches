@@ -28,7 +28,9 @@ export class WizzardController {
     const wizzard: IWizzard = this.wizzardService.getWizzard(request.user);
 
     // Get avatar
-    const avatar: IAvatar = await this.restService.avatar(request.body.avatar);
+    const avatar: IAvatar|null = request.body.avatar
+      ? await this.restService.avatar(request.body.avatar)
+      : null;
 
     // Edit account
     wizzard.avatar = request.body.avatar && avatar
