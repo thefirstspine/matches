@@ -63,9 +63,10 @@ export class ConfrontsGameActionWorker extends GameActionWorker {
     const boardCoordsTo: string = gameAction.responses[0].boardCoordsTo;
     const possibilities: ISubActionMoveCardOnBoardPossibility[] = (gameAction.subactions[0] as ISubActionSelectCoupleOnBoard).params.possibilities;
     const possibility: ISubActionMoveCardOnBoardPossibility|undefined = possibilities.find((p: ISubActionMoveCardOnBoardPossibility) => {
-      return p.boardCoordsFrom === boardCoordsFrom;
+      return p.boardCoordsFrom === boardCoordsFrom && p.boardCoordsTo.includes(boardCoordsTo);
     });
-    if (!possibility.boardCoordsTo.includes(boardCoordsTo)) {
+    if (!possibility) {
+      this.logService.warning('Possibility not found', gameAction);
       return false;
     }
 
