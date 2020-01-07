@@ -303,7 +303,7 @@ export class ApiService {
     if (action) {
       action.responses = request.params.response;
       return {
-        sent: true,
+        sent: action.responses.length ? true : false,
       };
     }
 
