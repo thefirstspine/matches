@@ -232,6 +232,14 @@ export class GameService {
   }
 
   /**
+   * Loads an instance in the hot memory
+   * @param instance
+   */
+  loadInMemory(instance: IGameInstance) {
+    this.gameInstances[instance.id] = instance;
+  }
+
+  /**
    * Async process actions for a game instance
    * @param gameInstance
    */
