@@ -145,7 +145,7 @@ export class GameService {
     });
 
     // Get the first user
-    const firstUserToPlay = 0; // randBetween(0, users.length);
+    const firstUserToPlay = randBetween(0, users.length);
 
     // Create the instance
     const gameInstance: IGameInstance = {
