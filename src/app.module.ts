@@ -15,6 +15,7 @@ import { ShopService } from './shop/shop.service';
 import { AuthService } from './@shared/auth-shared/auth.service';
 import { LogService } from './@shared/log-shared/log.service';
 import { RestService } from './rest/rest.service';
+import { RoomsService } from './rooms/rooms.service';
 
 @Module({
   imports: [],
@@ -32,6 +33,7 @@ import { RestService } from './rest/rest.service';
     AuthService,
     {provide: LogService, useValue: new LogService('arena')},
     RestService,
+    RoomsService,
   ],
 })
 export class AppModule {}
