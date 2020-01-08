@@ -12,11 +12,11 @@ import { IRespondToActionParams,
          IQueueResponse,
          IRefreshQueueAskParams,
          IJoinQueueParams,
-         IQuitQueueParams } from 'src/@shared/arena-shared/api';
+         IQuitQueueParams } from '../@shared/arena-shared/api';
 import { isRespondToActionParams,
          isQuitQueueParams,
          isRefreshAskQueueParams,
-         isJoinQueueParams } from 'src/@shared/arena-shared/api.types';
+         isJoinQueueParams } from '../@shared/arena-shared/api.types';
 
 /**
  * All the methods of the API are mapped here. The controller will call that

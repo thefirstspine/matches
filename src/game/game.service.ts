@@ -26,8 +26,9 @@ import { LogService } from '../@shared/log-shared/log.service';
 import { IGameInstance, IGameUser, IGameCard, IGameAction } from '../@shared/arena-shared/game';
 import { IWizzardItem } from '../@shared/arena-shared/wizzard';
 import { RestService } from '../rest/rest.service';
-import { ICard } from 'src/@shared/rest-shared/card';
-import { IGameType, IDeck } from 'src/@shared/rest-shared/entities';
+import { ICard } from '../@shared/rest-shared/card';
+import { IGameType, IDeck } from '../@shared/rest-shared/entities';
+import { RoomsService } from '../rooms/rooms.service';
 
 /**
  * Service to manage game instances
@@ -54,6 +55,7 @@ export class GameService {
     private readonly logService: LogService,
     private readonly wizzardService: WizzardService,
     private readonly restService: RestService,
+    private readonly roomService: RoomsService,
   ) {
     // Get base data
     this.gameInstances = {};

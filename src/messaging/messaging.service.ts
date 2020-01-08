@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import fetch, { Response } from 'node-fetch';
 import env from '../@shared/env-shared/env';
-import { LogService } from 'src/@shared/log-shared/log.service';
+import { LogService } from '../@shared/log-shared/log.service';
 
 @Injectable()
 export class MessagingService {
