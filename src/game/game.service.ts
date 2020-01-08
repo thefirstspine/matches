@@ -29,6 +29,7 @@ import { RestService } from '../rest/rest.service';
 import { ICard } from '../@shared/rest-shared/card';
 import { IGameType, IDeck } from '../@shared/rest-shared/entities';
 import { RoomsService } from '../rooms/rooms.service';
+import env from '../@shared/env-shared/env';
 
 /**
  * Service to manage game instances
@@ -170,6 +171,15 @@ export class GameService {
     // Save it
     this.gameInstances[this.nextId] = gameInstance;
     this.gamesStorageService.save(gameInstance);
+
+    // Create the room in the rooms service
+    await this.roomService.createRoom('arena', {
+      name: `game-${gameInstance.id}`,
+      senders: [{
+        displayName: '__system',
+        user: env.config.ARENA_ROOMS_USER,
+      }],
+    });
 
     // Increase next ID
     this.nextId ++;
