@@ -1,3 +1,4 @@
+// tslint:disable: no-empty
 import { LogService } from '../../@shared/log-shared/log.service';
 import { IGameInstance, IGameAction } from '../../@shared/arena-shared/game';
 import { Injectable } from '@nestjs/common';
@@ -47,9 +48,7 @@ export class GameActionWorker {
    * @param gameInstance
    * @param gameAction
    */
-  public async refresh(gameInstance: IGameInstance, gameAction: IGameAction): Promise<void> {
-    // TODO
-  }
+  public async refresh(gameInstance: IGameInstance, gameAction: IGameAction): Promise<void> {}
 
   /**
    * Executes the action. When succeed, this action is deleted & the other actions will be refreshed.
@@ -57,7 +56,6 @@ export class GameActionWorker {
    * @param gameAction
    */
   public async execute(gameInstance: IGameInstance, gameAction: IGameAction): Promise<boolean> {
-    // TODO
     return false;
   }
 
@@ -67,7 +65,6 @@ export class GameActionWorker {
    * @param gameAction
    */
   public async expires(gameInstance: IGameInstance, gameAction: IGameAction): Promise<boolean> {
-    // TODO
     return false;
   }
 
@@ -77,7 +74,6 @@ export class GameActionWorker {
    * @param gameAction
    */
   public async delete(gameInstance: IGameInstance, gameAction: IGameAction): Promise<void> {
-    // TODO
     gameInstance.actions.current = gameInstance.actions.current.filter((gameActionRef: IGameAction) => {
       if (gameActionRef === gameAction) {
         gameInstance.actions.previous.push({
