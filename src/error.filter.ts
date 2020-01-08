@@ -8,11 +8,14 @@ export class ErrorFilter implements ExceptionFilter {
     private readonly logService: LogService,
   ) {}
 
-  catch(exception: HttpException, host: ArgumentsHost) {
+  catch(exception: HttpException & Error, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
     const request = ctx.getRequest<Request>();
-    const status = exception.getStatus();
+    let status: number = 500;
+    if ( typeof exception.getStatus === 'function') {
+      status = exception.getStatus();
+    }
     if (status >= 500) {
       this.logService.error(
         `Global error with status ${status}`, {
@@ -32,6 +35,7 @@ export class ErrorFilter implements ExceptionFilter {
     response
       .status(status)
       .json({
+        message: status < 500 ? exception.message : undefined,
         statusCode: status,
         timestamp: new Date().toISOString(),
         path: request.url,
