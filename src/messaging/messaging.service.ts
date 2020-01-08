@@ -27,6 +27,9 @@ export class MessagingService {
     });
     const jsonResponse = await response.json();
     this.logService.info('Response from messaging service', jsonResponse);
+    if (response.status >= 400) {
+      throw new Error(JSON.stringify(jsonResponse));
+    }
     return jsonResponse;
   }
 
