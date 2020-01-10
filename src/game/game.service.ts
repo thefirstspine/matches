@@ -28,8 +28,8 @@ import { IWizzardItem } from '../@shared/arena-shared/wizzard';
 import { RestService } from '../rest/rest.service';
 import { ICard } from '../@shared/rest-shared/card';
 import { IGameType, IDeck } from '../@shared/rest-shared/entities';
-import { RoomsService } from '../rooms/rooms.service';
 import env from '../@shared/env-shared/env';
+import { ArenaRoomsService } from '../rooms/arena-rooms.service';
 
 /**
  * Service to manage game instances
@@ -56,7 +56,7 @@ export class GameService {
     private readonly logService: LogService,
     private readonly wizzardService: WizzardService,
     private readonly restService: RestService,
-    private readonly roomService: RoomsService,
+    private readonly arenaRoomsService: ArenaRoomsService,
   ) {
     // Get base data
     this.gameInstances = {};
@@ -173,13 +173,7 @@ export class GameService {
     this.gamesStorageService.save(gameInstance);
 
     // Create the room in the rooms service
-    await this.roomService.createRoom('arena', {
-      name: `game-${gameInstance.id}`,
-      senders: [{
-        displayName: '__system',
-        user: env.config.ARENA_ROOMS_USER,
-      }],
-    });
+    await this.arenaRoomsService.createRoomForGame(gameInstance);
 
     // Increase next ID
     this.nextId ++;
