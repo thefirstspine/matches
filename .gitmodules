@@ -13,3 +13,6 @@
 [submodule "src/@shared/rest-shared"]
 	path = src/@shared/rest-shared
 	url = https://github.com/thefirstspine/rest-shared
+[submodule "src/@shared/messaging-shared"]
+	path = src/@shared/messaging-shared
+	url = https://github.com/thefirstspine/messaging-shared

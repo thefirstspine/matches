@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { QueueService } from './../queue/queue.service';
 import { GameService } from '../game/game.service';
-import { MessagingService } from '../messaging/messaging.service';
 import { ShopService } from '../shop/shop.service';
 import { LogService } from '../@shared/log-shared/log.service';
 
@@ -17,7 +16,6 @@ export class TickerService {
   constructor(
     private readonly queueService: QueueService,
     private readonly gameService: GameService,
-    private readonly messagingService: MessagingService,
     private readonly shopService: ShopService,
     private readonly logService: LogService,
   ) {}

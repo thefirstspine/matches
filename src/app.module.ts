@@ -5,7 +5,6 @@ import { GameService } from './game/game.service';
 import { QueueService } from './queue/queue.service';
 import { TickerController } from './ticker/ticker.controller';
 import { TickerService } from './ticker/ticker.service';
-import { MessagingService } from './messaging/messaging.service';
 import { GamesStorageService } from './storage/games.storage.service';
 import { WizzardService } from './wizzard/wizzard.service';
 import { WizzardsStorageService } from './storage/wizzards.storage.service';
@@ -17,6 +16,7 @@ import { LogService } from './@shared/log-shared/log.service';
 import { RestService } from './rest/rest.service';
 import { RoomsService } from './rooms/rooms.service';
 import { ArenaRoomsService } from './rooms/arena-rooms.service';
+import { MessagingService } from './@shared/messaging-shared/messaging.service';
 
 @Module({
   imports: [],
@@ -26,7 +26,6 @@ import { ArenaRoomsService } from './rooms/arena-rooms.service';
     GameService,
     QueueService,
     TickerService,
-    MessagingService,
     GamesStorageService,
     WizzardService,
     WizzardsStorageService,
@@ -36,6 +35,7 @@ import { ArenaRoomsService } from './rooms/arena-rooms.service';
     RestService,
     RoomsService,
     ArenaRoomsService,
+    MessagingService,
   ],
 })
 export class AppModule {}

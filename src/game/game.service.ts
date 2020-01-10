@@ -3,7 +3,6 @@ import { shuffle } from '../utils/array.utils';
 import { randBetween } from '../utils/maths.utils';
 import { GamesStorageService } from '../storage/games.storage.service';
 import { GameActionWorker } from './game-action-workers/game-action-worker';
-import { MessagingService } from '../messaging/messaging.service';
 import { ThrowCardsGameActionWorker } from './game-action-workers/throw-cards.game-action-worker';
 import { PlaceCardGameActionWorker } from './game-action-workers/place-card.game-action-worker';
 import { StartConfrontsGameActionWorker } from './game-action-workers/start-confronts.game-action-worker';
@@ -28,8 +27,8 @@ import { IWizzardItem } from '../@shared/arena-shared/wizzard';
 import { RestService } from '../rest/rest.service';
 import { ICard } from '../@shared/rest-shared/card';
 import { IGameType, IDeck } from '../@shared/rest-shared/entities';
-import env from '../@shared/env-shared/env';
 import { ArenaRoomsService } from '../rooms/arena-rooms.service';
+import { MessagingService } from '../@shared/messaging-shared/messaging.service';
 
 /**
  * Service to manage game instances
@@ -284,7 +283,7 @@ export class GameService {
           // Send to the other players that the action succeed
           this.messagingService.sendMessage(
             '*',
-            `${MessagingService.SUBJECT__GAME}:${gameInstance.id}:action`,
+            `TheFirstSpine:game:${gameInstance.id}:action`,
             pendingGameAction,
           );
           // Okay, deletes the action

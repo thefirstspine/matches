@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { MessagingService } from '../messaging/messaging.service';
 import { GameService } from '../game/game.service';
 import { WizzardService } from '../wizzard/wizzard.service';
 import { destiny, origin } from '../@shared/rest-shared/base';
@@ -8,6 +7,7 @@ import { IWizzardItem, IWizzard, IHistoryItem } from '../@shared/arena-shared/wi
 import { IGameType } from '../@shared/rest-shared/entities';
 import { RestService } from '../rest/rest.service';
 import { getScore } from '../utils/game.utils';
+import { MessagingService } from '../@shared/messaging-shared/messaging.service';
 
 /**
  * Service to manage the game queue
@@ -98,7 +98,7 @@ export class QueueService {
     // Send message
     this.messagingService.sendMessage(
       '*',
-      MessagingService.SUBJECT__QUEUE,
+      'TheFirstSpine:queue',
       {
         event: 'joined',
         gameType,
@@ -201,7 +201,7 @@ export class QueueService {
       // Send message
       this.messagingService.sendMessage(
         queueUsersNeeded.map(e => e.user),
-        MessagingService.SUBJECT__GAME,
+        'TheFirstSpine:game',
         {
           event: 'created',
           gameType,
@@ -231,7 +231,7 @@ export class QueueService {
       if (queueUser.queueExpiresAt < Date.now()) {
         this.messagingService.sendMessage(
           [queueUser.user],
-          MessagingService.SUBJECT__QUEUE,
+          'TheFirstSpine:queue',
           {
             event: 'expired',
             gameType,

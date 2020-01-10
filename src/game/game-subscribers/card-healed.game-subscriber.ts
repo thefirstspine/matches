@@ -1,8 +1,8 @@
 import { IGameInstance, IGameCard, IGameUser } from '../../@shared/arena-shared/game';
 import { ICard } from '../../@shared/rest-shared/card';
 import { RestService } from '../../rest/rest.service';
-import { MessagingService } from '../../messaging/messaging.service';
 import { LogService } from '../../@shared/log-shared/log.service';
+import { MessagingService } from '../../@shared/messaging-shared/messaging.service';
 
 /**
  * This subscriber is executed once a 'game:card:lifeChanged:healed' event is thrown. It will look for cards that
@@ -13,7 +13,7 @@ import { LogService } from '../../@shared/log-shared/log.service';
 export default async function cardHealedGameSubscriber(gameInstance: IGameInstance, params: {gameCard: IGameCard, lifeChanged: number}) {
   await (new MessagingService(new LogService('arena'))).sendMessage(
     gameInstance.users.map((u: IGameUser) => u.user),
-    `${MessagingService.SUBJECT__GAME}:${gameInstance.id}:cardChanged`,
+    `TheFirstSpine:game:${gameInstance.id}:cardChanged`,
     {
       changes: {
         life: params.lifeChanged,
