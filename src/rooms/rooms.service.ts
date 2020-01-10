@@ -17,10 +17,17 @@ export class RoomsService {
    * @param subject
    * @param room
    */
-  async createRoom(subject: string, room: IRoom) {
+  async createRoom(subject: string, room: IRoom): Promise<IRoomCreated> {
     return this.sendRequest<IRoomCreated>(
       `subjects/${subject}/rooms`,
       room,
+      'post');
+  }
+
+  async sendMessageToRoom(subject: string, room: string, message: IMessage): Promise<IMessageCreated> {
+    return this.sendRequest<IMessageCreated>(
+      `subjects/${subject}/rooms/${room}/messages`,
+      message,
       'post');
   }
 
@@ -67,5 +74,14 @@ export interface ISender {
 }
 
 export interface ISenderCreated extends ISender {
+  timestamp: number;
+}
+
+export interface IMessage {
+  message: string;
+  user: number;
+}
+
+export interface IMessageCreated extends IMessage {
   timestamp: number;
 }
