@@ -5,6 +5,7 @@ import { Injectable } from '@nestjs/common';
 import { ICardCoords } from 'src/@shared/rest-shared/card';
 import { GameHookService } from '../game-hook/game-hook.service';
 import { IHasGameHookService } from '../injections.interface';
+import { ArenaRoomsService } from 'src/rooms/arena-rooms.service';
 
 /**
  * The "place a card" action game worker. During his turn, the player can put one card on the board.
@@ -18,6 +19,7 @@ export class PlaceCardGameWorker implements IGameWorker, IHasGameHookService {
 
   constructor(
     private readonly logService: LogService,
+    private readonly arenaRoomsService: ArenaRoomsService,
   ) {}
 
   /**
@@ -104,6 +106,15 @@ export class PlaceCardGameWorker implements IGameWorker, IHasGameHookService {
 
     // Dispatch event
     await this.gameHookService.dispatch(gameInstance, `card:creature:placed:${card.card.id}`);
+
+    // Send message to rooms
+    this.arenaRoomsService.sendMessageForGame(
+      gameInstance,
+      {
+        fr: `A placé une carte`,
+        en: ``,
+      },
+      gameAction.user);
 
     return true;
   }

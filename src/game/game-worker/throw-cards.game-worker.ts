@@ -5,6 +5,7 @@ import { LogService } from 'src/@shared/log-shared/log.service';
 import { Injectable } from '@nestjs/common';
 import { GameHookService } from '../game-hook/game-hook.service';
 import { IHasGameHookService } from '../injections.interface';
+import { ArenaRoomsService } from 'src/rooms/arena-rooms.service';
 
 /**
  * At the beggining of his turn, the player can throw to the discard one or more cards.
@@ -18,6 +19,7 @@ export class ThrowCardsGameWorker implements IGameWorker, IHasGameHookService {
 
   constructor(
     private readonly logService: LogService,
+    private readonly arenaRoomsService: ArenaRoomsService,
   ) {}
 
   /**
@@ -110,6 +112,16 @@ export class ThrowCardsGameWorker implements IGameWorker, IHasGameHookService {
 
     // Dispatch event
     await this.gameHookService.dispatch(gameInstance, `game:phaseChanged:actions`, {user: gameAction.user});
+
+    // Send message to rooms
+    const numCards: number = responseHandIndexes.length;
+    this.arenaRoomsService.sendMessageForGame(
+      gameInstance,
+      {
+        fr: `Défausse ${numCards} carte${(numCards > 1 ? 's' : '')}`,
+        en: ``,
+      },
+      gameAction.user);
 
     return true;
   }

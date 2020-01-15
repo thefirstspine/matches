@@ -4,6 +4,7 @@ import { LogService } from 'src/@shared/log-shared/log.service';
 import { Injectable } from '@nestjs/common';
 import { GameHookService } from '../game-hook/game-hook.service';
 import { IHasGameHookService } from '../injections.interface';
+import { ArenaRoomsService } from 'src/rooms/arena-rooms.service';
 
 /**
  * Game worker for "reconstruct" spell.
@@ -17,6 +18,7 @@ export class SpellReconstructGameWorker implements IGameWorker, IHasGameHookServ
 
   constructor(
     private readonly logService: LogService,
+    private readonly arenaRoomsService: ArenaRoomsService,
   ) {}
 
   /**
@@ -112,6 +114,15 @@ export class SpellReconstructGameWorker implements IGameWorker, IHasGameHookServ
     // Dispatch event
     await this.gameHookService.dispatch(gameInstance, `card:spell:used:${cardUsed.card.id}`, {gameCard: cardUsed});
     await this.gameHookService.dispatch(gameInstance, `game:card:lifeChanged:healed:${cardDamaged.card.id}`, {gameCard: cardDamaged, lifeChanged: 2});
+
+    // Send message to rooms
+    this.arenaRoomsService.sendMessageForGame(
+      gameInstance,
+      {
+        fr: `A joué une Reconstruction`,
+        en: ``,
+      },
+      gameAction.user);
 
     return true;
   }

@@ -4,6 +4,7 @@ import { LogService } from 'src/@shared/log-shared/log.service';
 import { Injectable } from '@nestjs/common';
 import { GameHookService } from '../game-hook/game-hook.service';
 import { IHasGameHookService } from '../injections.interface';
+import { ArenaRoomsService } from 'src/rooms/arena-rooms.service';
 
 /**
  * Worker for "thunder" spell.
@@ -17,6 +18,7 @@ export class SpellThunderGameWorker implements IGameWorker, IHasGameHookService 
 
   constructor(
     private readonly logService: LogService,
+    private readonly arenaRoomsService: ArenaRoomsService,
   ) {}
 
   /**
@@ -113,6 +115,15 @@ export class SpellThunderGameWorker implements IGameWorker, IHasGameHookService 
     await this.gameHookService.dispatch(gameInstance, `card:spell:used:${cardUsed.card.id}`, {gameCard: cardUsed});
     await this.gameHookService
       .dispatch(gameInstance, `game:card:lifeChanged:damaged:${cardDamaged.card.id}`, {gameCard: cardDamaged, lifeChanged: -4});
+
+    // Send message to rooms
+    this.arenaRoomsService.sendMessageForGame(
+      gameInstance,
+      {
+        fr: `A joué une Foudre`,
+        en: ``,
+      },
+      gameAction.user);
 
     return true;
   }

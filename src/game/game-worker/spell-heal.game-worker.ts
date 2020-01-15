@@ -4,6 +4,7 @@ import { LogService } from 'src/@shared/log-shared/log.service';
 import { Injectable } from '@nestjs/common';
 import { GameHookService } from '../game-hook/game-hook.service';
 import { IHasGameHookService } from '../injections.interface';
+import { ArenaRoomsService } from 'src/rooms/arena-rooms.service';
 
 /**
  * Main worker for "heal" spell.
@@ -15,6 +16,7 @@ export class SpellHealGameWorker implements IGameWorker, IHasGameHookService {
 
   constructor(
     private readonly logService: LogService,
+    private readonly arenaRoomsService: ArenaRoomsService,
   ) {}
 
   readonly type: string = 'spell-heal';
@@ -112,6 +114,15 @@ export class SpellHealGameWorker implements IGameWorker, IHasGameHookService {
     // Dispatch event
     await this.gameHookService.dispatch(gameInstance, `card:spell:used:${cardUsed.card.id}`, {gameCard: cardUsed});
     await this.gameHookService.dispatch(gameInstance, `game:card:lifeChanged:healed:${cardDamaged.card.id}`, {gameCard: cardDamaged, lifeChanged: 2});
+
+    // Send message to rooms
+    this.arenaRoomsService.sendMessageForGame(
+      gameInstance,
+      {
+        fr: `A joué un Soin`,
+        en: ``,
+      },
+      gameAction.user);
 
     return true;
   }
