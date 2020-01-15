@@ -1,19 +1,27 @@
-import { GameActionWorker } from './game-action-worker';
-import { IGameInstance,
-         IGameAction,
-         ISubActionMoveCardOnBoard,
-         ISubActionMoveCardOnBoardPossibility,
-         IGameCard} from '../../@shared/arena-shared/game';
-import { GameEvents } from '../game-subscribers/game-events';
-import { ICardCoords } from '../../@shared/rest-shared/card';
+import { IGameWorker } from './game-worker.interface';
+import {
+  IGameInstance,
+  IGameAction,
+  IGameCard,
+  ISubActionMoveCardOnBoard,
+  ISubActionMoveCardOnBoardPossibility } from 'src/@shared/arena-shared/game';
+import { LogService } from 'src/@shared/log-shared/log.service';
+import { Injectable } from '@nestjs/common';
+import { ICardCoords } from 'src/@shared/rest-shared/card';
+import { GameHookService } from '../game-hook/game-hook.service';
 
 /**
- * The creature movin' game worker. Only allowed during the "actions" phase. The player can move
- * only one creature to only one empty adjacent square.
+ * At the beggining of his turn, the player can throw to the discard one or more cards.
  */
-export class MoveCreatureGameActionWorker extends GameActionWorker {
+@Injectable() // Injectable required here for dependency injection
+export class MoveCreatureGameWorker implements IGameWorker {
 
-  static readonly TYPE: string = 'move-creature';
+  public readonly type: string = 'move-creature';
+
+  constructor(
+    private readonly logService: LogService,
+    private readonly gameHookService: GameHookService,
+  ) {}
 
   /**
    * @inheritdoc
@@ -21,7 +29,7 @@ export class MoveCreatureGameActionWorker extends GameActionWorker {
   public async create(gameInstance: IGameInstance, data: {user: number}): Promise<IGameAction> {
     return {
       createdAt: Date.now(),
-      type: MoveCreatureGameActionWorker.TYPE,
+      type: this.type,
       description: {
         en: ``,
         fr: `Déplacer une créature sur le plateau de jeu.`,
@@ -105,7 +113,7 @@ export class MoveCreatureGameActionWorker extends GameActionWorker {
     };
 
     // Dispatch event
-    await GameEvents.dispatch(gameInstance, `card:creature:moved:${card.card.id}`);
+    await this.gameHookService.dispatch(gameInstance, `card:creature:moved:${card.card.id}`);
 
     return true;
   }
@@ -150,4 +158,30 @@ export class MoveCreatureGameActionWorker extends GameActionWorker {
     return ret;
   }
 
+  /**
+   * Default expires method
+   * @param gameInstance
+   * @param gameAction
+   */
+  public async expires(gameInstance: IGameInstance, gameAction: IGameAction): Promise<boolean> {
+    return true;
+  }
+
+  /**
+   * Default delete method
+   * @param gameInstance
+   * @param gameAction
+   */
+  public async delete(gameInstance: IGameInstance, gameAction: IGameAction): Promise<void> {
+    gameInstance.actions.current = gameInstance.actions.current.filter((gameActionRef: IGameAction) => {
+      if (gameActionRef === gameAction) {
+        gameInstance.actions.previous.push({
+          ...gameAction,
+          passedAt: Date.now(),
+        });
+        return false;
+      }
+      return true;
+    });
+  }
 }

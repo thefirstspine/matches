@@ -1,14 +1,22 @@
-import { GameActionWorker } from './game-action-worker';
-import { IGameInstance, IGameAction, IGameCard, ISubActionMoveCardToDiscard } from '../../@shared/arena-shared/game';
+import { IGameWorker } from './game-worker.interface';
+import { IGameInstance, IGameAction, IGameCard, ISubActionMoveCardToDiscard } from 'src/@shared/arena-shared/game';
 import { isArray } from 'util';
-import { GameEvents } from '../game-subscribers/game-events';
+import { LogService } from 'src/@shared/log-shared/log.service';
+import { Injectable } from '@nestjs/common';
+import { GameHookService } from '../game-hook/game-hook.service';
 
 /**
  * At the beggining of his turn, the player can throw to the discard one or more cards.
  */
-export class ThrowCardsGameActionWorker extends GameActionWorker {
+@Injectable() // Injectable required here for dependency injection
+export class ThrowCardsGameWorker implements IGameWorker {
 
-  static readonly TYPE: string = 'throw-cards';
+  public readonly type: string = 'throw-cards';
+
+  constructor(
+    private readonly logService: LogService,
+    private readonly gameHookService: GameHookService,
+  ) {}
 
   /**
    * @inheritdoc
@@ -16,7 +24,7 @@ export class ThrowCardsGameActionWorker extends GameActionWorker {
   public async create(gameInstance: IGameInstance, data: {user: number}): Promise<IGameAction> {
     return {
       createdAt: Date.now(),
-      type: ThrowCardsGameActionWorker.TYPE,
+      type: this.type,
       description: {
         en: ``,
         fr: `Vous pouvez défausser une ou plusieurs cartes.`,
@@ -70,7 +78,7 @@ export class ThrowCardsGameActionWorker extends GameActionWorker {
 
     await Promise.all(cards.map((c: IGameCard) => {
       c.location = 'discard';
-      return GameEvents.dispatch(gameInstance, `card:discarded:${c.card.id}`, {gameCard: c});
+      return this.gameHookService.dispatch(gameInstance, `card:discarded:${c.card.id}`, {gameCard: c});
     }));
 
     // Pick the new cards
@@ -80,10 +88,10 @@ export class ThrowCardsGameActionWorker extends GameActionWorker {
       const card = gameInstance.cards.find(c => c.location === 'deck' && c.user === gameAction.user);
       if (card) {
         card.location = 'hand';
-        await GameEvents.dispatch(gameInstance, `game:card:picked:${card.card.id}`);
+        await this.gameHookService.dispatch(gameInstance, `game:card:picked:${card.card.id}`);
       } else {
         currentPlayerCard.card.stats.life -= 1;
-        await GameEvents.dispatch(
+        await this.gameHookService.dispatch(
           gameInstance,
           `game:card:lifeChanged:damaged:${currentPlayerCard.card.id}`, {gameCard: currentPlayerCard, lifeChanged: -1});
       }
@@ -93,15 +101,51 @@ export class ThrowCardsGameActionWorker extends GameActionWorker {
     const damages: number = responseHandIndexes.length - 1;
     if (damages > 0) {
       currentPlayerCard.card.stats.life -= damages;
-      await GameEvents.dispatch(
+      await this.gameHookService.dispatch(
         gameInstance,
         `game:card:lifeChanged:damaged:${currentPlayerCard.card.id}`, {gameCard: currentPlayerCard, lifeChanged: -damages});
     }
 
     // Dispatch event
-    await GameEvents.dispatch(gameInstance, `game:phaseChanged:actions`, {user: gameAction.user});
+    await this.gameHookService.dispatch(gameInstance, `game:phaseChanged:actions`, {user: gameAction.user});
 
     return true;
+  }
+
+  /**
+   * Default refresh method
+   * @param gameInstance
+   * @param gameAction
+   */
+  public async refresh(gameInstance: IGameInstance, gameAction: IGameAction): Promise<void> {
+    return;
+  }
+
+  /**
+   * Default expires method
+   * @param gameInstance
+   * @param gameAction
+   */
+  public async expires(gameInstance: IGameInstance, gameAction: IGameAction): Promise<boolean> {
+    return true;
+  }
+
+  /**
+   * Default delete method
+   * @param gameInstance
+   * @param gameAction
+   */
+  public async delete(gameInstance: IGameInstance, gameAction: IGameAction): Promise<void> {
+    gameInstance.actions.current = gameInstance.actions.current.filter((gameActionRef: IGameAction) => {
+      if (gameActionRef === gameAction) {
+        gameInstance.actions.previous.push({
+          ...gameAction,
+          passedAt: Date.now(),
+        });
+        return false;
+      }
+      return true;
+    });
   }
 
   /**
@@ -117,5 +161,4 @@ export class ThrowCardsGameActionWorker extends GameActionWorker {
       .map((card: IGameCard, index: number) => card.id !== 'curse-of-mara' ? index : null)
       .filter((i) => i !== null);
   }
-
 }

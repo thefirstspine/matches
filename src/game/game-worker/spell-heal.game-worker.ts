@@ -1,17 +1,21 @@
-import { GameActionWorker } from './game-action-worker';
-import { IGameInstance,
-         IGameAction,
-         IGameCard,
-         ISubActionPutCardOnBoard } from '../../@shared/arena-shared/game';
-import { GameEvents } from '../game-subscribers/game-events';
-import { ICardCoords } from '../../@shared/rest-shared/card';
+import { IGameWorker } from './game-worker.interface';
+import { IGameInstance, IGameAction, IGameCard, ISubActionPutCardOnBoard } from 'src/@shared/arena-shared/game';
+import { LogService } from 'src/@shared/log-shared/log.service';
+import { Injectable } from '@nestjs/common';
+import { GameHookService } from '../game-hook/game-hook.service';
 
 /**
- * The "place a card" action game worker. During his turn, the player can put one card on the board.
+ * Main worker for "heal" spell.
  */
-export class PlaceCardGameActionWorker extends GameActionWorker {
+@Injectable() // Injectable required here for dependency injection
+export class SpellHealGameWorker implements IGameWorker {
 
-  static readonly TYPE: string = 'place-card';
+  constructor(
+    private readonly logService: LogService,
+    private readonly gameHookService: GameHookService,
+  ) {}
+
+  readonly type: string = 'spell-heal';
 
   /**
    * @inheritdoc
@@ -19,10 +23,10 @@ export class PlaceCardGameActionWorker extends GameActionWorker {
   public async create(gameInstance: IGameInstance, data: {user: number}): Promise<IGameAction> {
     return {
       createdAt: Date.now(),
-      type: PlaceCardGameActionWorker.TYPE,
+      type: this.type,
       description: {
         en: ``,
-        fr: `Vous pouvez placer une carte sur le plateau de jeu.`,
+        fr: `Jouer un soin`,
       },
       user: data.user as number,
       priority: 1,
@@ -31,7 +35,7 @@ export class PlaceCardGameActionWorker extends GameActionWorker {
           type: 'putCardOnBoard',
           description: {
             en: ``,
-            fr: `Placer une carte à côté d'une case déjà contrôlée`,
+            fr: `Jouer un sort sur une carte`,
           },
           params: {
             handIndexes: this.getHandIndexes(gameInstance, data.user),
@@ -84,25 +88,61 @@ export class PlaceCardGameActionWorker extends GameActionWorker {
     const x: number = parseInt(responseBoardCoords.split('-')[0], 10);
     const y: number = parseInt(responseBoardCoords.split('-')[1], 10);
 
-    // Place the card
-    const card: IGameCard|undefined = gameInstance.cards
+    // Discard the spell
+    const cardUsed: IGameCard|undefined = gameInstance.cards
       .filter((c: IGameCard) => c.location === 'hand' && c.user === gameAction.user)
       .find((c: IGameCard, index: number) => index === responseHandIndex);
-    if (!card) {
+    if (!cardUsed) {
       this.logService.warning('Card not found', gameAction);
       return false;
     }
-    card.location = 'board';
-    card.coords = {x, y};
+    cardUsed.location = 'discard';
+
+    // Damage the card
+    const cardDamaged: IGameCard|undefined = gameInstance.cards
+      .find((c: IGameCard) => c.location === 'board' && c.coords && c.coords.x === x && c.coords.y === y);
+    if (!cardDamaged) {
+      this.logService.warning('Target not found', gameAction);
+      return false;
+    }
+    cardDamaged.card.stats.life += 2;
 
     // Dispatch event
-    await GameEvents.dispatch(gameInstance, `card:creature:placed:${card.card.id}`);
+    await this.gameHookService.dispatch(gameInstance, `card:spell:used:${cardUsed.card.id}`, {gameCard: cardUsed});
+    await this.gameHookService.dispatch(gameInstance, `game:card:lifeChanged:healed:${cardDamaged.card.id}`, {gameCard: cardDamaged, lifeChanged: 2});
 
     return true;
   }
 
   /**
-   * Get the possible hand indexes where a user can take a card from
+   * Default expires method
+   * @param gameInstance
+   * @param gameAction
+   */
+  public async expires(gameInstance: IGameInstance, gameAction: IGameAction): Promise<boolean> {
+    return true;
+  }
+
+  /**
+   * Default delete method
+   * @param gameInstance
+   * @param gameAction
+   */
+  public async delete(gameInstance: IGameInstance, gameAction: IGameAction): Promise<void> {
+    gameInstance.actions.current = gameInstance.actions.current.filter((gameActionRef: IGameAction) => {
+      if (gameActionRef === gameAction) {
+        gameInstance.actions.previous.push({
+          ...gameAction,
+          passedAt: Date.now(),
+        });
+        return false;
+      }
+      return true;
+    });
+  }
+
+  /**
+   * Get the hand indexes of the spell
    * @param gameInstance
    * @param user
    */
@@ -111,7 +151,7 @@ export class PlaceCardGameActionWorker extends GameActionWorker {
     return gameInstance.cards.filter((card: IGameCard) => {
       return card.user === user && card.location === 'hand';
     }).map((card: IGameCard, index: number) => {
-      if (['creature', 'artifact'].includes(card.card.type)) {
+      if (card.card.id === 'heal') {
         return index;
       }
       return null;
@@ -119,41 +159,14 @@ export class PlaceCardGameActionWorker extends GameActionWorker {
   }
 
   /**
-   * Get the possible board coordinates where the user can place a card
+   * Get the board coordinates where the spell can be played
    * @param gameInstance
    * @param user
    */
   protected getBoardCoords(gameInstance: IGameInstance, user: number): string[] {
     // Get the coordinates where the user can place a card
-    const boardCoords: string[] = [];
-    gameInstance.cards.filter((card: IGameCard) => {
-      return card.user === user && card.location === 'board';
-    }).forEach((card: IGameCard) => {
-      const x: number = card.coords.x;
-      const y: number = card.coords.y;
-      [
-        {x: x + 1, y},
-        {x: x - 1, y},
-        {x, y: y + 1},
-        {x, y: y - 1},
-      ].forEach((coords: ICardCoords) => {
-        // Skip invalid coords
-        if (coords.x < 0 || coords.y < 0) {
-          return;
-        }
-        if (coords.x > 6 || coords.y > 6) {
-          return;
-        }
-        // Skip already taken coords
-        if (gameInstance.cards.find(
-          (c: IGameCard) => c.location === 'board' && c.coords.x === coords.x  && c.coords.y === coords.y)) {
-          return;
-        }
-        boardCoords.push(`${coords.x}-${coords.y}`);
-      });
-    });
-
-    return boardCoords;
+    return gameInstance.cards.filter((card: IGameCard) => card.location === 'board' && card.card.type === 'creature' && card.coords)
+      .map((card: IGameCard) => `${card.coords.x}-${card.coords.y}`);
   }
 
 }

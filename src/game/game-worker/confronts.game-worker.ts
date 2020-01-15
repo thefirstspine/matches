@@ -1,20 +1,30 @@
-import { GameActionWorker } from './game-action-worker';
-import { GameEvents } from '../game-subscribers/game-events';
-import { IGameAction,
-         IGameInstance,
-         ISubActionMoveCardOnBoardPossibility,
-         ISubActionSelectCoupleOnBoard,
-         IGameCard } from '../../@shared/arena-shared/game';
-import { cardSide } from '../../@shared/rest-shared/base';
-import { ICardCoords } from '../../@shared/rest-shared/card';
+import { IGameWorker } from './game-worker.interface';
+import { IGameInstance,
+  IGameAction,
+  ISubActionMoveCardOnBoardPossibility,
+  ISubActionSelectCoupleOnBoard,
+  IGameCard } from 'src/@shared/arena-shared/game';
+import { LogService } from 'src/@shared/log-shared/log.service';
+import { Injectable } from '@nestjs/common';
+import { cardSide } from 'src/@shared/rest-shared/base';
+import { GameWorkerService } from './game-worker.service';
+import { ICardCoords } from 'src/@shared/rest-shared/card';
+import { GameHookService } from '../game-hook/game-hook.service';
 
 /**
  * The main confrontation game worker. Normally a confrontation is closing the turn of the player. This worker
  * will self-generate confrontations once every confrontation is done, and then throw a game:turnEnded event.
  */
-export class ConfrontsGameActionWorker extends GameActionWorker {
+@Injectable() // Injectable required here for dependency injection
+export class ConfrontsGameWorker implements IGameWorker {
 
-  static readonly TYPE: string = 'confronts';
+  readonly type: string = 'confronts';
+
+  constructor(
+    private readonly logService: LogService,
+    private readonly gameWorkerService: GameWorkerService,
+    private readonly gameHookService: GameHookService,
+  ) {}
 
   /**
    * @inheritdoc
@@ -22,7 +32,7 @@ export class ConfrontsGameActionWorker extends GameActionWorker {
   public async create(gameInstance: IGameInstance, data: {user: number}): Promise<IGameAction> {
     return {
       createdAt: Date.now(),
-      type: ConfrontsGameActionWorker.TYPE,
+      type: this.type,
       description: {
         en: ``,
         fr: `Confronter`,
@@ -124,13 +134,13 @@ export class ConfrontsGameActionWorker extends GameActionWorker {
     // Apply damages
     if (lifeLostTo > 0) {
       cardTo.card.stats.life -= lifeLostTo;
-      await GameEvents.dispatch(
+      await this.gameHookService.dispatch(
         gameInstance,
         `game:card:lifeChanged:damaged:${cardTo.card.id}`, {gameCard: cardTo, lifeChanged: -lifeLostTo});
     }
     if (lifeLostFrom > 0) {
       cardFrom.card.stats.life -= lifeLostFrom;
-      await GameEvents.dispatch(
+      await this.gameHookService.dispatch(
         gameInstance,
         `game:card:lifeChanged:damaged:${cardFrom.card.id}`, {gameCard: cardFrom, lifeChanged: -lifeLostFrom});
     }
@@ -140,7 +150,7 @@ export class ConfrontsGameActionWorker extends GameActionWorker {
     let isInConfront = true;
     for (let i = 0; i < 50 && i < gameInstance.actions.previous.length; i ++) {
       const prevAction = gameInstance.actions.previous[gameInstance.actions.previous.length - (i + 1)];
-      if (prevAction.type === ConfrontsGameActionWorker.TYPE && isInConfront) {
+      if (prevAction.type === this.type && isInConfront) {
         alreadyConfront.push(prevAction.responses[0].boardCoordsFrom);
       } else {
         isInConfront = false;
@@ -154,15 +164,13 @@ export class ConfrontsGameActionWorker extends GameActionWorker {
 
     if (newPossibilities.length > 0) {
       // Generate the action & replaces the possibilities
-      const action: IGameAction = await GameActionWorker
-        .getActionWorker(ConfrontsGameActionWorker.TYPE)
-        .create(gameInstance, {user: gameAction.user});
+      const action: IGameAction = await this.gameWorkerService.getWorker(this.type).create(gameInstance, {user: gameAction.user});
       (action.subactions[0] as ISubActionSelectCoupleOnBoard).params.possibilities = newPossibilities;
       // Add the the pool
       gameInstance.actions.current.push(action);
     } else {
       // Change turn
-      await GameEvents.dispatch(gameInstance, `game:turnEnded`, {user: gameAction.user});
+      await this.gameHookService.dispatch(gameInstance, `game:turnEnded`, {user: gameAction.user});
     }
 
     return true;
@@ -254,4 +262,39 @@ export class ConfrontsGameActionWorker extends GameActionWorker {
     return copy;
   }
 
+  /**
+   * Default refresh method
+   * @param gameInstance
+   * @param gameAction
+   */
+  public async refresh(gameInstance: IGameInstance, gameAction: IGameAction): Promise<void> {
+    return;
+  }
+
+  /**
+   * Default expires method
+   * @param gameInstance
+   * @param gameAction
+   */
+  public async expires(gameInstance: IGameInstance, gameAction: IGameAction): Promise<boolean> {
+    return true;
+  }
+
+  /**
+   * Default delete method
+   * @param gameInstance
+   * @param gameAction
+   */
+  public async delete(gameInstance: IGameInstance, gameAction: IGameAction): Promise<void> {
+    gameInstance.actions.current = gameInstance.actions.current.filter((gameActionRef: IGameAction) => {
+      if (gameActionRef === gameAction) {
+        gameInstance.actions.previous.push({
+          ...gameAction,
+          passedAt: Date.now(),
+        });
+        return false;
+      }
+      return true;
+    });
+  }
 }

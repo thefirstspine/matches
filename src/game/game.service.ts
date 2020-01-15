@@ -2,25 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { shuffle } from '../utils/array.utils';
 import { randBetween } from '../utils/maths.utils';
 import { GamesStorageService } from '../storage/games.storage.service';
-import { GameActionWorker } from './game-action-workers/game-action-worker';
-import { ThrowCardsGameActionWorker } from './game-action-workers/throw-cards.game-action-worker';
-import { PlaceCardGameActionWorker } from './game-action-workers/place-card.game-action-worker';
-import { StartConfrontsGameActionWorker } from './game-action-workers/start-confronts.game-action-worker';
-import { MoveCreatureGameActionWorker } from './game-action-workers/move-creature.game-action-worker';
-import { GameEvents } from './game-subscribers/game-events';
-import playerDamagedGameSubscriber from './game-subscribers/player-damaged.game-subscriber';
-import phaseActionsGameSubscriber from './game-subscribers/phase-actions.game-subscriber';
-import { SpellRuinGameActionWorker } from './game-action-workers/spell-ruin.game-action-worker';
-import { SpellPutrefactionGameActionWorker } from './game-action-workers/spell-putrefaction.game-action-worker';
-import { SpellThunderGameActionWorker } from './game-action-workers/spell-thunder.game-action-worker';
-import cardDamagedGameSubscriber from './game-subscribers/card-damaged.game-subscriber';
-import spellUsedGameSubscriber from './game-subscribers/spell-used.game-subscriber';
-import { SpellHealGameActionWorker } from './game-action-workers/spell-heal.game-action-worker';
-import cardHealedGameSubscriber from './game-subscribers/card-healed.game-subscriber';
-import { SpellReconstructGameActionWorker } from './game-action-workers/spell-reconstruct.game-action-worker';
 import { WizzardService } from '../wizzard/wizzard.service';
-import { ConfrontsGameActionWorker } from './game-action-workers/confronts.game-action-worker';
-import turnEndedGameSubscriber from './game-subscribers/turn-ended.game-subscriber';
 import { LogService } from '../@shared/log-shared/log.service';
 import { IGameInstance, IGameUser, IGameCard, IGameAction } from '../@shared/arena-shared/game';
 import { IWizzardItem } from '../@shared/arena-shared/wizzard';
@@ -29,6 +11,8 @@ import { ICard } from '../@shared/rest-shared/card';
 import { IGameType, IDeck } from '../@shared/rest-shared/entities';
 import { ArenaRoomsService } from '../rooms/arena-rooms.service';
 import { MessagingService } from '../@shared/messaging-shared/messaging.service';
+import { GameWorkerService } from './game-worker/game-worker.service';
+import { GameHookService } from './game-hook/game-hook.service';
 
 /**
  * Service to manage game instances
@@ -56,33 +40,12 @@ export class GameService {
     private readonly wizzardService: WizzardService,
     private readonly restService: RestService,
     private readonly arenaRoomsService: ArenaRoomsService,
+    private readonly gameWorkerService: GameWorkerService,
+    private readonly gameHookService: GameHookService,
   ) {
     // Get base data
     this.gameInstances = {};
     this.nextId = gamesStorageService.getNextId();
-
-    // Register game actions
-    GameActionWorker.registerActionWorker(ThrowCardsGameActionWorker.TYPE, new ThrowCardsGameActionWorker(this.logService));
-    GameActionWorker.registerActionWorker(PlaceCardGameActionWorker.TYPE, new PlaceCardGameActionWorker(this.logService));
-    GameActionWorker.registerActionWorker(MoveCreatureGameActionWorker.TYPE, new MoveCreatureGameActionWorker(this.logService));
-    GameActionWorker.registerActionWorker(StartConfrontsGameActionWorker.TYPE, new StartConfrontsGameActionWorker(this.logService));
-    GameActionWorker.registerActionWorker(ConfrontsGameActionWorker.TYPE, new ConfrontsGameActionWorker(this.logService));
-    GameActionWorker.registerActionWorker(SpellRuinGameActionWorker.TYPE, new SpellRuinGameActionWorker(this.logService));
-    GameActionWorker.registerActionWorker(SpellPutrefactionGameActionWorker.TYPE, new SpellPutrefactionGameActionWorker(this.logService));
-    GameActionWorker.registerActionWorker(SpellThunderGameActionWorker.TYPE, new SpellThunderGameActionWorker(this.logService));
-    GameActionWorker.registerActionWorker(SpellHealGameActionWorker.TYPE, new SpellHealGameActionWorker(this.logService));
-    GameActionWorker.registerActionWorker(SpellReconstructGameActionWorker.TYPE, new SpellReconstructGameActionWorker(this.logService));
-
-    // Register game subscribers
-    GameEvents.subscribe('game:card:lifeChanged:damaged:hunter', playerDamagedGameSubscriber);
-    GameEvents.subscribe('game:card:lifeChanged:damaged:sorcerer', playerDamagedGameSubscriber);
-    GameEvents.subscribe('game:card:lifeChanged:damaged:conjurer', playerDamagedGameSubscriber);
-    GameEvents.subscribe('game:card:lifeChanged:damaged:summoner', playerDamagedGameSubscriber);
-    GameEvents.subscribe('game:card:lifeChanged:damaged', cardDamagedGameSubscriber);
-    GameEvents.subscribe('game:card:lifeChanged:healed', cardHealedGameSubscriber);
-    GameEvents.subscribe('game:phaseChanged:actions', phaseActionsGameSubscriber);
-    GameEvents.subscribe('card:spell:used', spellUsedGameSubscriber);
-    GameEvents.subscribe('game:turnEnded', turnEndedGameSubscriber);
   }
 
   /**
@@ -163,7 +126,7 @@ export class GameService {
     };
 
     // Create the first action
-    const action: IGameAction = await GameActionWorker.getActionWorker(ThrowCardsGameActionWorker.TYPE)
+    const action: IGameAction = await this.gameWorkerService.getWorker('throw-cards')
       .create(gameInstance, {user: users[firstUserToPlay].user});
     gameInstance.actions.current.push(action);
 
@@ -279,7 +242,7 @@ export class GameService {
     // Executes the game actions when exists
     if (pendingGameAction) {
       try {
-        if (await GameActionWorker.getActionWorker(pendingGameAction.type).execute(gameInstance, pendingGameAction)) {
+        if (await this.gameWorkerService.getWorker(pendingGameAction.type).execute(gameInstance, pendingGameAction)) {
           // Send to the other players that the action succeed
           this.messagingService.sendMessage(
             '*',
@@ -287,10 +250,10 @@ export class GameService {
             pendingGameAction,
           );
           // Okay, deletes the action
-          await GameActionWorker.getActionWorker(pendingGameAction.type).delete(gameInstance, pendingGameAction);
+          await this.gameWorkerService.getWorker(pendingGameAction.type).delete(gameInstance, pendingGameAction);
           // Refresh the other ones
           const refreshPromises: Array<Promise<void>> = gameInstance.actions.current.map((action: IGameAction) => {
-            return GameActionWorker.getActionWorker(action.type).refresh(gameInstance, action);
+            return this.gameWorkerService.getWorker(action.type).refresh(gameInstance, action);
           });
           await Promise.all(refreshPromises);
         }
@@ -304,8 +267,8 @@ export class GameService {
     const promises: Array<Promise<any>> = gameInstance.actions.current.map(async (gameAction: IGameAction) => {
       try {
         if (gameAction.expiresAt && gameAction.expiresAt < Date.now()) {
-          if (await GameActionWorker.getActionWorker(gameAction.type).expires(gameInstance, gameAction)) {
-            await GameActionWorker.getActionWorker(gameAction.type).delete(gameInstance, gameAction);
+          if (await this.gameWorkerService.getWorker(gameAction.type).expires(gameInstance, gameAction)) {
+            await this.gameWorkerService.getWorker(gameAction.type).delete(gameInstance, gameAction);
           }
         }
       } catch (e) {

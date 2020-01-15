@@ -1,13 +1,21 @@
-import { GameActionWorker } from './game-action-worker';
-import { IGameInstance,
-         IGameAction,
-         IGameCard,
-         ISubActionPutCardOnBoard} from '../../@shared/arena-shared/game';
-import { GameEvents } from '../game-subscribers/game-events';
+import { IGameWorker } from './game-worker.interface';
+import { IGameInstance, IGameAction, ISubActionPutCardOnBoard, IGameCard } from 'src/@shared/arena-shared/game';
+import { LogService } from 'src/@shared/log-shared/log.service';
+import { Injectable } from '@nestjs/common';
+import { GameHookService } from '../game-hook/game-hook.service';
 
-export class SpellThunderGameActionWorker extends GameActionWorker {
+/**
+ * Game worker for "putrefaction" spell.
+ */
+@Injectable() // Injectable required here for dependency injection
+export class SpellPutrefactionGameWorker implements IGameWorker {
 
-  static readonly TYPE: string = 'spell-thunder';
+  readonly type: string = 'spell-putrefaction';
+
+  constructor(
+    private readonly logService: LogService,
+    private readonly gameHookService: GameHookService,
+  ) {}
 
   /**
    * @inheritdoc
@@ -15,10 +23,10 @@ export class SpellThunderGameActionWorker extends GameActionWorker {
   public async create(gameInstance: IGameInstance, data: {user: number}): Promise<IGameAction> {
     return {
       createdAt: Date.now(),
-      type: SpellThunderGameActionWorker.TYPE,
+      type: this.type,
       description: {
         en: ``,
-        fr: `Jouer une foudre`,
+        fr: `Jouer une putréfaction`,
       },
       user: data.user as number,
       priority: 1,
@@ -97,13 +105,41 @@ export class SpellThunderGameActionWorker extends GameActionWorker {
       this.logService.warning('Target not found', gameAction);
       return false;
     }
-    cardDamaged.card.stats.life -= 4;
+    cardDamaged.card.stats.life -= 2;
 
     // Dispatch event
-    await GameEvents.dispatch(gameInstance, `card:spell:used:${cardUsed.card.id}`, {gameCard: cardUsed});
-    await GameEvents.dispatch(gameInstance, `game:card:lifeChanged:damaged:${cardDamaged.card.id}`, {gameCard: cardDamaged, lifeChanged: -4});
+    await this.gameHookService.dispatch(gameInstance, `card:spell:used:${cardUsed.card.id}`, {gameCard: cardUsed});
+    await this.gameHookService
+      .dispatch(gameInstance, `game:card:lifeChanged:damaged:${cardDamaged.card.id}`, {gameCard: cardDamaged, lifeChanged: -2});
 
     return true;
+  }
+
+  /**
+   * Default expires method
+   * @param gameInstance
+   * @param gameAction
+   */
+  public async expires(gameInstance: IGameInstance, gameAction: IGameAction): Promise<boolean> {
+    return true;
+  }
+
+  /**
+   * Default delete method
+   * @param gameInstance
+   * @param gameAction
+   */
+  public async delete(gameInstance: IGameInstance, gameAction: IGameAction): Promise<void> {
+    gameInstance.actions.current = gameInstance.actions.current.filter((gameActionRef: IGameAction) => {
+      if (gameActionRef === gameAction) {
+        gameInstance.actions.previous.push({
+          ...gameAction,
+          passedAt: Date.now(),
+        });
+        return false;
+      }
+      return true;
+    });
   }
 
   /**
@@ -116,7 +152,7 @@ export class SpellThunderGameActionWorker extends GameActionWorker {
     return gameInstance.cards.filter((card: IGameCard) => {
       return card.user === user && card.location === 'hand';
     }).map((card: IGameCard, index: number) => {
-      if (card.card.id === 'thunder') {
+      if (card.card.id === 'putrefaction') {
         return index;
       }
       return null;
@@ -130,9 +166,7 @@ export class SpellThunderGameActionWorker extends GameActionWorker {
    */
   protected getBoardCoords(gameInstance: IGameInstance, user: number): string[] {
     // Get the coordinates where the user can place a card
-    return gameInstance.cards
-      .filter((card: IGameCard) => card.location === 'board' && ['creature', 'artifact'].includes(card.card.type) && card.coords)
+    return gameInstance.cards.filter((card: IGameCard) => card.location === 'board' && card.card.type === 'creature' && card.coords)
       .map((card: IGameCard) => `${card.coords.x}-${card.coords.y}`);
   }
-
 }
