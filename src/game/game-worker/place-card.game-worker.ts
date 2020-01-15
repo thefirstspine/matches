@@ -4,18 +4,20 @@ import { LogService } from 'src/@shared/log-shared/log.service';
 import { Injectable } from '@nestjs/common';
 import { ICardCoords } from 'src/@shared/rest-shared/card';
 import { GameHookService } from '../game-hook/game-hook.service';
+import { IHasGameHookService } from '../injections.interface';
 
 /**
  * The "place a card" action game worker. During his turn, the player can put one card on the board.
  */
 @Injectable() // Injectable required here for dependency injection
-export class PlaceCardGameWorker implements IGameWorker {
+export class PlaceCardGameWorker implements IGameWorker, IHasGameHookService {
+
+  public gameHookService: GameHookService;
 
   public readonly type: string = 'place-card';
 
   constructor(
     private readonly logService: LogService,
-    private readonly gameHookService: GameHookService,
   ) {}
 
   /**

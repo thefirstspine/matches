@@ -4,18 +4,20 @@ import { isArray } from 'util';
 import { LogService } from 'src/@shared/log-shared/log.service';
 import { Injectable } from '@nestjs/common';
 import { GameHookService } from '../game-hook/game-hook.service';
+import { IHasGameHookService } from '../injections.interface';
 
 /**
  * At the beggining of his turn, the player can throw to the discard one or more cards.
  */
 @Injectable() // Injectable required here for dependency injection
-export class ThrowCardsGameWorker implements IGameWorker {
+export class ThrowCardsGameWorker implements IGameWorker, IHasGameHookService {
+
+  public gameHookService: GameHookService;
 
   public readonly type: string = 'throw-cards';
 
   constructor(
     private readonly logService: LogService,
-    private readonly gameHookService: GameHookService,
   ) {}
 
   /**

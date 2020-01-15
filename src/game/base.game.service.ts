@@ -1,3 +1,6 @@
+import { Injectable } from '@nestjs/common';
+
+@Injectable()
 export class BaseGameService<T> {
 
   /**
@@ -25,9 +28,14 @@ export class BaseGameService<T> {
    * Create an injectable with his constructor and dependencies.
    * @param constructor
    */
-  protected createInjectable(constructor: (new(...args) => T)): T {
+  protected createInjectable(constructor: (new(...args) => T), props?: {[key: string]: any}): T {
     const args: any[] = this.getInjections(constructor);
     const injectable: T = new constructor(...args);
+    if (props) {
+      Object.keys(props).forEach((p: string) => {
+        injectable[p] = props[p];
+      });
+    }
     this.injectables.push(injectable);
     return injectable;
   }

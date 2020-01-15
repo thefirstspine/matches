@@ -3,18 +3,20 @@ import { IGameInstance, IGameAction, ISubActionSelectCoupleOnBoard } from 'src/@
 import { Injectable } from '@nestjs/common';
 import { GameWorkerService } from './game-worker.service';
 import { GameHookService } from '../game-hook/game-hook.service';
+import { IHasGameHookService } from '../injections.interface';
 
 /**
  * Game action to pass the "actions" phase & start the confrontations.
  */
 @Injectable() // Injectable required here for dependency injection
-export class StartConfrontsGameWorker implements IGameWorker {
+export class StartConfrontsGameWorker implements IGameWorker, IHasGameHookService {
+
+  public gameHookService: GameHookService;
 
   readonly type: string = 'start-confronts';
 
   constructor(
     private readonly gameWorkerService: GameWorkerService,
-    private readonly gameHookService: GameHookService,
   ) {}
 
   /**

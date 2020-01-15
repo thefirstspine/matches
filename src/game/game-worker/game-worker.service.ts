@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, forwardRef, Inject } from '@nestjs/common';
 import { MessagingService } from 'src/@shared/messaging-shared/messaging.service';
 import { LogService } from 'src/@shared/log-shared/log.service';
 import { ArenaRoomsService } from 'src/rooms/arena-rooms.service';
@@ -26,16 +26,25 @@ import { WizzardsStorageService } from 'src/storage/wizzards.storage.service';
 @Injectable()
 export class GameWorkerService extends BaseGameService<IGameWorker> {
 
+  protected initialized: boolean = false;
+
   constructor(
     private readonly messagingService: MessagingService,
     private readonly logService: LogService,
     private readonly wizzardService: WizzardService,
     private readonly restService: RestService,
     private readonly arenaRoomsService: ArenaRoomsService,
-    private readonly gameHookService: GameHookService,
     private readonly wizzardsStorageService: WizzardsStorageService,
+    @Inject(forwardRef(() => GameHookService)) private readonly gameHookService: GameHookService,
   ) {
     super();
+  }
+
+  protected init() {
+    if (this.initialized) {
+      return;
+    }
+    this.initialized = true;
 
     // Defer injections for game workers constructions
     this.deferInjection(this.messagingService);
@@ -48,16 +57,17 @@ export class GameWorkerService extends BaseGameService<IGameWorker> {
     this.deferInjection(this); // haya!
 
     // Create workers
-    this.createInjectable(ConfrontsGameWorker);
-    this.createInjectable(MoveCreatureGameWorker);
-    this.createInjectable(PlaceCardGameWorker);
-    this.createInjectable(SpellHealGameWorker);
-    this.createInjectable(SpellPutrefactionGameWorker);
-    this.createInjectable(SpellReconstructGameWorker);
-    this.createInjectable(SpellRuinGameWorker);
-    this.createInjectable(SpellThunderGameWorker);
-    this.createInjectable(StartConfrontsGameWorker);
-    this.createInjectable(ThrowCardsGameWorker);
+    const injectedProps = {gameWorkerService: this, gameHookService: this.gameHookService};
+    this.createInjectable(ConfrontsGameWorker, injectedProps);
+    this.createInjectable(MoveCreatureGameWorker, injectedProps);
+    this.createInjectable(PlaceCardGameWorker, injectedProps);
+    this.createInjectable(SpellHealGameWorker, injectedProps);
+    this.createInjectable(SpellPutrefactionGameWorker, injectedProps);
+    this.createInjectable(SpellReconstructGameWorker, injectedProps);
+    this.createInjectable(SpellRuinGameWorker, injectedProps);
+    this.createInjectable(SpellThunderGameWorker, injectedProps);
+    this.createInjectable(StartConfrontsGameWorker, injectedProps);
+    this.createInjectable(ThrowCardsGameWorker, injectedProps);
   }
 
   /**
@@ -65,6 +75,9 @@ export class GameWorkerService extends BaseGameService<IGameWorker> {
    * @param type
    */
   getWorker(type: string): IGameWorker {
+    if (!this.initialized) {
+      this.init();
+    }
     return this.injectables.find((w: IGameWorker) => w.type === type);
   }
 

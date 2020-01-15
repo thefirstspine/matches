@@ -3,18 +3,20 @@ import { IGameInstance, IGameAction, ISubActionPutCardOnBoard, IGameCard } from 
 import { LogService } from 'src/@shared/log-shared/log.service';
 import { Injectable } from '@nestjs/common';
 import { GameHookService } from '../game-hook/game-hook.service';
+import { IHasGameHookService } from '../injections.interface';
 
 /**
  * Worker for "thunder" spell.
  */
 @Injectable() // Injectable required here for dependency injection
-export class SpellThunderGameWorker implements IGameWorker {
+export class SpellThunderGameWorker implements IGameWorker, IHasGameHookService {
+
+  public gameHookService: GameHookService;
 
   readonly type: string = 'spell-thunder';
 
   constructor(
     private readonly logService: LogService,
-    private readonly gameHookService: GameHookService,
   ) {}
 
   /**

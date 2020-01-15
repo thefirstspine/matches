@@ -1,8 +1,10 @@
 import { IGameHook } from './game-hook.interface';
 import { Injectable } from '@nestjs/common';
 import { IGameInstance, IGameAction, IGameCard } from 'src/@shared/arena-shared/game';
-import { GameWorkerService } from '../game-worker/game-worker.service';
 import { IGameWorker } from '../game-worker/game-worker.interface';
+import { IHasGameWorkerService, IHasGameHookService } from '../injections.interface';
+import { GameWorkerService } from '../game-worker/game-worker.service';
+import { GameHookService } from './game-hook.service';
 
 /**
  * This subscriber is executed once a 'game:phaseChanged:actions' event is thrown. It will generates the actions
@@ -11,11 +13,10 @@ import { IGameWorker } from '../game-worker/game-worker.interface';
  * @param params
  */
 @Injectable()
-export class PhaseActionsGameHook implements IGameHook {
+export class PhaseActionsGameHook implements IGameHook, IHasGameWorkerService, IHasGameHookService {
 
-  constructor(
-    private readonly gameWorkerService: GameWorkerService,
-  ) {}
+  public gameWorkerService: GameWorkerService;
+  public gameHookService: GameHookService;
 
   async execute(gameInstance: IGameInstance, params: {user: number}): Promise<boolean> {
     gameInstance.actions.current.push(
@@ -28,7 +29,7 @@ export class PhaseActionsGameHook implements IGameHook {
     const promises: Array<Promise<IGameAction>> = [];
     gameInstance.cards.filter((card: IGameCard) => card.location === 'hand' && card.user === params.user && card.card.type === 'spell')
       .forEach((card: IGameCard) => {
-        const worker: IGameWorker|undefined = this.gameWorkerService.getWorker(`spell-${card.card.id}`);
+        const worker: IGameWorker|undefined = this.gameHookService.gameWorkerService.getWorker(`spell-${card.card.id}`);
         if (worker) {
           promises.push(worker.create(gameInstance, params));
         }

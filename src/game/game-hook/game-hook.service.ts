@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Inject, forwardRef } from '@nestjs/common';
 import { MessagingService } from 'src/@shared/messaging-shared/messaging.service';
 import { LogService } from 'src/@shared/log-shared/log.service';
 import { ArenaRoomsService } from 'src/rooms/arena-rooms.service';
@@ -24,6 +24,8 @@ export class GameHookService extends BaseGameService<IGameHook> {
 
   protected registeredHooks: {[identifier: string]: IGameHook} = {};
 
+  protected initialized: boolean = false;
+
   constructor(
     private readonly messagingService: MessagingService,
     private readonly logService: LogService,
@@ -31,8 +33,16 @@ export class GameHookService extends BaseGameService<IGameHook> {
     private readonly restService: RestService,
     private readonly arenaRoomsService: ArenaRoomsService,
     private readonly wizzardsStorageService: WizzardsStorageService,
+    @Inject(forwardRef(() => GameWorkerService)) public readonly gameWorkerService: GameWorkerService,
   ) {
     super();
+  }
+
+  protected init() {
+    if (this.initialized) {
+      return;
+    }
+    this.initialized = true;
 
     // Defer injections for game workers constructions
     this.deferInjection(this.messagingService);
@@ -43,27 +53,17 @@ export class GameHookService extends BaseGameService<IGameHook> {
     this.deferInjection(this.wizzardsStorageService);
     this.deferInjection(this); // haya!
 
-    // Defer injection of a new instance because of a circular dependency
-    this.deferInjection(new GameWorkerService(
-      this.messagingService,
-      this.logService,
-      this.wizzardService,
-      this.restService,
-      this.arenaRoomsService,
-      this,
-      this.wizzardsStorageService,
-    ));
-
     // Create hooks
-    this.subscribe('game:card:lifeChanged:damaged:hunter', this.createInjectable(PlayerDamagedGameHook));
-    this.subscribe('game:card:lifeChanged:damaged:sorcerer', this.createInjectable(PlayerDamagedGameHook));
-    this.subscribe('game:card:lifeChanged:damaged:conjurer', this.createInjectable(PlayerDamagedGameHook));
-    this.subscribe('game:card:lifeChanged:damaged:summoner', this.createInjectable(PlayerDamagedGameHook));
-    this.subscribe('game:card:lifeChanged:damaged', this.createInjectable(CardDamagedGameHook));
-    this.subscribe('game:card:lifeChanged:healed', this.createInjectable(CardHealedGameHook));
-    this.subscribe('game:phaseChanged:actions', this.createInjectable(PhaseActionsGameHook));
-    this.subscribe('card:spell:used', this.createInjectable(SpellUsedGameHook));
-    this.subscribe('game:turnEnded', this.createInjectable(TurnEndedGameHook));
+    const injectedProps = {gameWorkerService: this.gameWorkerService, gameHookService: this};
+    this.subscribe('game:card:lifeChanged:damaged:hunter', this.createInjectable(PlayerDamagedGameHook, injectedProps));
+    this.subscribe('game:card:lifeChanged:damaged:sorcerer', this.createInjectable(PlayerDamagedGameHook, injectedProps));
+    this.subscribe('game:card:lifeChanged:damaged:conjurer', this.createInjectable(PlayerDamagedGameHook, injectedProps));
+    this.subscribe('game:card:lifeChanged:damaged:summoner', this.createInjectable(PlayerDamagedGameHook, injectedProps));
+    this.subscribe('game:card:lifeChanged:damaged', this.createInjectable(CardDamagedGameHook, injectedProps));
+    this.subscribe('game:card:lifeChanged:healed', this.createInjectable(CardHealedGameHook, injectedProps));
+    this.subscribe('game:phaseChanged:actions', this.createInjectable(PhaseActionsGameHook, injectedProps));
+    this.subscribe('card:spell:used', this.createInjectable(SpellUsedGameHook, injectedProps));
+    this.subscribe('game:turnEnded', this.createInjectable(TurnEndedGameHook, injectedProps));
   }
 
   /**
@@ -72,6 +72,9 @@ export class GameHookService extends BaseGameService<IGameHook> {
    * @param worker
    */
   protected subscribe(event: string, hook: IGameHook) {
+    if (!this.initialized) {
+      this.init();
+    }
     this.registeredHooks[event] = hook;
   }
 
@@ -82,6 +85,9 @@ export class GameHookService extends BaseGameService<IGameHook> {
    * @param params
    */
   async dispatch(gameInstance: IGameInstance, event: string, params?: any) {
+    if (!this.initialized) {
+      this.init();
+    }
     const promises: Array<Promise<boolean>> = [];
     event.split(':').reduce((acc: string, current: string) => {
       acc = (acc === '') ? current : acc + ':' + current;

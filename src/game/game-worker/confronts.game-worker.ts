@@ -10,20 +10,22 @@ import { cardSide } from 'src/@shared/rest-shared/base';
 import { GameWorkerService } from './game-worker.service';
 import { ICardCoords } from 'src/@shared/rest-shared/card';
 import { GameHookService } from '../game-hook/game-hook.service';
+import { IHasGameHookService, IHasGameWorkerService } from '../injections.interface';
 
 /**
  * The main confrontation game worker. Normally a confrontation is closing the turn of the player. This worker
  * will self-generate confrontations once every confrontation is done, and then throw a game:turnEnded event.
  */
 @Injectable() // Injectable required here for dependency injection
-export class ConfrontsGameWorker implements IGameWorker {
+export class ConfrontsGameWorker implements IGameWorker, IHasGameHookService, IHasGameWorkerService {
+
+  public gameHookService: GameHookService;
+  public gameWorkerService: GameWorkerService;
 
   readonly type: string = 'confronts';
 
   constructor(
     private readonly logService: LogService,
-    private readonly gameWorkerService: GameWorkerService,
-    private readonly gameHookService: GameHookService,
   ) {}
 
   /**
