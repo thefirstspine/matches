@@ -76,7 +76,7 @@ export class PlayerDamagedGameHook implements IGameHook {
       {name: 'shard', num: 30},
       {name: 'victory-mark', num: 1},
     ] : [
-      {name: 'shard', num: 30},
+      {name: 'shard', num: 10},
       {name: 'defeat-mark', num: 1},
     ];
 
