@@ -102,10 +102,10 @@ export class PlayerDamagedGameHook implements IGameHook {
       }
     } else {
       // Register the triumphs for the destiny & the origin
-      if (!wizzard.triumphs.includes(gameUser.destiny)) {
+      if (gameUser.destiny && !wizzard.triumphs.includes(gameUser.destiny)) {
         wizzard.triumphs.push(gameUser.destiny);
       }
-      if (!wizzard.triumphs.includes(gameUser.origin)) {
+      if (gameUser.origin && !wizzard.triumphs.includes(gameUser.origin)) {
         wizzard.triumphs.push(gameUser.origin);
       }
     }
