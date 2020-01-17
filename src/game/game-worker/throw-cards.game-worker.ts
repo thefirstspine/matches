@@ -35,6 +35,7 @@ export class ThrowCardsGameWorker implements IGameWorker, IHasGameHookService {
       },
       user: data.user as number,
       priority: 1,
+      expiresAt: Date.now() + (30 * 1000), // expires in 30 seconds
       subactions: [
         {
           type: 'moveCardsToDiscard',
@@ -136,11 +137,12 @@ export class ThrowCardsGameWorker implements IGameWorker, IHasGameHookService {
   }
 
   /**
-   * Default expires method
+   * On expiration, do not throw cards
    * @param gameInstance
    * @param gameAction
    */
   public async expires(gameInstance: IGameInstance, gameAction: IGameAction): Promise<boolean> {
+    gameAction.responses = [[]];
     return true;
   }
 

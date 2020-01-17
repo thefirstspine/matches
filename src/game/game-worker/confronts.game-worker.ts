@@ -41,6 +41,7 @@ export class ConfrontsGameWorker implements IGameWorker, IHasGameHookService, IH
       },
       user: data.user as number,
       priority: 1,
+      expiresAt: Date.now() + (30 * 1000), // expires in 30 seconds
       subactions: [
         {
           type: 'selectCoupleOnBoard',
@@ -274,11 +275,18 @@ export class ConfrontsGameWorker implements IGameWorker, IHasGameHookService, IH
   }
 
   /**
-   * Default expires method
+   * Expires by chosing confronts randomly
    * @param gameInstance
    * @param gameAction
    */
   public async expires(gameInstance: IGameInstance, gameAction: IGameAction): Promise<boolean> {
+    const possibilities: ISubActionMoveCardOnBoardPossibility[] = (gameAction.subactions[0] as ISubActionSelectCoupleOnBoard).params.possibilities;
+    const possibility: ISubActionMoveCardOnBoardPossibility = possibilities[Math.floor(Math.random() * possibilities.length)];
+    const boardCoordsTo: string = possibility.boardCoordsTo[Math.floor(Math.random() * possibility.boardCoordsTo.length)];
+    gameAction.responses = [{
+      boardCoordsFrom: possibility.boardCoordsFrom,
+      boardCoordsTo,
+    }];
     return true;
   }
 

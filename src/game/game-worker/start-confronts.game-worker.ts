@@ -32,6 +32,7 @@ export class StartConfrontsGameWorker implements IGameWorker, IHasGameHookServic
       },
       user: data.user as number,
       priority: 1,
+      expiresAt: Date.now() + (90 * 1000), // expires in 90 seconds
       subactions: [
         {
           type: 'pass',
@@ -85,11 +86,12 @@ export class StartConfrontsGameWorker implements IGameWorker, IHasGameHookServic
   }
 
   /**
-   * Default expires method
+   * Pass to the confrontations on expiration
    * @param gameInstance
    * @param gameAction
    */
   public async expires(gameInstance: IGameInstance, gameAction: IGameAction): Promise<boolean> {
+    gameAction.responses = [{pass: true}];
     return true;
   }
 
