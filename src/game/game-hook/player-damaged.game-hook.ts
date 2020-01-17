@@ -6,6 +6,7 @@ import { WizzardService } from 'src/wizzard/wizzard.service';
 import { ILoot } from 'src/@shared/rest-shared/entities';
 import { IWizzard } from 'src/@shared/arena-shared/wizzard';
 import { mergeLootsInItems } from 'src/utils/game.utils';
+import { RestService } from 'src/rest/rest.service';
 
 /**
  * This subscriber is executed once a 'game:card:lifeChanged:damaged:{player}' event is thrown and look for dead
@@ -19,6 +20,7 @@ export class PlayerDamagedGameHook implements IGameHook {
   constructor(
     private readonly wizzardService: WizzardService,
     private readonly wizzardsStorageService: WizzardsStorageService,
+    private readonly restService: RestService,
   ) {}
 
   async execute(gameInstance: IGameInstance, params: {gameCard: IGameCard}): Promise<boolean> {
@@ -29,6 +31,9 @@ export class PlayerDamagedGameHook implements IGameHook {
       const losers: IGameUser[] = gameInstance.users.filter((u: IGameUser) => u.user === params.gameCard.user);
       const winners: IGameUser[] = gameInstance.users.filter((u: IGameUser) => u.user !== params.gameCard.user);
 
+      // Get the game type
+      const gameType = await this.restService.gameType(gameInstance.gameTypeId);
+
       // Generate results & register history
       const result: IGameResult[] = [];
       losers.forEach((gameUser: IGameUser) => {
@@ -36,6 +41,7 @@ export class PlayerDamagedGameHook implements IGameHook {
           false,
           gameUser,
           gameInstance,
+          gameType.loots.defeat,
           result);
       });
 
@@ -44,6 +50,7 @@ export class PlayerDamagedGameHook implements IGameHook {
           true,
           gameUser,
           gameInstance,
+          gameType.loots.victory,
           result);
       });
 
@@ -70,17 +77,9 @@ export class PlayerDamagedGameHook implements IGameHook {
     victory: boolean,
     gameUser: IGameUser,
     gameInstance: IGameInstance,
+    loot: ILoot[],
     result: IGameResult[],
   ) {
-    // Create loot
-    const loot: ILoot[] = victory ? [
-      {name: 'shard', num: 30},
-      {name: 'victory-mark', num: 1},
-    ] : [
-      {name: 'shard', num: 10},
-      {name: 'defeat-mark', num: 1},
-    ];
-
     // Get wizard's account
     const wizzard: IWizzard = this.wizzardService.getWizzard(gameUser.user);
 
