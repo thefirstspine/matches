@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { IGameInstance, IGameUser } from 'src/@shared/arena-shared/game';
+import { IGameInstance, IGameUser } from '../@shared/arena-shared/game';
 import { RoomsService, IRoom, IRoomCreated, ISender } from './rooms.service';
 import { WizzardService } from '../wizzard/wizzard.service';
 import { IWizzard } from '../@shared/arena-shared/wizzard';

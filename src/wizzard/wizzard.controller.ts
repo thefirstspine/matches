@@ -5,7 +5,7 @@ import { AuthGuard } from '../@shared/auth-shared/auth.guard';
 import { IWizzard } from '../@shared/arena-shared/wizzard';
 import { IAvatar } from '../@shared/rest-shared/entities';
 import { RestService } from '../rest/rest.service';
-import { MessagingService } from 'src/@shared/messaging-shared/messaging.service';
+import { MessagingService } from '../@shared/messaging-shared/messaging.service';
 
 @Controller('wizzard')
 export class WizzardController {

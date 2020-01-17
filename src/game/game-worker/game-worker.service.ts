@@ -1,9 +1,9 @@
 import { Injectable, forwardRef, Inject } from '@nestjs/common';
-import { MessagingService } from 'src/@shared/messaging-shared/messaging.service';
-import { LogService } from 'src/@shared/log-shared/log.service';
-import { ArenaRoomsService } from 'src/rooms/arena-rooms.service';
-import { RestService } from 'src/rest/rest.service';
-import { WizzardService } from 'src/wizzard/wizzard.service';
+import { MessagingService } from '../../@shared/messaging-shared/messaging.service';
+import { LogService } from '../../@shared/log-shared/log.service';
+import { ArenaRoomsService } from '../../rooms/arena-rooms.service';
+import { RestService } from '../../rest/rest.service';
+import { WizzardService } from '../../wizzard/wizzard.service';
 import { IGameWorker } from './game-worker.interface';
 import { ThrowCardsGameWorker } from './throw-cards.game-worker';
 import { MoveCreatureGameWorker } from './move-creature.game-worker';
@@ -17,7 +17,7 @@ import { SpellRuinGameWorker } from './spell-ruin.game-worker';
 import { SpellThunderGameWorker } from './spell-thunder.game-worker';
 import { StartConfrontsGameWorker } from './start-confronts.game-worker';
 import { GameHookService } from '../game-hook/game-hook.service';
-import { WizzardsStorageService } from 'src/storage/wizzards.storage.service';
+import { WizzardsStorageService } from '../../storage/wizzards.storage.service';
 
 /**
  * Main service that manages game workers. Each game worker is responsible of a game action type. This service

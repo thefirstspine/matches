@@ -1,5 +1,5 @@
 import { IGameWorker } from './game-worker.interface';
-import { IGameInstance, IGameAction, ISubActionSelectCoupleOnBoard } from 'src/@shared/arena-shared/game';
+import { IGameInstance, IGameAction, ISubActionSelectCoupleOnBoard } from '../../@shared/arena-shared/game';
 import { Injectable } from '@nestjs/common';
 import { GameWorkerService } from './game-worker.service';
 import { GameHookService } from '../game-hook/game-hook.service';

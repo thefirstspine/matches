@@ -1,6 +1,6 @@
 import { IGameHook } from './game-hook.interface';
 import { Injectable } from '@nestjs/common';
-import { IGameInstance, IGameAction } from 'src/@shared/arena-shared/game';
+import { IGameInstance, IGameAction } from '../../@shared/arena-shared/game';
 import { GameHookService } from './game-hook.service';
 import { IHasGameHookService } from '../injections.interface';
 

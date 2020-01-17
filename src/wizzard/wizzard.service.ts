@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { WizzardsStorageService } from '../storage/wizzards.storage.service';
 import { randBetween } from '../utils/maths.utils';
 import { IWizzard } from '../@shared/arena-shared/wizzard';
-import { MessagingService } from 'src/@shared/messaging-shared/messaging.service';
+import { MessagingService } from '../@shared/messaging-shared/messaging.service';
 
 @Injectable()
 export class WizzardService {

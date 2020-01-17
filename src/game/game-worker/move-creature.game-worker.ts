@@ -4,13 +4,13 @@ import {
   IGameAction,
   IGameCard,
   ISubActionMoveCardOnBoard,
-  ISubActionMoveCardOnBoardPossibility } from 'src/@shared/arena-shared/game';
-import { LogService } from 'src/@shared/log-shared/log.service';
+  ISubActionMoveCardOnBoardPossibility } from '../../@shared/arena-shared/game';
+import { LogService } from '../../@shared/log-shared/log.service';
 import { Injectable } from '@nestjs/common';
-import { ICardCoords } from 'src/@shared/rest-shared/card';
+import { ICardCoords } from '../../@shared/rest-shared/card';
 import { GameHookService } from '../game-hook/game-hook.service';
 import { IHasGameHookService } from '../injections.interface';
-import { ArenaRoomsService } from 'src/rooms/arena-rooms.service';
+import { ArenaRoomsService } from '../../rooms/arena-rooms.service';
 
 /**
  * At the beggining of his turn, the player can throw to the discard one or more cards.

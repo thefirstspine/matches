@@ -3,12 +3,12 @@ import { IGameInstance,
   IGameAction,
   ISubActionMoveCardOnBoardPossibility,
   ISubActionSelectCoupleOnBoard,
-  IGameCard } from 'src/@shared/arena-shared/game';
-import { LogService } from 'src/@shared/log-shared/log.service';
+  IGameCard } from '../../@shared/arena-shared/game';
+import { LogService } from '../../@shared/log-shared/log.service';
 import { Injectable } from '@nestjs/common';
-import { cardSide } from 'src/@shared/rest-shared/base';
+import { cardSide } from '../../@shared/rest-shared/base';
 import { GameWorkerService } from './game-worker.service';
-import { ICardCoords } from 'src/@shared/rest-shared/card';
+import { ICardCoords } from '../../@shared/rest-shared/card';
 import { GameHookService } from '../game-hook/game-hook.service';
 import { IHasGameHookService, IHasGameWorkerService } from '../injections.interface';
 

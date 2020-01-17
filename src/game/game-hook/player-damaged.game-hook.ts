@@ -1,13 +1,13 @@
 import { IGameHook } from './game-hook.interface';
 import { Injectable } from '@nestjs/common';
-import { IGameInstance, IGameUser, IGameResult, IGameCard } from 'src/@shared/arena-shared/game';
-import { WizzardsStorageService } from 'src/storage/wizzards.storage.service';
-import { WizzardService } from 'src/wizzard/wizzard.service';
-import { ILoot } from 'src/@shared/rest-shared/entities';
-import { IWizzard } from 'src/@shared/arena-shared/wizzard';
-import { mergeLootsInItems } from 'src/utils/game.utils';
-import { RestService } from 'src/rest/rest.service';
-import { MessagingService } from 'src/@shared/messaging-shared/messaging.service';
+import { IGameInstance, IGameUser, IGameResult, IGameCard } from '../../@shared/arena-shared/game';
+import { WizzardsStorageService } from '../../storage/wizzards.storage.service';
+import { WizzardService } from '../../wizzard/wizzard.service';
+import { ILoot } from '../../@shared/rest-shared/entities';
+import { IWizzard } from '../../@shared/arena-shared/wizzard';
+import { mergeLootsInItems } from '../../utils/game.utils';
+import { RestService } from '../../rest/rest.service';
+import { MessagingService } from '../../@shared/messaging-shared/messaging.service';
 
 /**
  * This subscriber is executed once a 'game:card:lifeChanged:damaged:{player}' event is thrown and look for dead

@@ -1,4 +1,4 @@
-import { IGameInstance } from 'src/@shared/arena-shared/game';
+import { IGameInstance } from '../..//@shared/arena-shared/game';
 
 /**
  * Main game hook interface. A game hook is an event-based method triggered by calling the GameHookService.

@@ -4,7 +4,7 @@ import { WizzardsStorageService } from '../storage/wizzards.storage.service';
 import fetch, { Response } from 'node-fetch';
 import env from '../@shared/env-shared/env';
 import { IWizzard, IWizzardItem } from '../@shared/arena-shared/wizzard';
-import { MessagingService } from 'src/@shared/messaging-shared/messaging.service';
+import { MessagingService } from '../@shared/messaging-shared/messaging.service';
 
 @Injectable()
 export class ShopService {

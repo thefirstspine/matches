@@ -1,9 +1,9 @@
 import { IGameHook } from './game-hook.interface';
 import { Injectable } from '@nestjs/common';
-import { IGameInstance, IGameUser, IGameCard } from 'src/@shared/arena-shared/game';
-import { MessagingService } from 'src/@shared/messaging-shared/messaging.service';
-import { ICard } from 'src/@shared/rest-shared/card';
-import { RestService } from 'src/rest/rest.service';
+import { IGameInstance, IGameUser, IGameCard } from '../..//@shared/arena-shared/game';
+import { MessagingService } from '../..//@shared/messaging-shared/messaging.service';
+import { ICard } from '../..//@shared/rest-shared/card';
+import { RestService } from '../..//rest/rest.service';
 
 /**
  * This subscriber is executed once a 'game:card:lifeChanged:healed' event is thrown. It will look for cards that

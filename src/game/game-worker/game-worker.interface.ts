@@ -1,4 +1,4 @@
-import { IGameAction, IGameInstance } from '../../@shared/arena-shared/game';
+import { IGameAction, IGameInstance } from '../..//@shared/arena-shared/game';
 
 export interface IGameWorker {
 

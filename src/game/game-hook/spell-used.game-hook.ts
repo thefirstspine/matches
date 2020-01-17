@@ -1,6 +1,6 @@
 import { IGameHook } from './game-hook.interface';
 import { Injectable } from '@nestjs/common';
-import { IGameInstance, IGameCard, IGameAction } from 'src/@shared/arena-shared/game';
+import { IGameInstance, IGameCard, IGameAction } from '../../@shared/arena-shared/game';
 
 /**
  * This subscriber is executed once a 'card:spell:used' event is thrown. It wil delete old spells actions.

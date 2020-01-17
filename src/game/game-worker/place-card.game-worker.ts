@@ -1,11 +1,11 @@
 import { IGameWorker } from './game-worker.interface';
-import { IGameInstance, IGameAction, IGameCard, ISubActionPutCardOnBoard } from 'src/@shared/arena-shared/game';
-import { LogService } from 'src/@shared/log-shared/log.service';
+import { IGameInstance, IGameAction, IGameCard, ISubActionPutCardOnBoard } from '../../@shared/arena-shared/game';
+import { LogService } from '../../@shared/log-shared/log.service';
 import { Injectable } from '@nestjs/common';
-import { ICardCoords } from 'src/@shared/rest-shared/card';
+import { ICardCoords } from '../../@shared/rest-shared/card';
 import { GameHookService } from '../game-hook/game-hook.service';
 import { IHasGameHookService } from '../injections.interface';
-import { ArenaRoomsService } from 'src/rooms/arena-rooms.service';
+import { ArenaRoomsService } from '../../rooms/arena-rooms.service';
 
 /**
  * The "place a card" action game worker. During his turn, the player can put one card on the board.
