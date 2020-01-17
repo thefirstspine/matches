@@ -266,10 +266,8 @@ export class GameService {
     // Get the pending game actions with expiration
     const promises: Array<Promise<any>> = gameInstance.actions.current.map(async (gameAction: IGameAction) => {
       try {
-        if (gameAction.expiresAt && gameAction.expiresAt < Date.now()) {
-          if (await this.gameWorkerService.getWorker(gameAction.type).expires(gameInstance, gameAction)) {
-            await this.gameWorkerService.getWorker(gameAction.type).delete(gameInstance, gameAction);
-          }
+        if (gameAction.expiresAt && gameAction.expiresAt < Date.now() && gameAction.priority === maxPriority) {
+          await this.gameWorkerService.getWorker(gameAction.type).expires(gameInstance, gameAction);
         }
       } catch (e) {
         // tslint:disable-next-line:no-console
