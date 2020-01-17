@@ -187,20 +187,36 @@ export class ConfrontsGameWorker implements IGameWorker, IHasGameHookService, IH
   protected getPossibilities(gameInstance: IGameInstance, user: number): ISubActionMoveCardOnBoardPossibility[] {
     const ret: ISubActionMoveCardOnBoardPossibility[] = [];
     gameInstance.cards.forEach((card: IGameCard) => {
-      const attacksOn: cardSide[] = [];
-      if (
-        card.location === 'board' &&
-        card.user === user &&
-        card.card.type === 'creature'
-      ) {
-        attacksOn.push('top', 'right', 'bottom', 'left');
+      // Cards that does not have stats can confront
+      if (!card.card.stats) {
+        return;
       }
-      // TODO: the capacity "threat" works here
+
+      const attacksOn: cardSide[] = [];
+      const allSides: cardSide[] = ['top', 'right', 'bottom', 'left'];
+      const cardRotated: IGameCard = this.rotate(card, gameInstance);
+
+      if (
+        cardRotated.location === 'board' &&
+        cardRotated.user === user
+      ) {
+        if (cardRotated.card.type === 'creature') {
+          // The creatures can attack on all sides
+          attacksOn.push('top', 'right', 'bottom', 'left');
+        } else {
+          // The other cards can attack on the "threat" side
+          allSides.forEach((s: cardSide) => {
+            if (cardRotated.card.stats[s].capacity === 'threat') {
+              attacksOn.push(s);
+            }
+          });
+        }
+      }
 
       if (attacksOn.length > 0) {
         attacksOn.forEach((side: cardSide) => {
-          const coordsFrom: ICardCoords = JSON.parse(JSON.stringify(card.coords));
-          const coordsTo: ICardCoords = JSON.parse(JSON.stringify(card.coords));
+          const coordsFrom: ICardCoords = JSON.parse(JSON.stringify(cardRotated.coords));
+          const coordsTo: ICardCoords = JSON.parse(JSON.stringify(cardRotated.coords));
           switch (side) {
             case 'bottom':
               coordsTo.y ++;
