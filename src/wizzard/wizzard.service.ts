@@ -2,11 +2,15 @@ import { Injectable } from '@nestjs/common';
 import { WizzardsStorageService } from '../storage/wizzards.storage.service';
 import { randBetween } from '../utils/maths.utils';
 import { IWizzard } from '../@shared/arena-shared/wizzard';
+import { MessagingService } from 'src/@shared/messaging-shared/messaging.service';
 
 @Injectable()
 export class WizzardService {
 
-  constructor(private readonly wizzardsStorageService: WizzardsStorageService) {}
+  constructor(
+    private readonly wizzardsStorageService: WizzardsStorageService,
+    private readonly messagingService: MessagingService,
+  ) {}
 
   getWizzard(user: number): IWizzard {
     let wizzard: IWizzard|null = this.wizzardsStorageService.get(user);
@@ -22,6 +26,7 @@ export class WizzardService {
         avatar: ['mara', 'insane', 'merlin'][randBetween(0, 2)],
         title: 'wizzard',
       };
+      this.messagingService.sendMessage([wizzard.id], 'TheFirstSpine:account', wizzard);
       this.wizzardsStorageService.save(wizzard);
     }
 

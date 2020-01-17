@@ -7,6 +7,7 @@ import { ILoot } from 'src/@shared/rest-shared/entities';
 import { IWizzard } from 'src/@shared/arena-shared/wizzard';
 import { mergeLootsInItems } from 'src/utils/game.utils';
 import { RestService } from 'src/rest/rest.service';
+import { MessagingService } from 'src/@shared/messaging-shared/messaging.service';
 
 /**
  * This subscriber is executed once a 'game:card:lifeChanged:damaged:{player}' event is thrown and look for dead
@@ -21,6 +22,7 @@ export class PlayerDamagedGameHook implements IGameHook {
     private readonly wizzardService: WizzardService,
     private readonly wizzardsStorageService: WizzardsStorageService,
     private readonly restService: RestService,
+    private readonly messagingService: MessagingService,
   ) {}
 
   async execute(gameInstance: IGameInstance, params: {gameCard: IGameCard}): Promise<boolean> {
@@ -110,6 +112,7 @@ export class PlayerDamagedGameHook implements IGameHook {
     }
 
     // Save wizard
+    this.messagingService.sendMessage([wizzard.id], 'TheFirstSpine:account', wizzard);
     this.wizzardsStorageService.save(wizzard);
 
     result.push({

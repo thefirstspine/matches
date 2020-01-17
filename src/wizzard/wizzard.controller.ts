@@ -5,6 +5,7 @@ import { AuthGuard } from '../@shared/auth-shared/auth.guard';
 import { IWizzard } from '../@shared/arena-shared/wizzard';
 import { IAvatar } from '../@shared/rest-shared/entities';
 import { RestService } from '../rest/rest.service';
+import { MessagingService } from 'src/@shared/messaging-shared/messaging.service';
 
 @Controller('wizzard')
 export class WizzardController {
@@ -13,6 +14,7 @@ export class WizzardController {
     private readonly wizzardService: WizzardService,
     private readonly restService: RestService,
     private readonly wizzardsStorageService: WizzardsStorageService,
+    private readonly messagingService: MessagingService,
   ) {}
 
   @Get()
@@ -41,6 +43,7 @@ export class WizzardController {
       : wizzard.title;
 
     // Cold save account
+    this.messagingService.sendMessage([wizzard.id], 'TheFirstSpine:account', wizzard);
     this.wizzardsStorageService.save(wizzard);
 
     // Return account data
