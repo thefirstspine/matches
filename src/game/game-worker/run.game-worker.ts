@@ -9,16 +9,18 @@ import { LogService } from '../../@shared/log-shared/log.service';
 import { Injectable } from '@nestjs/common';
 import { ICardCoords } from '../../@shared/rest-shared/card';
 import { GameHookService } from '../game-hook/game-hook.service';
-import { IHasGameHookService } from '../injections.interface';
+import { IHasGameHookService, IHasGameWorkerService } from '../injections.interface';
 import { ArenaRoomsService } from '../../rooms/arena-rooms.service';
+import { GameWorkerService } from './game-worker.service';
 
 /**
  * At the beggining of his turn, the player can throw to the discard one or more cards.
  */
 @Injectable() // Injectable required here for dependency injection
-export class RunGameWorker implements IGameWorker, IHasGameHookService {
+export class RunGameWorker implements IGameWorker, IHasGameHookService, IHasGameWorkerService {
 
   public gameHookService: GameHookService;
+  public gameWorkerService: GameWorkerService;
 
   public readonly type: string = 'run';
 
@@ -118,6 +120,13 @@ export class RunGameWorker implements IGameWorker, IHasGameHookService {
 
     // Dispatch event
     await this.gameHookService.dispatch(gameInstance, `card:creature:moved:${card.card.id}`);
+
+    // Deletes the action "skip-run"
+    gameInstance.actions.current.forEach((currentGameAction: IGameAction) => {
+      if (currentGameAction.type === 'skip-run') {
+        this.gameWorkerService.getWorker(currentGameAction.type).delete(gameInstance, currentGameAction);
+      }
+    });
 
     // Send message to rooms
     this.arenaRoomsService.sendMessageForGame(
