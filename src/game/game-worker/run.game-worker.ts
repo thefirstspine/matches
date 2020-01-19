@@ -164,7 +164,12 @@ export class RunGameWorker implements IGameWorker, IHasGameHookService {
             return;
           }
           // Skip already taken coords
-          if (gameInstance.cards.find((c: IGameCard) => c.location === 'board' && c.coords.x === coords.x && c.coords.y === coords.y)) {
+          const card: IGameCard =
+            gameInstance.cards.find((c: IGameCard) => c.location === 'board' && c.coords.x === coords.x && c.coords.y === coords.y);
+          if (card.card.type === 'creature' || card.card.type === 'artifact' || card.card.type === 'player') {
+            return;
+          }
+          if (card.card.id === 'ditch') {
             return;
           }
           possibility.boardCoordsTo.push(`${coords.x}-${coords.y}`);
