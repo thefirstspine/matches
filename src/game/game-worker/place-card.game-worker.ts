@@ -172,7 +172,7 @@ export class PlaceCardGameWorker implements IGameWorker, IHasGameHookService {
     // Get the coordinates where the user can place a card
     const boardCoords: string[] = [];
     gameInstance.cards.filter((card: IGameCard) => {
-      return card.user === user && card.location === 'board';
+      return card.user === user && card.location === 'board' && ['creature', 'artifact', 'player'].includes(card.card.type);
     }).forEach((card: IGameCard) => {
       const x: number = card.coords.x;
       const y: number = card.coords.y;
@@ -190,8 +190,15 @@ export class PlaceCardGameWorker implements IGameWorker, IHasGameHookService {
           return;
         }
         // Skip already taken coords
-        if (gameInstance.cards.find(
-          (c: IGameCard) => c.location === 'board' && c.coords.x === coords.x  && c.coords.y === coords.y)) {
+        const card: IGameCard =
+          gameInstance.cards.find((c: IGameCard) => c.location === 'board' && c.coords.x === coords.x && c.coords.y === coords.y);
+        if (card) {
+          if (card.card.type === 'creature' || card.card.type === 'artifact' || card.card.type === 'player') {
+            return;
+          }
+          if (card.card.id === 'ditch' || card.card.id === 'burden-earth') {
+            return;
+          }
           return;
         }
         boardCoords.push(`${coords.x}-${coords.y}`);
