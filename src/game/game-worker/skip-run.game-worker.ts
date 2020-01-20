@@ -89,6 +89,12 @@ export class SkipRunGameWorker implements IGameWorker, IHasGameHookService, IHas
    * @param gameAction
    */
   public async delete(gameInstance: IGameInstance, gameAction: IGameAction): Promise<void> {
+    // The next "throw-cards" game action should have more time
+    const action: IGameAction|undefined = gameInstance.actions.current.find((a: IGameAction) => a.type === 'throw-cards');
+    if (action) {
+      action.expiresAt = Date.now() + (30 * 1000); // expires in 30 seconds
+    }
+
     gameInstance.actions.current = gameInstance.actions.current.filter((gameActionRef: IGameAction) => {
       if (gameActionRef === gameAction) {
         gameInstance.actions.previous.push({
