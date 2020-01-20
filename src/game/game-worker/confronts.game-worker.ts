@@ -237,7 +237,8 @@ export class ConfrontsGameWorker implements IGameWorker, IHasGameHookService, IH
               return card.location === 'board' &&
                 card.coords.x === coordsTo.x &&
                 card.coords.y === coordsTo.y &&
-                card.user !== user;
+                card.user !== user &&
+                ['creature', 'artifact', 'player'].includes(card.card.type);
             })
           ) {
             ret.push({
