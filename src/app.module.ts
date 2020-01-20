@@ -19,6 +19,7 @@ import { ArenaRoomsService } from './rooms/arena-rooms.service';
 import { MessagingService } from './@shared/messaging-shared/messaging.service';
 import { GameWorkerService } from './game/game-worker/game-worker.service';
 import { GameHookService } from './game/game-hook/game-hook.service';
+import { BotsService } from './bots/bots.service';
 
 @Module({
   imports: [],
@@ -40,6 +41,7 @@ import { GameHookService } from './game/game-hook/game-hook.service';
     MessagingService,
     GameWorkerService,
     GameHookService,
+    BotsService,
   ],
 })
 export class AppModule {}

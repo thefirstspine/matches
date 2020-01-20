@@ -8,6 +8,7 @@ import { IGameType } from '../@shared/rest-shared/entities';
 import { RestService } from '../rest/rest.service';
 import { getScore } from '../utils/game.utils';
 import { MessagingService } from '../@shared/messaging-shared/messaging.service';
+import { BotsService } from '../bots/bots.service';
 
 /**
  * Service to manage the game queue
@@ -33,6 +34,7 @@ export class QueueService {
     private readonly gameService: GameService,
     private readonly wizzardService: WizzardService,
     private readonly restService: RestService,
+    private readonly botsService: BotsService,
   ) {
   }
 
@@ -94,6 +96,11 @@ export class QueueService {
       style,
       queueExpiresAt: Date.now() + (QueueService.QUEUE__EXPIRATION_TIME * 1000),
     });
+
+    // On empty queue for quick & classic games, create a bot
+    if (gameType.matchmakingMode === 'asap' && this.queue[gameTypeId].length < gameType.players.length) {
+      await this.botsService.askForABot(gameTypeId);
+    }
 
     // Send message
     this.messagingService.sendMessage(
