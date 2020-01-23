@@ -11,7 +11,7 @@ export interface IGameWorker {
    * Method to create an action (called by the Game service & other workers)
    * @param gameInstance
    */
-  create(gameInstance: IGameInstance, data: {[key: string]: string|number}): Promise<IGameAction|null>;
+  create(gameInstance: IGameInstance, data: {[key: string]: any}): Promise<IGameAction|null>;
 
   /**
    * This is called for each remaining actions after a possible action succeed and is deleted.
