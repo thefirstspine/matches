@@ -3,16 +3,18 @@ import { IGameInstance, IGameAction, ISubActionPutCardOnBoard, IGameCard } from 
 import { LogService } from '../../@shared/log-shared/log.service';
 import { Injectable } from '@nestjs/common';
 import { GameHookService } from '../game-hook/game-hook.service';
-import { IHasGameHookService } from '../injections.interface';
+import { IHasGameHookService, IHasGameWorkerService } from '../injections.interface';
 import { ArenaRoomsService } from '../../rooms/arena-rooms.service';
+import { GameWorkerService } from './game-worker.service';
 
 /**
  * Worker for "replacement" spell.
  */
 @Injectable() // Injectable required here for dependency injection
-export class SpellReplacementGameWorker implements IGameWorker, IHasGameHookService {
+export class SpellReplacementGameWorker implements IGameWorker, IHasGameHookService, IHasGameWorkerService {
 
   public gameHookService: GameHookService;
+  public gameWorkerService: GameWorkerService;
 
   readonly type: string = 'spell-replacement';
 
@@ -113,7 +115,20 @@ export class SpellReplacementGameWorker implements IGameWorker, IHasGameHookServ
 
     // Dispatch event
     await this.gameHookService.dispatch(gameInstance, `card:spell:used:${cardUsed.card.id}`, {gameCard: cardUsed});
-    await this.gameHookService.dispatch(gameInstance, `card:discarded:${cardTarget.card.id}`, {gameCard: cardTarget});
+    await this.gameHookService.dispatch(gameInstance, `card:destroyed:${cardTarget.card.id}`, {gameCard: cardTarget});
+
+    // Test for possibility to put another card
+    if (!gameInstance.cards.find((c: IGameCard) => {
+      return c.location === 'board' &&
+        c.coords.x === cardTarget.coords.x &&
+        c.coords.y === cardTarget.coords.y &&
+        (['creature', 'artifact'].includes(c.card.type) || ['burden-earth', 'ditch'].includes(c.card.id));
+    })) {
+      // Create the action for the other player, with the priority 3
+      const action: IGameAction = await this.gameWorkerService.getWorker('replace-card')
+        .create(gameInstance, {user: cardTarget.user, coords: cardTarget.coords});
+      gameInstance.actions.current.push(action);
+    }
 
     // Send message to rooms
     this.arenaRoomsService.sendMessageForGame(
