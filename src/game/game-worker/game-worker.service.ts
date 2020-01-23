@@ -21,6 +21,7 @@ import { WizzardsStorageService } from '../../storage/wizzards.storage.service';
 import { RunGameWorker } from './run.game-worker';
 import { SkipRunGameWorker } from './skip-run.game-worker';
 import { SpellReplacementGameWorker } from './spell-replacement.game-worker';
+import { ReplaceCardGameWorker } from './replace-card.game-worker';
 
 /**
  * Main service that manages game workers. Each game worker is responsible of a game action type. This service
@@ -74,6 +75,7 @@ export class GameWorkerService extends BaseGameService<IGameWorker> {
     this.createInjectable(RunGameWorker, injectedProps);
     this.createInjectable(SkipRunGameWorker, injectedProps);
     this.createInjectable(SpellReplacementGameWorker, injectedProps);
+    this.createInjectable(ReplaceCardGameWorker, injectedProps);
   }
 
   /**
