@@ -34,25 +34,9 @@ export class CardDamagedGameHook implements IGameHook {
       });
 
     if (params.gameCard && params.gameCard.card.stats.life <= 0) {
-      if (params.gameCard.card.stats.capacities && params.gameCard.card.stats.capacities.includes('burdenEarth')) {
-        // On a card with "burdenEarth" capacity, place a Burden Earth card
-        const burdenEarth: ICard = await this.restService.card('burden-earth');
-        const randomId: number = randBetween(0, Number.MAX_SAFE_INTEGER);
-        const burdenEarthGameCard: IGameCard = {
-          card: burdenEarth,
-          id: `${gameInstance}_${randomId}`,
-          location: 'board',
-          user: params.gameCard.user,
-          coords: {
-            x: params.gameCard.coords.x,
-            y: params.gameCard.coords.y,
-          },
-        };
-        gameInstance.cards.push(burdenEarthGameCard);
-      }
-      // Discard the card
+      // Destroye the card
       params.gameCard.location = 'discard';
-      await this.gameHookService.dispatch(gameInstance, `card:discarded:${params.gameCard.card.id}`, {gameCard: params.gameCard});
+      await this.gameHookService.dispatch(gameInstance, `card:destroyed:${params.gameCard.card.id}`, {gameCard: params.gameCard});
     }
     return true;
   }
