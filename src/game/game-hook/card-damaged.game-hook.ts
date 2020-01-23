@@ -35,7 +35,6 @@ export class CardDamagedGameHook implements IGameHook {
 
     if (params.gameCard && params.gameCard.card.stats.life <= 0) {
       // Destroye the card
-      params.gameCard.location = 'discard';
       await this.gameHookService.dispatch(gameInstance, `card:destroyed:${params.gameCard.card.id}`, {gameCard: params.gameCard});
     }
     return true;
