@@ -15,6 +15,7 @@ import { SpellUsedGameHook } from './spell-used.game-hook';
 import { TurnEndedGameHook } from './turn-ended.game-hook';
 import { GameWorkerService } from '../game-worker/game-worker.service';
 import { WizzardsStorageService } from '../..//storage/wizzards.storage.service';
+import { CardDestroyedGameHook } from './card-destroyed.game-hook';
 
 /**
  * Main service that manages game hooks.
@@ -64,6 +65,7 @@ export class GameHookService extends BaseGameService<IGameHook> {
     this.subscribe('game:phaseChanged:actions', this.createInjectable(PhaseActionsGameHook, injectedProps));
     this.subscribe('card:spell:used', this.createInjectable(SpellUsedGameHook, injectedProps));
     this.subscribe('game:turnEnded', this.createInjectable(TurnEndedGameHook, injectedProps));
+    this.subscribe('card:destroyed', this.createInjectable(CardDestroyedGameHook, injectedProps));
   }
 
   /**
