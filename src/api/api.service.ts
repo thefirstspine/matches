@@ -63,7 +63,7 @@ export class ApiService {
       throw new ApiError('Invalid method parameter(s).', ApiError.CODE_INVALID_PARAMS);
     }
 
-    const queue: IGameUser[] = this.queueService.refreshAsk(
+    const queue: IGameUser[] = await this.queueService.refreshAsk(
       request.params.gameType,
       request.user,
     );

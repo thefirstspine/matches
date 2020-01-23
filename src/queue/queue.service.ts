@@ -95,12 +95,8 @@ export class QueueService {
       origin,
       style,
       queueExpiresAt: Date.now() + (QueueService.QUEUE__EXPIRATION_TIME * 1000),
+      queueEnteredAt: Date.now(),
     });
-
-    // On empty queue for quick & classic games, create a bot
-    if (gameType.matchmakingMode === 'asap' && this.queue[gameTypeId].length < gameType.players.length) {
-      await this.botsService.askForABot(gameTypeId);
-    }
 
     // Send message
     this.messagingService.sendMessage(
@@ -116,10 +112,10 @@ export class QueueService {
     return this.queue[gameTypeId];
   }
 
-  refreshAsk(
+  async refreshAsk(
     gameTypeId: string,
     user: number,
-  ): IGameUser[] {
+  ): Promise<IGameUser[]> {
     // Exit method if user is not in the queue
     if (!this.isUserInQueue(gameTypeId, user)) {
       throw new Error('User not in a the queue.');
@@ -130,12 +126,25 @@ export class QueueService {
       throw new Error('Queue not available. Check the game type ID or retry in a few minutes.');
     }
 
-    // Remove the user from the queue
+    const gameType: IGameType = await this.restService.gameType(gameTypeId);
+    if (!gameType) {
+      throw new Error('Cannot find this game type.');
+    }
+
+    // Refresh user queue's expiration date
     this.queue[gameTypeId].forEach((queueUser: IQueueUser) => {
       if (queueUser.user === user) {
         queueUser.queueExpiresAt = Date.now() + (QueueService.QUEUE__EXPIRATION_TIME * 1000);
+
+        // On empty queue and user is waiting for more than 60 seconds, call a bot
+        if (gameType.matchmakingMode === 'asap' &&
+          this.queue[gameTypeId].length < gameType.players.length &&
+          queueUser.queueEnteredAt + (60 * 1000) >= Date.now()) {
+          this.botsService.askForABot(gameTypeId);
+        }
       }
     });
+
     return this.queue[gameTypeId];
   }
 
@@ -294,4 +303,5 @@ export interface IQueue {
 
 export interface IQueueUser extends IGameUser {
   queueExpiresAt: number;
+  queueEnteredAt: number;
 }
