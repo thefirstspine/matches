@@ -105,7 +105,7 @@ export class PlaceCardGameWorker implements IGameWorker, IHasGameHookService {
     card.coords = {x, y};
 
     // Dispatch event
-    await this.gameHookService.dispatch(gameInstance, `card:creature:placed:${card.card.id}`);
+    await this.gameHookService.dispatch(gameInstance, `card:placed:${card.card.id}`, {gameCard: card});
 
     // Send message to rooms
     this.arenaRoomsService.sendMessageForGame(
