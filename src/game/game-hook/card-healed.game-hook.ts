@@ -30,9 +30,8 @@ export class CardHealedGameHook implements IGameHook {
         gameCard: params.gameCard,
       });
 
-    const cardModel: ICard = await this.restService.card(params.gameCard.card.id);
-    if (params.gameCard.currentStats.life > cardModel.stats.life) {
-      params.gameCard.currentStats.life = cardModel.stats.life;
+    if (params.gameCard.currentStats.life > params.gameCard.card.stats.life) {
+      params.gameCard.currentStats.life = params.gameCard.card.stats.life;
     }
 
     return true;
