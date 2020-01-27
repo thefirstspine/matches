@@ -95,7 +95,7 @@ export class ThrowCardsGameWorker implements IGameWorker, IHasGameHookService {
         card.location = 'hand';
         await this.gameHookService.dispatch(gameInstance, `game:card:picked:${card.card.id}`);
       } else {
-        currentPlayerCard.card.stats.life -= 1;
+        currentPlayerCard.currentStats.life -= 1;
         await this.gameHookService.dispatch(
           gameInstance,
           `game:card:lifeChanged:damaged:${currentPlayerCard.card.id}`, {gameCard: currentPlayerCard, lifeChanged: -1});
@@ -105,7 +105,7 @@ export class ThrowCardsGameWorker implements IGameWorker, IHasGameHookService {
     // Remove life from the player for more than one card discarded
     const damages: number = responseHandIndexes.length - 1;
     if (damages > 0) {
-      currentPlayerCard.card.stats.life -= damages;
+      currentPlayerCard.currentStats.life -= damages;
       await this.gameHookService.dispatch(
         gameInstance,
         `game:card:lifeChanged:damaged:${currentPlayerCard.card.id}`, {gameCard: currentPlayerCard, lifeChanged: -damages});

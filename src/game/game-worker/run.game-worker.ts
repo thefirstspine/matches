@@ -150,9 +150,9 @@ export class RunGameWorker implements IGameWorker, IHasGameHookService, IHasGame
     gameInstance.cards.forEach((card: IGameCard) => {
       if (card.location === 'board' &&
         card.user === user &&
-        card.card.stats &&
-        card.card.stats.capacities &&
-        card.card.stats.capacities.includes('run')
+        card.currentStats &&
+        card.currentStats.capacities &&
+        card.currentStats.capacities.includes('run')
       ) {
         // We found a user's creature on the board
         const possibility: ISubActionMoveCardOnBoardPossibility = {

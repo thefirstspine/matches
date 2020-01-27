@@ -109,7 +109,7 @@ export class SpellHealGameWorker implements IGameWorker, IHasGameHookService {
       this.logService.warning('Target not found', gameAction);
       return false;
     }
-    cardDamaged.card.stats.life += 2;
+    cardDamaged.currentStats.life += 2;
 
     // Dispatch event
     await this.gameHookService.dispatch(gameInstance, `card:spell:used:${cardUsed.card.id}`, {gameCard: cardUsed});

@@ -118,31 +118,31 @@ export class ConfrontsGameWorker implements IGameWorker, IHasGameHookService, IH
     let lifeLostTo = 0;
     let lifeLostFrom = 0;
     if (direction === 'bottom') {
-      lifeLostTo = cardFromRotated.card.stats.bottom.strenght - cardToRotated.card.stats.top.defense;
-      lifeLostFrom = cardToRotated.card.stats.top.strenght - cardFromRotated.card.stats.bottom.defense;
+      lifeLostTo = cardFromRotated.currentStats.bottom.strenght - cardToRotated.currentStats.top.defense;
+      lifeLostFrom = cardToRotated.currentStats.top.strenght - cardFromRotated.currentStats.bottom.defense;
     }
     if (direction === 'top') {
-      lifeLostTo = cardFromRotated.card.stats.top.strenght - cardToRotated.card.stats.bottom.defense;
-      lifeLostFrom = cardToRotated.card.stats.bottom.strenght - cardFromRotated.card.stats.top.defense;
+      lifeLostTo = cardFromRotated.currentStats.top.strenght - cardToRotated.currentStats.bottom.defense;
+      lifeLostFrom = cardToRotated.currentStats.bottom.strenght - cardFromRotated.currentStats.top.defense;
     }
     if (direction === 'left') {
-      lifeLostTo = cardFromRotated.card.stats.left.strenght - cardToRotated.card.stats.right.defense;
-      lifeLostFrom = cardToRotated.card.stats.right.strenght - cardFromRotated.card.stats.left.defense;
+      lifeLostTo = cardFromRotated.currentStats.left.strenght - cardToRotated.currentStats.right.defense;
+      lifeLostFrom = cardToRotated.currentStats.right.strenght - cardFromRotated.currentStats.left.defense;
     }
     if (direction === 'right') {
-      lifeLostTo = cardFromRotated.card.stats.right.strenght - cardToRotated.card.stats.left.defense;
-      lifeLostFrom = cardToRotated.card.stats.left.strenght - cardFromRotated.card.stats.right.defense;
+      lifeLostTo = cardFromRotated.currentStats.right.strenght - cardToRotated.currentStats.left.defense;
+      lifeLostFrom = cardToRotated.currentStats.left.strenght - cardFromRotated.currentStats.right.defense;
     }
 
     // Apply damages
     if (lifeLostTo > 0) {
-      cardTo.card.stats.life -= lifeLostTo;
+      cardTo.currentStats.life -= lifeLostTo;
       await this.gameHookService.dispatch(
         gameInstance,
         `game:card:lifeChanged:damaged:${cardTo.card.id}`, {gameCard: cardTo, lifeChanged: -lifeLostTo});
     }
     if (lifeLostFrom > 0) {
-      cardFrom.card.stats.life -= lifeLostFrom;
+      cardFrom.currentStats.life -= lifeLostFrom;
       await this.gameHookService.dispatch(
         gameInstance,
         `game:card:lifeChanged:damaged:${cardFrom.card.id}`, {gameCard: cardFrom, lifeChanged: -lifeLostFrom});
@@ -188,7 +188,7 @@ export class ConfrontsGameWorker implements IGameWorker, IHasGameHookService, IH
     const ret: ISubActionMoveCardOnBoardPossibility[] = [];
     gameInstance.cards.forEach((card: IGameCard) => {
       // Cards that does not have stats can confront
-      if (!card.card.stats) {
+      if (!card.currentStats) {
         return;
       }
 
@@ -206,7 +206,7 @@ export class ConfrontsGameWorker implements IGameWorker, IHasGameHookService, IH
         } else {
           // The other cards can attack on the "threat" side
           allSides.forEach((s: cardSide) => {
-            if (cardRotated.card.stats[s].capacity === 'threat') {
+            if (cardRotated.currentStats[s].capacity === 'threat') {
               attacksOn.push(s);
             }
           });
@@ -275,8 +275,8 @@ export class ConfrontsGameWorker implements IGameWorker, IHasGameHookService, IH
 
     // 180 degrees rotation
     if (currentIndex === 0) {
-      copy.card.stats.bottom = JSON.parse(JSON.stringify(card.card.stats.top));
-      copy.card.stats.top = JSON.parse(JSON.stringify(card.card.stats.bottom));
+      copy.currentStats.bottom = JSON.parse(JSON.stringify(card.currentStats.top));
+      copy.currentStats.top = JSON.parse(JSON.stringify(card.currentStats.bottom));
     }
 
     return copy;

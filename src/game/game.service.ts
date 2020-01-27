@@ -71,8 +71,9 @@ export class GameService {
           user: gameUser.user,
           location: card.type === 'player' ? 'board' : 'deck',
           coords: card.type === 'player' ? gameType.players[index] : undefined,
-          card: JSON.parse(JSON.stringify(card)),
           id: `${this.nextId}_${randomId}`,
+          currentStats: card.stats ? JSON.parse(JSON.stringify(card.stats)) : undefined,
+          card,
         });
       });
     });
