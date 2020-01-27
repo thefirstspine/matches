@@ -73,7 +73,7 @@ export class GameService {
           coords: card.type === 'player' ? gameType.players[index] : undefined,
           id: `${this.nextId}_${randomId}`,
           currentStats: card.stats ? JSON.parse(JSON.stringify(card.stats)) : undefined,
-          card,
+          card: JSON.parse(JSON.stringify(card)),
         });
       });
     });
