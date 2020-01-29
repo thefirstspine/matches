@@ -142,6 +142,11 @@ describe('Spell heal', () => {
     expect(result).toBeTruthy();
     expect(gameInstance.cards[1].currentStats).toBeDefined();
     expect(gameInstance.cards[1].currentStats.life).toBe(bansheeCard.stats.life - 2);
+    expect(gameInstance.cards[1].location).toBe('board');
+    expect(gameInstance.cards[1].coords).toBeDefined();
+    expect(gameInstance.cards[1].coords.x).toBe(3);
+    expect(gameInstance.cards[1].coords.y).toBe(3);
+    expect(gameInstance.cards[0].location).toBe('discard');
   });
 
   test('heal on non-damaged card', async () => {
@@ -193,6 +198,11 @@ describe('Spell heal', () => {
     expect(result).toBeTruthy();
     expect(gameInstance.cards[1].currentStats).toBeDefined();
     expect(gameInstance.cards[1].currentStats.life).toBe(bansheeCard.stats.life);
+    expect(gameInstance.cards[1].location).toBe('board');
+    expect(gameInstance.cards[1].coords).toBeDefined();
+    expect(gameInstance.cards[1].coords.x).toBe(3);
+    expect(gameInstance.cards[1].coords.y).toBe(3);
+    expect(gameInstance.cards[0].location).toBe('discard');
   });
 
   test('heal on card with 1 damage', async () => {
@@ -245,6 +255,11 @@ describe('Spell heal', () => {
     expect(result).toBeTruthy();
     expect(gameInstance.cards[1].currentStats).toBeDefined();
     expect(gameInstance.cards[1].currentStats.life).toBe(bansheeCard.stats.life);
+    expect(gameInstance.cards[1].location).toBe('board');
+    expect(gameInstance.cards[1].coords).toBeDefined();
+    expect(gameInstance.cards[1].coords.x).toBe(3);
+    expect(gameInstance.cards[1].coords.y).toBe(3);
+    expect(gameInstance.cards[0].location).toBe('discard');
   });
 
 });
