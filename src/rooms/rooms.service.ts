@@ -49,7 +49,7 @@ export class RoomsService {
       },
     });
     const jsonResponse: any = await response.json();
-    this.logService.info('Response from messaging service', jsonResponse);
+    this.logService.info('Response from rooms service', jsonResponse);
     if (response.status >= 400) {
       throw new Error(JSON.stringify(jsonResponse));
     }
