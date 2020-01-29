@@ -1,12 +1,12 @@
 import { Injectable, Inject, forwardRef } from '@nestjs/common';
-import { MessagingService } from '../..//@shared/messaging-shared/messaging.service';
-import { LogService } from '../..//@shared/log-shared/log.service';
-import { ArenaRoomsService } from '../..//rooms/arena-rooms.service';
-import { RestService } from '../..//rest/rest.service';
-import { WizzardService } from '../..//wizzard/wizzard.service';
+import { MessagingService } from '../../@shared/messaging-shared/messaging.service';
+import { LogService } from '../../@shared/log-shared/log.service';
+import { ArenaRoomsService } from '../../rooms/arena-rooms.service';
+import { RestService } from '../../rest/rest.service';
+import { WizzardService } from '../../wizzard/wizzard.service';
 import { BaseGameService } from '../base.game.service';
 import { IGameHook } from './game-hook.interface';
-import { IGameInstance } from '../..//@shared/arena-shared/game';
+import { IGameInstance } from '../../@shared/arena-shared/game';
 import { CardDamagedGameHook } from './card-damaged.game-hook';
 import { CardHealedGameHook } from './card-healed.game-hook';
 import { PlayerDamagedGameHook } from './player-damaged.game-hook';
@@ -14,7 +14,7 @@ import { PhaseActionsGameHook } from './phase-actions.game-hook';
 import { SpellUsedGameHook } from './spell-used.game-hook';
 import { TurnEndedGameHook } from './turn-ended.game-hook';
 import { GameWorkerService } from '../game-worker/game-worker.service';
-import { WizzardsStorageService } from '../..//storage/wizzards.storage.service';
+import { WizzardsStorageService } from '../../storage/wizzards.storage.service';
 import { CardDestroyedGameHook } from './card-destroyed.game-hook';
 import { SoulOfASacrifiedHunterPlacesGameHook } from './soul-of-a-sacrified-hunter-placed.game-hook';
 
