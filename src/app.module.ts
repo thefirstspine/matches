@@ -20,10 +20,11 @@ import { MessagingService } from './@shared/messaging-shared/messaging.service';
 import { GameWorkerService } from './game/game-worker/game-worker.service';
 import { GameHookService } from './game/game-hook/game-hook.service';
 import { BotsService } from './bots/bots.service';
+import { IndexController } from './index/index.controller';
 
 @Module({
   imports: [],
-  controllers: [ApiController, TickerController, WizzardController, ShopController],
+  controllers: [ApiController, TickerController, WizzardController, ShopController, IndexController],
   providers: [
     ApiService,
     GameService,
