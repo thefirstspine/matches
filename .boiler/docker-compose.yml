@@ -11,7 +11,7 @@ services:
       - ${DATA}:/data/
       - /var/log:/var/log
     ports:
-      - "2105:2105"
+      - "${PORT}:${PORT}"
     tty: true
     env_file:
       - .env
