@@ -1,0 +1,25 @@
+version: "3.2"
+
+services:
+  arena:
+    build: 'arena'
+    image: thefirstspine_arena_image
+    container_name: thefirstspine_arena_container
+    networks:
+      default:
+        ipv4_address: ${ARENA_IP}
+    volumes:
+      - ${ARENA_DATA}:/data/
+      - /var/log:/var/log
+    ports:
+      - "2105:2105"
+    tty: true
+    env_file:
+      - .env
+
+networks:
+  default:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: ${NETWORK_SUBNET}
