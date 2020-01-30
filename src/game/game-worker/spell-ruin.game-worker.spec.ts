@@ -16,7 +16,7 @@ import { ArenaRoomsService } from '../../rooms/arena-rooms.service';
 import { GameHookService } from '../game-hook/game-hook.service';
 import { BotsService } from '../../bots/bots.service';
 import { LogService } from '../../@shared/log-shared/log.service';
-import { IGameInstance, IGameAction } from '../../@shared/arena-shared/game';
+import { IGameInstance, IGameAction, ISubActionPutCardOnBoard } from '../../@shared/arena-shared/game';
 
 describe('Spell ruin', () => {
   let gameWorkerService: GameWorkerService;
@@ -96,8 +96,10 @@ describe('Spell ruin', () => {
     // Get base cards
     const ruinCard = await restService.card('ruin');
     const towerCard = await restService.card('the-tower');
+    const bansheeCard = await restService.card('banshee');
     expect(ruinCard).toBeDefined();
     expect(towerCard).toBeDefined();
+    expect(bansheeCard).toBeDefined();
 
     // Create game instance
     const gameInstance: IGameInstance = {
@@ -126,11 +128,32 @@ describe('Spell ruin', () => {
         life: towerCard.stats.life - 3,
       },
     });
+    gameInstance.cards.push({
+      id: '',
+      card: bansheeCard,
+      user: gameInstance.users[0].user,
+      location: 'board',
+      coords: {
+        x: 3,
+        y: 2,
+      },
+      currentStats: {
+        ...bansheeCard.stats,
+      },
+    });
 
     // Create game action & add it to the instance
     const gameAction: IGameAction = await gameWorkerService.getWorker('spell-ruin').create(gameInstance, {user: gameInstance.users[0].user});
     gameAction.responses = [{handIndex: 0, boardCoords: '3-3'}];
     gameInstance.actions.current.push(gameAction);
+    expect(gameAction.subactions.length).toBe(1);
+    expect(gameAction.subactions[0].type).toBe('putCardOnBoard');
+    expect((gameAction.subactions[0] as ISubActionPutCardOnBoard).params.boardCoords).toBeDefined();
+    expect((gameAction.subactions[0] as ISubActionPutCardOnBoard).params.boardCoords.length).toBe(1);
+    expect((gameAction.subactions[0] as ISubActionPutCardOnBoard).params.boardCoords[0]).toBe('3-3');
+    expect((gameAction.subactions[0] as ISubActionPutCardOnBoard).params.handIndexes).toBeDefined();
+    expect((gameAction.subactions[0] as ISubActionPutCardOnBoard).params.handIndexes.length).toBe(1);
+    expect((gameAction.subactions[0] as ISubActionPutCardOnBoard).params.handIndexes[0]).toBe(0);
 
     // Execute
     const result: boolean = await gameWorkerService.getWorker('spell-ruin').execute(
@@ -150,8 +173,10 @@ describe('Spell ruin', () => {
     // Get base cards
     const ruinCard = await restService.card('ruin');
     const towerCard = await restService.card('the-tower');
+    const bansheeCard = await restService.card('banshee');
     expect(ruinCard).toBeDefined();
     expect(towerCard).toBeDefined();
+    expect(bansheeCard).toBeDefined();
 
     // Create game instance
     const gameInstance: IGameInstance = {
@@ -179,11 +204,32 @@ describe('Spell ruin', () => {
         ...towerCard.stats,
       },
     });
+    gameInstance.cards.push({
+      id: '',
+      card: bansheeCard,
+      user: gameInstance.users[0].user,
+      location: 'board',
+      coords: {
+        x: 3,
+        y: 2,
+      },
+      currentStats: {
+        ...bansheeCard.stats,
+      },
+    });
 
     // Create game action & add it to the instance
     const gameAction: IGameAction = await gameWorkerService.getWorker('spell-ruin').create(gameInstance, {user: gameInstance.users[0].user});
     gameAction.responses = [{handIndex: 0, boardCoords: '3-3'}];
     gameInstance.actions.current.push(gameAction);
+    expect(gameAction.subactions.length).toBe(1);
+    expect(gameAction.subactions[0].type).toBe('putCardOnBoard');
+    expect((gameAction.subactions[0] as ISubActionPutCardOnBoard).params.boardCoords).toBeDefined();
+    expect((gameAction.subactions[0] as ISubActionPutCardOnBoard).params.boardCoords.length).toBe(1);
+    expect((gameAction.subactions[0] as ISubActionPutCardOnBoard).params.boardCoords[0]).toBe('3-3');
+    expect((gameAction.subactions[0] as ISubActionPutCardOnBoard).params.handIndexes).toBeDefined();
+    expect((gameAction.subactions[0] as ISubActionPutCardOnBoard).params.handIndexes.length).toBe(1);
+    expect((gameAction.subactions[0] as ISubActionPutCardOnBoard).params.handIndexes[0]).toBe(0);
 
     // Execute
     const result: boolean = await gameWorkerService.getWorker('spell-ruin').execute(
