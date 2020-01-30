@@ -36,13 +36,13 @@ export class RestService {
   }
 
   public async list<T>(resource: string): Promise<T[]> {
-    const response: Response = await fetch(`${env.config.REST_INTERNAL_URL}/rest/${resource}`);
+    const response: Response = await fetch(`${env.config.REST_URL}/rest/${resource}`);
     const json = await response.json();
     return json as T[];
   }
 
   public async single<T>(resource: string, id: string): Promise<T> {
-    const response: Response = await fetch(`${env.config.REST_INTERNAL_URL}/rest/${resource}/${id}`);
+    const response: Response = await fetch(`${env.config.REST_URL}/rest/${resource}/${id}`);
     const json = await response.json();
     return json as T;
   }

@@ -72,7 +72,7 @@ export class ShopService {
 
     // Call the shop endpoint
     const result: Response = await fetch(
-      env.config.SHOP_INTERNAL_URL + '/api/purchase',
+      env.config.SHOP_URL + '/api/purchase',
       {
         method: 'post',
         body: JSON.stringify({
@@ -103,7 +103,7 @@ export class ShopService {
 
   async lookForCompletePurchases() {
     const promises: Array<Promise<any>> = this.shopPurchases.map(async (purchase: IShopPurchase) => {
-      const response: Response = await fetch(env.config.SHOP_INTERNAL_URL + `/api/payments/${purchase.paymentId}`);
+      const response: Response = await fetch(env.config.SHOP_URL + `/api/payments/${purchase.paymentId}`);
       const json = await response.json();
     });
 

@@ -39,13 +39,13 @@ export class RoomsService {
    */
   protected async sendRequest<T>(endpoint: string, data: any, method: 'get'|'post' = 'get'): Promise<T> {
     this.logService.info('Send message to room service', {endpoint, data});
-    const url: string = `${env.config.ROOMS_INTERNAL_URL}/api/${endpoint}`;
+    const url: string = `${env.config.ROOMS_URL}/api/${endpoint}`;
     const response: Response = await fetch(url, {
       body: JSON.stringify(data),
       method,
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${env.config.ARENA_ROOMS_TOKEN}`,
+        'Authorization': `Bearer ${env.config.ROOMS_TOKEN}`,
       },
     });
     const jsonResponse: any = await response.json();

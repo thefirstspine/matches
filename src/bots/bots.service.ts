@@ -11,7 +11,7 @@ export class BotsService {
   public async askForABot(gameType: string): Promise<IApiResponse> {
     // Call the bots service
     const ret: Response = await fetch(
-      `${env.config.BOTS_INTERNAL_URL}/api/spawn`,
+      `${env.config.BOTS_URL}/api/spawn`,
       {
         method: 'post',
         body: JSON.stringify({
@@ -21,7 +21,7 @@ export class BotsService {
           },
         }),
         headers: {
-          'Authorization': `Bearer ${env.config.ARENA_BOTS_TOKEN}`,
+          'Authorization': `Bearer ${env.config.BOTS_TOKEN}`,
           'Content-Type': 'application/json',
         },
       },
