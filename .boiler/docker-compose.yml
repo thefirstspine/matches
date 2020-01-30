@@ -20,6 +20,3 @@ services:
 networks:
   default:
     driver: bridge
-    ipam:
-      config:
-        - subnet: ${NETWORK_SUBNET}
