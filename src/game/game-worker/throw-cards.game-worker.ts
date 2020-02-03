@@ -89,17 +89,23 @@ export class ThrowCardsGameWorker implements IGameWorker, IHasGameHookService {
     // Pick the new cards
     const currentPlayerCard: IGameCard = gameInstance.cards.find(c => c.card && c.card.type === 'player' && c.user === gameAction.user);
     const currentCards: number = gameInstance.cards.filter(c => c.location === 'hand' && c.user === gameAction.user).length;
+    let burnDamages: number = 0;
     for (let i = currentCards; i < 6; i ++) {
       const card = gameInstance.cards.find(c => c.location === 'deck' && c.user === gameAction.user);
       if (card) {
         card.location = 'hand';
         await this.gameHookService.dispatch(gameInstance, `game:card:picked:${card.card.id}`);
       } else {
-        currentPlayerCard.currentStats.life -= 1;
-        await this.gameHookService.dispatch(
-          gameInstance,
-          `game:card:lifeChanged:damaged:${currentPlayerCard.card.id}`, {gameCard: currentPlayerCard, lifeChanged: -1});
+        burnDamages ++;
       }
+    }
+
+    // Process burn
+    if (burnDamages > 0) {
+      currentPlayerCard.currentStats.life -= burnDamages;
+      await this.gameHookService.dispatch(
+        gameInstance,
+        `game:card:lifeChanged:damaged:${currentPlayerCard.card.id}`, {gameCard: currentPlayerCard, lifeChanged: -burnDamages});
     }
 
     // Remove life from the player for more than one card discarded
