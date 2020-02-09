@@ -25,10 +25,8 @@ export class ShopController {
 
     try {
       this.shopService.exchange({
-        shopItemId: item.id,
         user: request.user,
-        from: {name: 'shard', num: item.price.num},
-        to: item.loots,
+        ...item,
       });
       return {
         status: true,
@@ -54,10 +52,8 @@ export class ShopController {
 
     try {
       const html = await this.shopService.purchase({
-        shopItemId: item.id,
         user: request.user,
-        from: {name: 'shard', num: item.price.num},
-        to: item.loots,
+        ...item,
       });
       return {
         status: true,

@@ -5,6 +5,7 @@ import fetch, { Response } from 'node-fetch';
 import env from '../@shared/env-shared/env';
 import { IWizzard, IWizzardItem } from '../@shared/arena-shared/wizzard';
 import { MessagingService } from '../@shared/messaging-shared/messaging.service';
+import { IShopItem, ILoot } from '../@shared/rest-shared/entities';
 
 @Injectable()
 export class ShopService {
@@ -20,16 +21,16 @@ export class ShopService {
   exchange(purchase: IPurchase) {
     // Get the wizzard
     const wizzard: IWizzard = this.wizzardService.getWizzard(purchase.user);
-    if (wizzard.purchases.includes(purchase.shopItemId)) {
+    if (wizzard.purchases.includes(purchase.id)) {
       throw new Error('Already purchased');
     }
 
     // Gather & check required items
-    const itemFrom: IWizzardItem[] = wizzard.items.filter(item => item.name === purchase.from.name);
-    if (itemFrom.length <= 0 || itemFrom[0].num < purchase.from.num) {
+    const itemFrom: IWizzardItem[] = wizzard.items.filter(item => item.name === purchase.price.currency);
+    if (itemFrom.length <= 0 || itemFrom[0].num < purchase.price.num) {
       throw new Error('No sufficient item count');
     }
-    itemFrom[0].num -= purchase.from.num;
+    itemFrom[0].num -= purchase.price.num;
     wizzard.items = wizzard.items.map((i: IWizzardItem) => {
       return i.name === itemFrom[0].name ?
         itemFrom[0] :
@@ -37,7 +38,7 @@ export class ShopService {
     });
 
     // Gather or create item
-    purchase.to.forEach((toSingle: IWizzardItem) => {
+    purchase.loots.forEach((toSingle: ILoot) => {
       const itemTo: IWizzardItem[] = wizzard.items.filter(item => item.name === toSingle.name);
       if (itemTo.length <= 0) {
         const newItemTo: IWizzardItem = {
@@ -56,7 +57,7 @@ export class ShopService {
     });
 
     // Add purchase to history
-    wizzard.purchases.push(purchase.shopItemId);
+    wizzard.purchases.push(purchase.id);
 
     // Save wizzard
     this.messagingService.sendMessage([wizzard.id], 'TheFirstSpine:account', wizzard);
@@ -64,10 +65,9 @@ export class ShopService {
   }
 
   async purchase(purchase: IPurchase) {
-    // Get the wizzard
-    const wizzard: IWizzard = this.wizzardService.getWizzard(purchase.user);
-    if (wizzard.purchases.includes(purchase.shopItemId)) {
-      throw new Error('Already purchased');
+    // Check for currency
+    if (purchase.price.currency !== 'eur') {
+      throw new Error('Can only purchase with `eur` currency');
     }
 
     // Call the shop endpoint
@@ -79,7 +79,7 @@ export class ShopService {
           item: {
             name: 'Achat depuis Arena',
             description: 'Achat depuis Arena',
-            amount: purchase.from.num * 100,
+            amount: purchase.price.num * 100,
           },
         }),
         headers: {
@@ -112,11 +112,8 @@ export class ShopService {
 
 }
 
-export interface IPurchase {
+export interface IPurchase extends IShopItem {
   user: number;
-  shopItemId: string;
-  from: IWizzardItem;
-  to: IWizzardItem[];
 }
 
 export interface IShopPurchase extends IPurchase {
