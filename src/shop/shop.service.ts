@@ -52,9 +52,9 @@ export class ShopService {
     wizzard.purchases.push(purchase.id);
 
     // Save wizzard
+    this.wizzardStorageService.save(wizzard);
     this.messagingService.sendMessage([wizzard.id], 'TheFirstSpine:account', wizzard);
     this.messagingService.sendMessage([wizzard.id], 'TheFirstSpine:shop', purchase);
-    this.wizzardStorageService.save(wizzard);
   }
 
   async purchase(purchase: IPurchase) {
@@ -135,9 +135,9 @@ export class ShopService {
         // Add the loot
         const wizzard: IWizzard = this.wizzardService.getWizzard(purchase.user);
         mergeLootsInItems(wizzard.items, purchase.loots);
+        this.wizzardStorageService.save(wizzard);
         this.messagingService.sendMessage([wizzard.id], 'TheFirstSpine:account', wizzard);
         this.messagingService.sendMessage([wizzard.id], 'TheFirstSpine:shop', purchase);
-        this.wizzardStorageService.save(wizzard);
 
         // Remove the purchase
         this.shopPurchases = this.shopPurchases.filter((p: IShopPurchase) => purchase !== p);
