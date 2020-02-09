@@ -7,6 +7,7 @@ import { IWizzard, IWizzardItem } from '../@shared/arena-shared/wizzard';
 import { MessagingService } from '../@shared/messaging-shared/messaging.service';
 import { IShopItem, ILoot } from '../@shared/rest-shared/entities';
 import { LogService } from '../@shared/log-shared/log.service';
+import { mergeLootsInItems } from 'src/utils/game.utils';
 
 @Injectable()
 export class ShopService {
@@ -21,6 +22,11 @@ export class ShopService {
   ) {}
 
   exchange(purchase: IPurchase) {
+    // Check for currency
+    if (purchase.price.currency !== 'shards') {
+      throw new Error('Can only exchange with `shards` currency');
+    }
+
     // Get the wizzard
     const wizzard: IWizzard = this.wizzardService.getWizzard(purchase.user);
     if (wizzard.purchases.includes(purchase.id)) {
@@ -28,7 +34,7 @@ export class ShopService {
     }
 
     // Gather & check required items
-    const itemFrom: IWizzardItem[] = wizzard.items.filter(item => item.name === purchase.price.currency);
+    const itemFrom: IWizzardItem[] = wizzard.items.filter(item => item.name === 'shard');
     if (itemFrom.length <= 0 || itemFrom[0].num < purchase.price.num) {
       throw new Error('No sufficient item count');
     }
@@ -40,23 +46,7 @@ export class ShopService {
     });
 
     // Gather or create item
-    purchase.loots.forEach((toSingle: ILoot) => {
-      const itemTo: IWizzardItem[] = wizzard.items.filter(item => item.name === toSingle.name);
-      if (itemTo.length <= 0) {
-        const newItemTo: IWizzardItem = {
-          num: 0,
-          name: toSingle.name,
-        };
-        wizzard.items.push(newItemTo);
-        itemTo.push(newItemTo);
-      }
-      itemTo[0].num += toSingle.num;
-      wizzard.items = wizzard.items.map((i: IWizzardItem) => {
-        return i.name === itemTo[0].name ?
-        itemTo[0] :
-          i;
-      });
-    });
+    mergeLootsInItems(wizzard.items, purchase.loots);
 
     // Add purchase to history
     wizzard.purchases.push(purchase.id);
@@ -112,11 +102,50 @@ export class ShopService {
 
   async lookForCompletePurchases() {
     const promises: Array<Promise<any>> = this.shopPurchases.map(async (purchase: IShopPurchase) => {
-      const response: Response = await fetch(env.config.SHOP_URL + `/api/payments/${purchase.paymentId}`);
-      const json = await response.json();
+      const response: Response = await fetch(
+        env.config.SHOP_URL + `/api/payments/${purchase.paymentId}`,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${env.config.SHOP_TOKEN}`,
+          },
+        },
+      );
+      const responseJson = await response.json();
+
+      // The status is unknown
+      if (responseJson.status === 'unknown') {
+        // Remove the purchase
+        this.logService.warning(`Unknown status for purchase #${purchase.paymentId}`, purchase);
+        this.shopPurchases = this.shopPurchases.filter((p: IShopPurchase) => purchase !== p);
+        return;
+      }
+
+      // The payment failed
+      if (responseJson.status === 'failed') {
+        // Remove the purchase
+        this.logService.info(`Unknown status for purchase #${purchase.paymentId}`, purchase);
+        this.shopPurchases = this.shopPurchases.filter((p: IShopPurchase) => purchase !== p);
+        return;
+      }
+
+      // The payment succeeded
+      if (responseJson.status === 'succeeded') {
+        // Add the loot
+        const wizzard: IWizzard = this.wizzardService.getWizzard(purchase.user);
+        mergeLootsInItems(wizzard.items, purchase.loots);
+        this.messagingService.sendMessage([wizzard.id], 'TheFirstSpine:account', wizzard);
+        this.wizzardStorageService.save(wizzard);
+
+        // Remove the purchase
+        this.shopPurchases = this.shopPurchases.filter((p: IShopPurchase) => purchase !== p);
+
+        this.logService.info(`Purchase #${purchase.paymentId} succeeded`, purchase);
+        return;
+      }
     });
 
-    return Promise.all(promises);
+    await Promise.all(promises);
   }
 
 }
