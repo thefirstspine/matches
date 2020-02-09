@@ -6,6 +6,7 @@ import env from '../@shared/env-shared/env';
 import { IWizzard, IWizzardItem } from '../@shared/arena-shared/wizzard';
 import { MessagingService } from '../@shared/messaging-shared/messaging.service';
 import { IShopItem, ILoot } from '../@shared/rest-shared/entities';
+import { LogService } from '../@shared/log-shared/log.service';
 
 @Injectable()
 export class ShopService {
@@ -16,6 +17,7 @@ export class ShopService {
     private readonly wizzardService: WizzardService,
     private readonly wizzardStorageService: WizzardsStorageService,
     private readonly messagingService: MessagingService,
+    private readonly logService: LogService,
   ) {}
 
   exchange(purchase: IPurchase) {
@@ -71,19 +73,21 @@ export class ShopService {
     }
 
     // Call the shop endpoint
+    const body = {
+      item: {
+        name: 'Achat depuis Arena',
+        description: 'Achat depuis Arena',
+        price: purchase.price.num * 100,
+      },
+      successUrl: 'https://redirect.tfslocal/success',
+      cancelUrl: 'https://redirect.tfslocal/cancel',
+    };
+    this.logService.info('Send message to shop service', body);
     const result: Response = await fetch(
       env.config.SHOP_URL + '/api/purchase',
       {
         method: 'post',
-        body: JSON.stringify({
-          item: {
-            name: 'Achat depuis Arena',
-            description: 'Achat depuis Arena',
-            price: purchase.price.num * 100,
-          },
-          successUrl: 'https://redirect.tfslocal/success',
-          cancelUrl: 'https://redirect.tfslocal/cancel',
-        }),
+        body: JSON.stringify(body),
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${env.config.SHOP_TOKEN}`,
@@ -93,6 +97,8 @@ export class ShopService {
 
     // Ready result
     const json = await result.json();
+    this.logService.info('Response from shop service', json);
+
     if (json.status) {
       // Save the purchase to the history for further checking
       this.shopPurchases.push({
