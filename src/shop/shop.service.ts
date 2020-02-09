@@ -79,11 +79,14 @@ export class ShopService {
           item: {
             name: 'Achat depuis Arena',
             description: 'Achat depuis Arena',
-            amount: purchase.price.num * 100,
+            price: purchase.price.num * 100,
           },
+          successUrl: 'https://redirect.tfslocal/success',
+          cancelUrl: 'https://redirect.tfslocal/cancel',
         }),
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${env.config.SHOP_TOKEN}`,
         },
       },
     );
