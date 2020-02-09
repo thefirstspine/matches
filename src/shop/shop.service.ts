@@ -53,6 +53,7 @@ export class ShopService {
 
     // Save wizzard
     this.messagingService.sendMessage([wizzard.id], 'TheFirstSpine:account', wizzard);
+    this.messagingService.sendMessage([wizzard.id], 'TheFirstSpine:shop', purchase);
     this.wizzardStorageService.save(wizzard);
   }
 
@@ -135,6 +136,7 @@ export class ShopService {
         const wizzard: IWizzard = this.wizzardService.getWizzard(purchase.user);
         mergeLootsInItems(wizzard.items, purchase.loots);
         this.messagingService.sendMessage([wizzard.id], 'TheFirstSpine:account', wizzard);
+        this.messagingService.sendMessage([wizzard.id], 'TheFirstSpine:shop', purchase);
         this.wizzardStorageService.save(wizzard);
 
         // Remove the purchase
