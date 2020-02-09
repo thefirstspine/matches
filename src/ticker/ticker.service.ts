@@ -44,7 +44,7 @@ export class TickerService {
       }
     }
 
-    // Look for pending actions every tock
+    // Look for pending actions every tick
     try {
       await this.gameService.lookForPendingActions();
     } catch (e) {
