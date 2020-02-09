@@ -1,8 +1,9 @@
-import { Controller, Post, Body, UseGuards, Req } from '@nestjs/common';
+import { Controller, Post, Body, UseGuards, Req, Get } from '@nestjs/common';
 import { ShopService } from './shop.service';
 import { AuthGuard } from '../@shared/auth-shared/auth.guard';
 import { IShopItem } from '../@shared/rest-shared/entities';
 import { RestService } from '../rest/rest.service';
+import * as fs from 'fs';
 
 @Controller('shop')
 export class ShopController {
@@ -65,6 +66,11 @@ export class ShopController {
         message: e.message,
       };
     }
+  }
+
+  @Get('v/success')
+  vSuccess() {
+    return fs.readFileSync(`${__dirname}/../assets/arena-shop-success.html`).toString();
   }
 
 }

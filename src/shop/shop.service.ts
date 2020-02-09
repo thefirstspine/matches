@@ -70,8 +70,8 @@ export class ShopService {
         description: 'Achat depuis Arena',
         price: purchase.price.num * 100,
       },
-      successUrl: 'https://redirect.tfslocal/success',
-      cancelUrl: 'https://redirect.tfslocal/cancel',
+      successUrl: `${env.config.ARENA_URL}/shop/v/success`,
+      cancelUrl: `${env.config.ARENA_URL}/shop/v/cancel`,
     };
     this.logService.info('Send message to shop service', body);
     const result: Response = await fetch(
