@@ -7,7 +7,7 @@ import { IWizzard, IWizzardItem } from '../@shared/arena-shared/wizzard';
 import { MessagingService } from '../@shared/messaging-shared/messaging.service';
 import { IShopItem, ILoot } from '../@shared/rest-shared/entities';
 import { LogService } from '../@shared/log-shared/log.service';
-import { mergeLootsInItems } from 'src/utils/game.utils';
+import { mergeLootsInItems } from '../utils/game.utils';
 
 @Injectable()
 export class ShopService {
