@@ -2,29 +2,6 @@
 
 The `arena` service is the service that will manage all the games & wizzards accounts in the Arena products.
 
-## Public endpoints documentation
-
-### Generic endpoints
-
-- [GET /](docs/generic.md#get_/)
-- [GET /status](docs/generic.md#get_status)
-
-### Game API
-
-- [POST /api](docs/game-api.md#post_api)
-
-### Shop endpoints
-
-- [POST /shop/exchange](docs/shop.md#post_shop_exchange)
-- [POST /shop/purchase](docs/shop.md#post_shop_purchase)
-- [GET /shop/v/success](docs/shop.md#get_shop_v_success)
-- [GET /shop/v/cancel](docs/shop.md#get_shop_v_cancel)
-
-### Profile endpoints
-
-- [GET /wizzard](docs/shop.md#get_wizzard)
-- [POST /wizzard/edit](docs/shop.md#post_wizzard_edit)
-
 ## Installation
 
 ```bash
@@ -49,6 +26,29 @@ node dist/main.js
 ```bash
 npm run test:game
 ```
+
+## Public endpoints documentation
+
+### Generic endpoints
+
+- [GET /](docs/generic.md#get_/)
+- [GET /status](docs/generic.md#get_status)
+
+### Game API
+
+- [POST /api](docs/game-api.md#post_api)
+
+### Shop endpoints
+
+- [POST /shop/exchange](docs/shop.md#post_shop_exchange)
+- [POST /shop/purchase](docs/shop.md#post_shop_purchase)
+- [GET /shop/v/success](docs/shop.md#get_shop_v_success)
+- [GET /shop/v/cancel](docs/shop.md#get_shop_v_cancel)
+
+### Profile endpoints
+
+- [GET /wizzard](docs/shop.md#get_wizzard)
+- [POST /wizzard/edit](docs/shop.md#post_wizzard_edit)
 
 ## License
 
