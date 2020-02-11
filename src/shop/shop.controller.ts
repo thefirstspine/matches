@@ -73,6 +73,11 @@ export class ShopController {
     return fs.readFileSync(`${__dirname}/../assets/arena-shop-success.html`).toString();
   }
 
+  @Get('v/cancel')
+  vCancel() {
+    return fs.readFileSync(`${__dirname}/../assets/arena-shop-cancel.html`).toString();
+  }
+
 }
 
 export interface IExchangeResult {
