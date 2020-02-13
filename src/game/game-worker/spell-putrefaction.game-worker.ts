@@ -114,7 +114,7 @@ export class SpellPutrefactionGameWorker implements IGameWorker, IHasGameHookSer
     // Dispatch event
     await this.gameHookService.dispatch(gameInstance, `card:spell:used:${cardUsed.card.id}`, {gameCard: cardUsed});
     await this.gameHookService
-      .dispatch(gameInstance, `game:card:lifeChanged:damaged:${cardDamaged.card.id}`, {gameCard: cardDamaged, lifeChanged: -2});
+      .dispatch(gameInstance, `game:card:lifeChanged:damaged:${cardDamaged.card.id}`, {gameCard: cardDamaged, source: cardUsed, lifeChanged: -2});
 
     // Send message to rooms
     this.arenaRoomsService.sendMessageForGame(

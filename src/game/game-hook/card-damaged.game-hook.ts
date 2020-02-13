@@ -22,7 +22,7 @@ export class CardDamagedGameHook implements IGameHook {
     private readonly restService: RestService,
   ) {}
 
-  async execute(gameInstance: IGameInstance, params: {gameCard: IGameCard, lifeChanged: number}): Promise<boolean> {
+  async execute(gameInstance: IGameInstance, params: {gameCard: IGameCard, source: IGameCard, lifeChanged: number}): Promise<boolean> {
     await this.messagingService.sendMessage(
       gameInstance.users.map((u: IGameUser) => u.user),
       `TheFirstSpine:game:${gameInstance.id}:cardChanged`,
