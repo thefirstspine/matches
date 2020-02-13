@@ -17,6 +17,7 @@ import { GameWorkerService } from '../game-worker/game-worker.service';
 import { WizzardsStorageService } from '../../storage/wizzards.storage.service';
 import { CardDestroyedGameHook } from './card-destroyed.game-hook';
 import { SoulOfASacrifiedHunterPlacesGameHook } from './soul-of-a-sacrified-hunter-placed.game-hook';
+import { ActionExecutedGameHook } from './action-executed.game-hook';
 
 /**
  * Main service that manages game hooks.
@@ -57,6 +58,7 @@ export class GameHookService extends BaseGameService<IGameHook> {
 
     // Create hooks
     const injectedProps = {gameWorkerService: this.gameWorkerService, gameHookService: this};
+    this.subscribe('action:executed', this.createInjectable(ActionExecutedGameHook, injectedProps));
     this.subscribe('game:card:lifeChanged:damaged:hunter', this.createInjectable(PlayerDamagedGameHook, injectedProps));
     this.subscribe('game:card:lifeChanged:damaged:sorcerer', this.createInjectable(PlayerDamagedGameHook, injectedProps));
     this.subscribe('game:card:lifeChanged:damaged:conjurer', this.createInjectable(PlayerDamagedGameHook, injectedProps));

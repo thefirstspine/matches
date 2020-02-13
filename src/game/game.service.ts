@@ -73,6 +73,7 @@ export class GameService {
           coords: card.type === 'player' ? gameType.players[index] : undefined,
           id: `${this.nextId}_${randomId}`,
           currentStats: card.stats ? JSON.parse(JSON.stringify(card.stats)) : undefined,
+          metadata: {},
           card: JSON.parse(JSON.stringify(card)),
         });
       });
@@ -244,6 +245,9 @@ export class GameService {
     if (pendingGameAction) {
       try {
         if (await this.gameWorkerService.getWorker(pendingGameAction.type).execute(gameInstance, pendingGameAction)) {
+          // Dispatch event after each action
+          this.gameHookService
+            .dispatch(gameInstance, `action:executed:${pendingGameAction.type}`, {user: pendingGameAction.user, action: pendingGameAction});
           // Send to the other players that the action succeed
           this.messagingService.sendMessage(
             '*',
@@ -252,9 +256,14 @@ export class GameService {
           );
           // Okay, deletes the action
           await this.gameWorkerService.getWorker(pendingGameAction.type).delete(gameInstance, pendingGameAction);
+          // Dispatch event after each action
+          this.gameHookService.dispatch(gameInstance, `action:deleted:${pendingGameAction.type}`, {user: pendingGameAction.user});
           // Refresh the other ones
-          const refreshPromises: Array<Promise<void>> = gameInstance.actions.current.map((action: IGameAction) => {
-            return this.gameWorkerService.getWorker(action.type).refresh(gameInstance, action);
+          const refreshPromises: Array<Promise<void>> = gameInstance.actions.current.map(async (action: IGameAction) => {
+              this.gameWorkerService.getWorker(action.type).refresh(gameInstance, action);
+              // Dispatch event after each action
+              this.gameHookService.dispatch(gameInstance, `action:refreshed:${action.type}`, {user: action.user, action});
+              return;
           });
           await Promise.all(refreshPromises);
         }
@@ -269,6 +278,8 @@ export class GameService {
       try {
         if (gameAction.expiresAt && gameAction.expiresAt < Date.now() && gameAction.priority === maxPriority) {
           await this.gameWorkerService.getWorker(gameAction.type).expires(gameInstance, gameAction);
+          // Dispatch event after each action
+          this.gameHookService.dispatch(gameInstance, `action:expired:${gameAction.type}`, {user: gameAction.user, action: gameAction});
         }
       } catch (e) {
         // tslint:disable-next-line:no-console
