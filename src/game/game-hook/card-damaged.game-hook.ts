@@ -33,7 +33,21 @@ export class CardDamagedGameHook implements IGameHook {
         gameCard: params.gameCard,
       });
 
-    if (params.gameCard && params.gameCard.currentStats.life <= 0) {
+    // Death capacity
+    if (
+      params.gameCard.currentStats?.capacities?.includes('death') && // test on death capacity
+      params.lifeChanged < 0 && // only positive damages trigger this capacity
+      ['artifact', 'creature'].includes(params.source?.card?.type) // only on creature & artifact source
+    ) {
+      // Destroye the damaged card
+      params.gameCard.location = 'discard';
+      await this.gameHookService.dispatch(gameInstance, `card:destroyed:${params.gameCard.card.id}`, {gameCard: params.gameCard});
+      // Destroye the source of damages
+      params.source.location = 'discard';
+      await this.gameHookService.dispatch(gameInstance, `card:destroyed:${params.gameCard.card.id}`, {gameCard: params.source});
+    }
+
+    if (params.gameCard.location !== 'discard' && params.gameCard && params.gameCard.currentStats.life <= 0) {
       // Destroye the card
       await this.gameHookService.dispatch(gameInstance, `card:destroyed:${params.gameCard.card.id}`, {gameCard: params.gameCard});
     }
