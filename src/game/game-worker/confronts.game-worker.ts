@@ -11,6 +11,7 @@ import { GameWorkerService } from './game-worker.service';
 import { ICardCoords } from '../../@shared/rest-shared/card';
 import { GameHookService } from '../game-hook/game-hook.service';
 import { IHasGameHookService, IHasGameWorkerService } from '../injections.interface';
+import { ArenaRoomsService } from '../../rooms/arena-rooms.service';
 
 /**
  * The main confrontation game worker. Normally a confrontation is closing the turn of the player. This worker
@@ -26,6 +27,7 @@ export class ConfrontsGameWorker implements IGameWorker, IHasGameHookService, IH
 
   constructor(
     private readonly logService: LogService,
+    private readonly arenaRoomsService: ArenaRoomsService,
   ) {}
 
   /**
@@ -175,6 +177,15 @@ export class ConfrontsGameWorker implements IGameWorker, IHasGameHookService, IH
       // Change turn
       await this.gameHookService.dispatch(gameInstance, `game:turnEnded`, {user: gameAction.user});
     }
+
+    // Send message to rooms
+    this.arenaRoomsService.sendMessageForGame(
+      gameInstance,
+      {
+        fr: `Joue une confrontation`,
+        en: ``,
+      },
+      gameAction.user);
 
     return true;
   }

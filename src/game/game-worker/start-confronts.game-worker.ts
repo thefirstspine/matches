@@ -4,6 +4,7 @@ import { Injectable } from '@nestjs/common';
 import { GameWorkerService } from './game-worker.service';
 import { GameHookService } from '../game-hook/game-hook.service';
 import { IHasGameHookService } from '../injections.interface';
+import { ArenaRoomsService } from '../../rooms/arena-rooms.service';
 
 /**
  * Game action to pass the "actions" phase & start the confrontations.
@@ -17,6 +18,7 @@ export class StartConfrontsGameWorker implements IGameWorker, IHasGameHookServic
 
   constructor(
     private readonly gameWorkerService: GameWorkerService,
+    private readonly arenaRoomsService: ArenaRoomsService,
   ) {}
 
   /**
@@ -72,6 +74,15 @@ export class StartConfrontsGameWorker implements IGameWorker, IHasGameHookServic
       // On empty possibilities, pass to the next user
       await this.gameHookService.dispatch(gameInstance, `game:turnEnded`, {user: gameAction.user});
     }
+
+    // Send message to rooms
+    this.arenaRoomsService.sendMessageForGame(
+      gameInstance,
+      {
+        fr: `Passe aux confrontations`,
+        en: ``,
+      },
+      gameAction.user);
 
     return true;
   }

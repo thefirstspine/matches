@@ -4,6 +4,7 @@ import { IGameInstance, IGameAction, ISubActionMoveCardOnBoard, IGameCard } from
 import { IHasGameWorkerService, IHasGameHookService } from '../injections.interface';
 import { GameWorkerService } from '../game-worker/game-worker.service';
 import { GameHookService } from './game-hook.service';
+import { ArenaRoomsService } from '../../rooms/arena-rooms.service';
 
 @Injectable()
 export class TurnEndedGameHook implements IGameHook, IHasGameWorkerService, IHasGameHookService {
@@ -11,11 +12,33 @@ export class TurnEndedGameHook implements IGameHook, IHasGameWorkerService, IHas
   public gameWorkerService: GameWorkerService;
   public gameHookService: GameHookService;
 
+  constructor(
+    private readonly arenaRoomsService: ArenaRoomsService,
+  ) {}
+
   async execute(gameInstance: IGameInstance, params: {user: number}): Promise<boolean> {
+    // Send message to rooms
+    this.arenaRoomsService.sendMessageForGame(
+      gameInstance,
+      {
+        fr: `Termine son tour`,
+        en: ``,
+      },
+      params.user);
+
     // Get the next user
     const foundIndex = gameInstance.users.findIndex((u) => u.user === params.user);
     const nextIndex = foundIndex === gameInstance.users.length - 1 ? 0 : foundIndex + 1;
     const nextUser = gameInstance.users[nextIndex].user;
+
+    // Send message to rooms
+    this.arenaRoomsService.sendMessageForGame(
+      gameInstance,
+      {
+        fr: `Commence son tour`,
+        en: ``,
+      },
+      nextUser);
 
     // Generate "run" & "skip-run" action
     const runAction: IGameAction = await this.gameWorkerService.getWorker('run')
