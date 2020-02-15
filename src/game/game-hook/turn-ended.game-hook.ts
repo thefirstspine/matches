@@ -5,6 +5,8 @@ import { IHasGameWorkerService, IHasGameHookService } from '../injections.interf
 import { GameWorkerService } from '../game-worker/game-worker.service';
 import { GameHookService } from './game-hook.service';
 import { ArenaRoomsService } from '../../rooms/arena-rooms.service';
+import { ICard } from '../../@shared/rest-shared/card';
+import { RestService } from '../../rest/rest.service';
 
 @Injectable()
 export class TurnEndedGameHook implements IGameHook, IHasGameWorkerService, IHasGameHookService {
@@ -14,6 +16,7 @@ export class TurnEndedGameHook implements IGameHook, IHasGameWorkerService, IHas
 
   constructor(
     private readonly arenaRoomsService: ArenaRoomsService,
+    private readonly restService: RestService,
   ) {}
 
   async execute(gameInstance: IGameInstance, params: {user: number}): Promise<boolean> {
@@ -52,15 +55,34 @@ export class TurnEndedGameHook implements IGameHook, IHasGameWorkerService, IHas
       gameInstance.actions.current.push(skipRunAction);
     }
 
-    // Remove the "burden-earth" cards of the next user
-    const promises: Array<Promise<void>> = [];
+    const promises: Array<Promise<any>> = [];
     gameInstance.cards.forEach((c: IGameCard) => {
+      // Remove the "burden-earth" cards of the next user
       if (c.user === nextUser && c.card.id === 'burden-earth') {
         c.location = 'discard';
         const promise = this.gameHookService.dispatch(gameInstance, `card:discarded:${c.card.id}`, {gameCard: c});
         promises.push(promise);
       }
+
+      // Replace the "Great Old" cards
+      if (c.location === 'board' && c.user === nextUser && c.card.id === 'great-old-egg') {
+        const juvenileGreatOldPromise: Promise<ICard> = this.restService.card('juvenile-great-old');
+        juvenileGreatOldPromise.then((replacement: ICard) => {
+          c.card = replacement;
+          c.currentStats = replacement.stats;
+        });
+        promises.push(juvenileGreatOldPromise);
+      }
+      if (c.location === 'board' && c.user === nextUser && c.card.id === 'juvenile-great-old') {
+        const greatOldPromise: Promise<ICard> = this.restService.card('great-old');
+        greatOldPromise.then((replacement: ICard) => {
+          c.card = replacement;
+          c.currentStats = replacement.stats;
+        });
+        promises.push(greatOldPromise);
+      }
     });
+
     await Promise.all(promises);
 
     // Generate the actions of the user
