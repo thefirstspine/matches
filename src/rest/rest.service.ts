@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { ICard } from '../@shared/rest-shared/card';
-import { IGameType, IDeck, IShopItem, IAvatar } from '../@shared/rest-shared/entities';
+import { IGameType, IDeck, IShopItem, IAvatar, ICycle } from '../@shared/rest-shared/entities';
 import fetch, { Response } from 'node-fetch';
 import env from '../@shared/env-shared/env';
 
@@ -33,6 +33,10 @@ export class RestService {
 
   public async avatar(id: string): Promise<IAvatar> {
     return this.single('avatars', id);
+  }
+
+  public async currentCycle(): Promise<ICycle> {
+    return this.single('cycles', 'current');
   }
 
   public async list<T>(resource: string): Promise<T[]> {
