@@ -136,6 +136,9 @@ export class GameService {
     this.gameInstances[this.nextId] = gameInstance;
     this.gamesStorageService.save(gameInstance);
 
+    // Dispatch event with the created instance
+    this.gameHookService.dispatch(gameInstance, `instance:created:${gameTypeId}`, {gameInstance});
+
     // Create the room in the rooms service
     await this.arenaRoomsService.createRoomForGame(gameInstance);
 
