@@ -6,6 +6,7 @@ import { ICardCoords } from '../../@shared/rest-shared/card';
 import { GameHookService } from '../game-hook/game-hook.service';
 import { IHasGameHookService } from '../injections.interface';
 import { ArenaRoomsService } from '../../rooms/arena-rooms.service';
+import { randBetween } from '../../utils/maths.utils';
 
 /**
  * The "replace a card" action game worker. When the spell "replacement" is called this high prioritary action is required.
@@ -124,6 +125,10 @@ export class ReplaceCardGameWorker implements IGameWorker, IHasGameHookService {
    * @param gameAction
    */
   public async expires(gameInstance: IGameInstance, gameAction: IGameAction): Promise<boolean> {
+    const handIndexes = this.getHandIndexes(gameInstance, gameAction.user);
+    const handIndex = handIndexes[randBetween(0, handIndexes.length)];
+    const boardCoords = (gameAction.subactions[0] as ISubActionPutCardOnBoard).params.boardCoords[0];
+    gameAction.responses = [{handIndex, boardCoords}];
     return true;
   }
 
