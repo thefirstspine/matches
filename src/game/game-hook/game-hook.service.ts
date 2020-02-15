@@ -18,6 +18,7 @@ import { WizzardsStorageService } from '../../storage/wizzards.storage.service';
 import { CardDestroyedGameHook } from './card-destroyed.game-hook';
 import { SoulOfASacrifiedHunterPlacesGameHook } from './soul-of-a-sacrified-hunter-placed.game-hook';
 import { ActionExecutedGameHook } from './action-executed.game-hook';
+import { TournamentCreatedGameHook } from './tournament-created.game-hook';
 
 /**
  * Main service that manages game hooks.
@@ -70,6 +71,7 @@ export class GameHookService extends BaseGameService<IGameHook> {
     this.subscribe('game:turnEnded', this.createInjectable(TurnEndedGameHook, injectedProps));
     this.subscribe('card:destroyed', this.createInjectable(CardDestroyedGameHook, injectedProps));
     this.subscribe('card:placed:soul-of-a-sacrified-hunter', this.createInjectable(SoulOfASacrifiedHunterPlacesGameHook, injectedProps));
+    this.subscribe('instance:created:tournament', this.createInjectable(TournamentCreatedGameHook, injectedProps));
   }
 
   /**
