@@ -70,6 +70,7 @@ export class GameHookService extends BaseGameService<IGameHook> {
     this.subscribe('game:phaseChanged:actions', this.createInjectable(PhaseActionsGameHook, injectedProps));
     this.subscribe('card:spell:used', this.createInjectable(SpellUsedGameHook, injectedProps));
     this.subscribe('game:turnEnded', this.createInjectable(TurnEndedGameHook, injectedProps));
+    this.subscribe('card:destroyed:insanes-run', this.createInjectable(InsanesRunDestroyedGameHook, injectedProps));
     this.subscribe('card:destroyed', this.createInjectable(CardDestroyedGameHook, injectedProps));
     this.subscribe('card:placed:soul-of-a-sacrified-hunter', this.createInjectable(SoulOfASacrifiedHunterPlacesGameHook, injectedProps));
     this.subscribe('game:created:tournament', this.createInjectable(TournamentCreatedGameHook, injectedProps));
