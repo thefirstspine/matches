@@ -23,7 +23,7 @@ export class ActionExecutedGameHook implements IGameHook {
 
     // Find the cards with aura
     const cardsWithAura: IGameCard[] = cardsOnBoard.filter((c: IGameCard) => {
-      return ['top', 'bottom', 'left', 'right'].find((s) => c?.currentStats[s]?.capacity === 'aura') !== undefined;
+      return ['top', 'bottom', 'left', 'right'].find((s) => c?.currentStats?.[s]?.capacity === 'aura') !== undefined;
     });
 
     // Increase stats
