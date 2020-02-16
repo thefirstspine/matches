@@ -37,7 +37,8 @@ export class CardDamagedGameHook implements IGameHook {
     if (
       params.gameCard.currentStats?.capacities?.includes('death') && // test on death capacity
       params.lifeChanged < 0 && // only positive damages trigger this capacity
-      ['artifact', 'creature'].includes(params.source?.card?.type) // only on creature & artifact source
+      ['artifact', 'creature'].includes(params.source?.card?.type) && // only on creature & artifact source
+      params.gameCard.location === 'board' // avoid to detroye a card twice
     ) {
       // Destroye the damaged card
       params.gameCard.location = 'discard';
