@@ -19,6 +19,7 @@ import { CardDestroyedGameHook } from './card-destroyed.game-hook';
 import { SoulOfASacrifiedHunterPlacesGameHook } from './soul-of-a-sacrified-hunter-placed.game-hook';
 import { ActionExecutedGameHook } from './action-executed.game-hook';
 import { TournamentCreatedGameHook } from './tournament-created.game-hook';
+import { InsanesRunDestroyedGameHook } from './insanes-run-destroyed.game-hook';
 
 /**
  * Main service that manages game hooks.
@@ -60,18 +61,18 @@ export class GameHookService extends BaseGameService<IGameHook> {
     // Create hooks
     const injectedProps = {gameWorkerService: this.gameWorkerService, gameHookService: this};
     this.subscribe('action:executed', this.createInjectable(ActionExecutedGameHook, injectedProps));
-    this.subscribe('game:card:lifeChanged:damaged:hunter', this.createInjectable(PlayerDamagedGameHook, injectedProps));
-    this.subscribe('game:card:lifeChanged:damaged:sorcerer', this.createInjectable(PlayerDamagedGameHook, injectedProps));
-    this.subscribe('game:card:lifeChanged:damaged:conjurer', this.createInjectable(PlayerDamagedGameHook, injectedProps));
-    this.subscribe('game:card:lifeChanged:damaged:summoner', this.createInjectable(PlayerDamagedGameHook, injectedProps));
-    this.subscribe('game:card:lifeChanged:damaged', this.createInjectable(CardDamagedGameHook, injectedProps));
-    this.subscribe('game:card:lifeChanged:healed', this.createInjectable(CardHealedGameHook, injectedProps));
+    this.subscribe('card:lifeChanged:damaged:hunter', this.createInjectable(PlayerDamagedGameHook, injectedProps));
+    this.subscribe('card:lifeChanged:damaged:sorcerer', this.createInjectable(PlayerDamagedGameHook, injectedProps));
+    this.subscribe('card:lifeChanged:damaged:conjurer', this.createInjectable(PlayerDamagedGameHook, injectedProps));
+    this.subscribe('card:lifeChanged:damaged:summoner', this.createInjectable(PlayerDamagedGameHook, injectedProps));
+    this.subscribe('card:lifeChanged:damaged', this.createInjectable(CardDamagedGameHook, injectedProps));
+    this.subscribe('card:lifeChanged:healed', this.createInjectable(CardHealedGameHook, injectedProps));
     this.subscribe('game:phaseChanged:actions', this.createInjectable(PhaseActionsGameHook, injectedProps));
     this.subscribe('card:spell:used', this.createInjectable(SpellUsedGameHook, injectedProps));
     this.subscribe('game:turnEnded', this.createInjectable(TurnEndedGameHook, injectedProps));
     this.subscribe('card:destroyed', this.createInjectable(CardDestroyedGameHook, injectedProps));
     this.subscribe('card:placed:soul-of-a-sacrified-hunter', this.createInjectable(SoulOfASacrifiedHunterPlacesGameHook, injectedProps));
-    this.subscribe('instance:created:tournament', this.createInjectable(TournamentCreatedGameHook, injectedProps));
+    this.subscribe('game:created:tournament', this.createInjectable(TournamentCreatedGameHook, injectedProps));
   }
 
   /**

@@ -10,7 +10,7 @@ import { RestService } from '../../rest/rest.service';
 import { MessagingService } from '../../@shared/messaging-shared/messaging.service';
 
 /**
- * This subscriber is executed once a 'game:card:lifeChanged:damaged:{player}' event is thrown and look for dead
+ * This subscriber is executed once a 'card:lifeChanged:damaged:{player}' event is thrown and look for dead
  * players.
  * @param gameInstance
  * @param params

@@ -7,7 +7,7 @@ import { ICard } from '../../@shared/rest-shared/card';
 import { RestService } from '../../rest/rest.service';
 
 /**
- * This subscriber is executed once a 'game:card:lifeChanged:damaged' event is thrown. It will look for dead
+ * This subscriber is executed once a 'card:lifeChanged:damaged' event is thrown. It will look for dead
  * cards and place it on the discard.
  * @param gameInstance
  * @param params

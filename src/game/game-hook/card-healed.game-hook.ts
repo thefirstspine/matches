@@ -6,7 +6,7 @@ import { ICard } from '../..//@shared/rest-shared/card';
 import { RestService } from '../..//rest/rest.service';
 
 /**
- * This subscriber is executed once a 'game:card:lifeChanged:healed' event is thrown. It will look for cards that
+ * This subscriber is executed once a 'card:lifeChanged:healed' event is thrown. It will look for cards that
  * has too much life.
  * @param gameInstance
  * @param params

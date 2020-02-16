@@ -141,13 +141,13 @@ export class ConfrontsGameWorker implements IGameWorker, IHasGameHookService, IH
       cardTo.currentStats.life -= lifeLostTo;
       await this.gameHookService.dispatch(
         gameInstance,
-        `game:card:lifeChanged:damaged:${cardTo.card.id}`, {gameCard: cardTo, source: cardFrom, lifeChanged: -lifeLostTo});
+        `card:lifeChanged:damaged:${cardTo.card.id}`, {gameCard: cardTo, source: cardFrom, lifeChanged: -lifeLostTo});
     }
     if (lifeLostFrom > 0) {
       cardFrom.currentStats.life -= lifeLostFrom;
       await this.gameHookService.dispatch(
         gameInstance,
-        `game:card:lifeChanged:damaged:${cardFrom.card.id}`, {gameCard: cardFrom, source: cardTo, lifeChanged: -lifeLostFrom});
+        `card:lifeChanged:damaged:${cardFrom.card.id}`, {gameCard: cardFrom, source: cardTo, lifeChanged: -lifeLostFrom});
     }
 
     // Get the old confronts based on the last 50 actions (+ this one)
