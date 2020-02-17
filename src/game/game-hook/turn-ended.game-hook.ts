@@ -65,7 +65,7 @@ export class TurnEndedGameHook implements IGameHook, IHasGameWorkerService, IHas
       }
 
       // Add strength to "growth" capacity
-      if (c.user === nextUser && c.currentStats?.capacities?.includes('grow')) {
+      if (c.user === nextUser && c.currentStats?.capacities?.includes('grow') && c.location === 'board') {
         c.metadata = c.metadata ? c.metadata : {};
         c.metadata.growBonus = c.metadata.growBonus ? c.metadata.growBonus + 1 : 1;
         if (c.metadata.growBonus <= 5) {
@@ -77,7 +77,7 @@ export class TurnEndedGameHook implements IGameHook, IHasGameWorkerService, IHas
       }
 
       // Replace the "Great Old" cards
-      if (c.location === 'board' && c.user === nextUser && c.location === 'board' && c.card.id === 'great-old-egg') {
+      if (c.location === 'board' && c.user === nextUser && c.card.id === 'great-old-egg') {
         const juvenileGreatOldPromise: Promise<ICard> = this.restService.card('juvenile-great-old');
         juvenileGreatOldPromise.then((replacement: ICard) => {
           c.card = replacement;
