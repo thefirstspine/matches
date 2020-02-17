@@ -58,7 +58,7 @@ export class TurnEndedGameHook implements IGameHook, IHasGameWorkerService, IHas
     const promises: Array<Promise<any>> = [];
     gameInstance.cards.forEach((c: IGameCard) => {
       // Remove the "burden-earth" cards of the next user
-      if (c.user === nextUser && c.card.id === 'burden-earth') {
+      if (c.user === nextUser && c.location === 'board' && c.card.id === 'burden-earth') {
         c.location = 'discard';
         const promise = this.gameHookService.dispatch(gameInstance, `card:discarded:${c.card.id}`, {gameCard: c});
         promises.push(promise);
@@ -77,7 +77,7 @@ export class TurnEndedGameHook implements IGameHook, IHasGameWorkerService, IHas
       }
 
       // Replace the "Great Old" cards
-      if (c.location === 'board' && c.user === nextUser && c.card.id === 'great-old-egg') {
+      if (c.location === 'board' && c.user === nextUser && c.location === 'board' && c.card.id === 'great-old-egg') {
         const juvenileGreatOldPromise: Promise<ICard> = this.restService.card('juvenile-great-old');
         juvenileGreatOldPromise.then((replacement: ICard) => {
           c.card = replacement;
