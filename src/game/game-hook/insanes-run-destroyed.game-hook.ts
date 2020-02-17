@@ -1,11 +1,6 @@
 import { IGameHook } from './game-hook.interface';
 import { Injectable } from '@nestjs/common';
-import { IGameInstance, IGameUser, IGameCard, IGameAction, ISubActionChoseCardOnBoard } from '../../@shared/arena-shared/game';
-import { MessagingService } from '../../@shared/messaging-shared/messaging.service';
-import { GameHookService } from './game-hook.service';
-import { ICard } from '../../@shared/rest-shared/card';
-import { RestService } from '../../rest/rest.service';
-import { randBetween } from '../../utils/maths.utils';
+import { IGameInstance, IGameCard, IGameAction, ISubActionChoseCardOnBoard } from '../../@shared/arena-shared/game';
 import { IHasGameWorkerService } from '../injections.interface';
 import { GameWorkerService } from '../game-worker/game-worker.service';
 
@@ -19,12 +14,6 @@ import { GameWorkerService } from '../game-worker/game-worker.service';
 export class InsanesRunDestroyedGameHook implements IGameHook, IHasGameWorkerService {
 
   public gameWorkerService: GameWorkerService;
-
-  constructor(
-    private readonly messagingService: MessagingService,
-    private readonly gameHookService: GameHookService,
-    private readonly restService: RestService,
-  ) {}
 
   async execute(gameInstance: IGameInstance, params: {gameCard: IGameCard}): Promise<boolean> {
     // Create a new action
