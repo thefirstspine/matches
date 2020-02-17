@@ -45,7 +45,7 @@ export class CardDamagedGameHook implements IGameHook {
       await this.gameHookService.dispatch(gameInstance, `card:destroyed:${params.gameCard.card.id}`, {gameCard: params.gameCard});
       // Destroye the source of damages
       params.source.location = 'discard';
-      await this.gameHookService.dispatch(gameInstance, `card:destroyed:${params.gameCard.card.id}`, {gameCard: params.source});
+      await this.gameHookService.dispatch(gameInstance, `card:destroyed:${params.source.card.id}`, {gameCard: params.gameCard});
     }
 
     if (params.gameCard.location !== 'discard' && params.gameCard && params.gameCard.currentStats.life <= 0) {
