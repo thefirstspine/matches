@@ -64,6 +64,18 @@ export class TurnEndedGameHook implements IGameHook, IHasGameWorkerService, IHas
         promises.push(promise);
       }
 
+      // Add strength to "growth" capacity
+      if (c.user === nextUser && c.currentStats?.capacities?.includes('grow')) {
+        c.metadata = c.metadata ? c.metadata : {};
+        c.metadata.growBonus = c.metadata.growBonus ? c.metadata.growBonus + 1 : 1;
+        if (c.metadata.growBonus <= 5) {
+          c.currentStats.bottom.strenght += 2;
+          c.currentStats.left.strenght += 2;
+          c.currentStats.right.strenght += 2;
+          c.currentStats.top.strenght += 2;
+        }
+      }
+
       // Replace the "Great Old" cards
       if (c.location === 'board' && c.user === nextUser && c.card.id === 'great-old-egg') {
         const juvenileGreatOldPromise: Promise<ICard> = this.restService.card('juvenile-great-old');
