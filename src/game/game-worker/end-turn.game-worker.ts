@@ -1,25 +1,61 @@
-import { IGameHook } from './game-hook.interface';
+import { IGameWorker } from './game-worker.interface';
+import { IGameInstance, IGameAction, IGameCard, ISubActionMoveCardOnBoard } from '../../@shared/arena-shared/game';
 import { Injectable } from '@nestjs/common';
-import { IGameInstance, IGameAction, ISubActionMoveCardOnBoard, IGameCard } from '../../@shared/arena-shared/game';
-import { IHasGameWorkerService, IHasGameHookService } from '../injections.interface';
-import { GameWorkerService } from '../game-worker/game-worker.service';
-import { GameHookService } from './game-hook.service';
+import { GameHookService } from '../game-hook/game-hook.service';
+import { IHasGameHookService, IHasGameWorkerService } from '../injections.interface';
 import { ArenaRoomsService } from '../../rooms/arena-rooms.service';
-import { ICard } from '../../@shared/rest-shared/card';
+import { GameWorkerService } from './game-worker.service';
 import { RestService } from '../../rest/rest.service';
+import { ICard } from '../../@shared/rest-shared/card';
 
-@Injectable()
-export class TurnEndedGameHook implements IGameHook, IHasGameWorkerService, IHasGameHookService {
+/**
+ * Terminate the turn of the user.
+ */
+@Injectable() // Injectable required here for dependency injection
+export class EndTurnGameWorker implements IGameWorker, IHasGameHookService, IHasGameWorkerService, IHasGameHookService {
 
-  public gameWorkerService: GameWorkerService;
   public gameHookService: GameHookService;
+  public gameWorkerService: GameWorkerService;
+
+  public readonly type: string = 'end-turn';
 
   constructor(
-    private readonly arenaRoomsService: ArenaRoomsService,
     private readonly restService: RestService,
+    private readonly arenaRoomsService: ArenaRoomsService,
   ) {}
 
-  async execute(gameInstance: IGameInstance, params: {user: number}): Promise<boolean> {
+  /**
+   * @inheritdoc
+   */
+  public async create(gameInstance: IGameInstance, data: {user: number}): Promise<IGameAction> {
+    return {
+      createdAt: Date.now(),
+      type: this.type,
+      description: {
+        en: ``,
+        fr: `Terminer le tour`,
+      },
+      user: data.user as number,
+      priority: 1,
+      expiresAt: Date.now() + (10 * 1000), // expires in 10 seconds
+      subactions: [
+        {
+          type: 'pass',
+          description: {
+            en: ``,
+            fr: `Terminer le tour`,
+          },
+          params: {},
+        },
+      ],
+    };
+  }
+
+  /**
+   * @inheritdoc
+   */
+  public async execute(gameInstance: IGameInstance, gameAction: IGameAction): Promise<boolean> {
+    await this.gameHookService.dispatch(gameInstance, `game:turnEnded`, {user: gameAction.user});
     // Send message to rooms
     this.arenaRoomsService.sendMessageForGame(
       gameInstance,
@@ -27,10 +63,10 @@ export class TurnEndedGameHook implements IGameHook, IHasGameWorkerService, IHas
         fr: `Termine son tour`,
         en: ``,
       },
-      params.user);
+      gameAction.user);
 
     // Get the next user
-    const foundIndex = gameInstance.users.findIndex((u) => u.user === params.user);
+    const foundIndex = gameInstance.users.findIndex((u) => u.user === gameAction.user);
     const nextIndex = foundIndex === gameInstance.users.length - 1 ? 0 : foundIndex + 1;
     const nextUser = gameInstance.users[nextIndex].user;
 
@@ -101,7 +137,44 @@ export class TurnEndedGameHook implements IGameHook, IHasGameWorkerService, IHas
     const action: IGameAction = await this.gameWorkerService.getWorker('throw-cards')
       .create(gameInstance, {user: nextUser});
     gameInstance.actions.current.push(action);
+
     return true;
   }
 
+  /**
+   * Default refresh method
+   * @param gameInstance
+   * @param gameAction
+   */
+  public async refresh(gameInstance: IGameInstance, gameAction: IGameAction): Promise<void> {
+    return;
+  }
+
+  /**
+   * On expiration, do not throw cards
+   * @param gameInstance
+   * @param gameAction
+   */
+  public async expires(gameInstance: IGameInstance, gameAction: IGameAction): Promise<boolean> {
+    gameAction.responses = [[]];
+    return true;
+  }
+
+  /**
+   * Default delete method
+   * @param gameInstance
+   * @param gameAction
+   */
+  public async delete(gameInstance: IGameInstance, gameAction: IGameAction): Promise<void> {
+    gameInstance.actions.current = gameInstance.actions.current.filter((gameActionRef: IGameAction) => {
+      if (gameActionRef === gameAction) {
+        gameInstance.actions.previous.push({
+          ...gameAction,
+          passedAt: Date.now(),
+        });
+        return false;
+      }
+      return true;
+    });
+  }
 }

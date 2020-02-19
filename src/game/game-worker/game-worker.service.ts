@@ -24,6 +24,7 @@ import { SpellReplacementGameWorker } from './spell-replacement.game-worker';
 import { ReplaceCardGameWorker } from './replace-card.game-worker';
 import { InsanesRunEffectGameWorker } from './insanes-run-effect.game-worker';
 import { MonstrousPortalEffectGameWorker } from './monstrous-portal-effect.game-worker';
+import { EndTurnGameWorker } from './end-turn.game-worker';
 
 /**
  * Main service that manages game workers. Each game worker is responsible of a game action type. This service
@@ -80,6 +81,7 @@ export class GameWorkerService extends BaseGameService<IGameWorker> {
     this.createInjectable(ReplaceCardGameWorker, injectedProps);
     this.createInjectable(InsanesRunEffectGameWorker, injectedProps);
     this.createInjectable(MonstrousPortalEffectGameWorker, injectedProps);
+    this.createInjectable(EndTurnGameWorker, injectedProps);
   }
 
   /**

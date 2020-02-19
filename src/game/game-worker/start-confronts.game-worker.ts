@@ -71,8 +71,9 @@ export class StartConfrontsGameWorker implements IGameWorker, IHasGameHookServic
       // Add the action to the action pool
       gameInstance.actions.current.push(action);
     } else {
-      // On empty possibilities, pass to the next user
-      await this.gameHookService.dispatch(gameInstance, `game:turnEnded`, {user: gameAction.user});
+      // On empty possibilities, end the turn
+      const endTurnAction: IGameAction = await this.gameWorkerService.getWorker('end-turn').create(gameInstance, {user: gameAction.user});
+      gameInstance.actions.current.push(endTurnAction);
     }
 
     // Send message to rooms

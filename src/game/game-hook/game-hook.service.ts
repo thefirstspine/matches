@@ -12,7 +12,6 @@ import { CardHealedGameHook } from './card-healed.game-hook';
 import { PlayerDamagedGameHook } from './player-damaged.game-hook';
 import { PhaseActionsGameHook } from './phase-actions.game-hook';
 import { SpellUsedGameHook } from './spell-used.game-hook';
-import { TurnEndedGameHook } from './turn-ended.game-hook';
 import { GameWorkerService } from '../game-worker/game-worker.service';
 import { WizzardsStorageService } from '../../storage/wizzards.storage.service';
 import { CardDestroyedGameHook } from './card-destroyed.game-hook';
@@ -75,7 +74,6 @@ export class GameHookService extends BaseGameService<IGameHook> {
     this.subscribe('card:placed:soul-of-a-sacrified-hunter', this.createInjectable(SoulOfASacrifiedHunterPlacesGameHook, injectedProps));
     this.subscribe('game:created:tournament', this.createInjectable(TournamentCreatedGameHook, injectedProps));
     this.subscribe('game:phaseChanged:actions', this.createInjectable(PhaseActionsGameHook, injectedProps));
-    this.subscribe('game:turnEnded', this.createInjectable(TurnEndedGameHook, injectedProps));
   }
 
   /**

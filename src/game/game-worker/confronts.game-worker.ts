@@ -174,8 +174,9 @@ export class ConfrontsGameWorker implements IGameWorker, IHasGameHookService, IH
       // Add the the pool
       gameInstance.actions.current.push(action);
     } else {
-      // Change turn
-      await this.gameHookService.dispatch(gameInstance, `game:turnEnded`, {user: gameAction.user});
+      // End turn
+      const endTurnAction: IGameAction = await this.gameWorkerService.getWorker('end-turn').create(gameInstance, {user: gameAction.user});
+      gameInstance.actions.current.push(endTurnAction);
     }
 
     // Send message to rooms

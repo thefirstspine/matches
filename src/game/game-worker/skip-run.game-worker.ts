@@ -106,18 +106,4 @@ export class SkipRunGameWorker implements IGameWorker, IHasGameHookService, IHas
       return true;
     });
   }
-
-  /**
-   * Get the hand indexes of the allowed cards. The user CANNOT discard the "Curse of Mara" card.
-   * @param gameInstance
-   * @param user
-   */
-  protected getHandIndexes(gameInstance: IGameInstance, user: number): number[] {
-    return gameInstance.cards
-      .filter((card: IGameCard) => {
-        return card.user === user && card.location === 'hand';
-      })
-      .map((card: IGameCard, index: number) => card.id !== 'curse-of-mara' ? index : null)
-      .filter((i) => i !== null);
-  }
 }
