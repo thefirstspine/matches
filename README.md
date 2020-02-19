@@ -31,24 +31,24 @@ npm run test:game
 
 ### Generic endpoints
 
-- [GET /](docs/generic.md#get_/)
-- [GET /status](docs/generic.md#get_status)
+- [GET /](docs/generic.md#GET%20%2F)
+- [GET /status](docs/generic.md#GET%20%2Fstatus)
 
 ### Game API
 
-- [POST /api](docs/game-api.md#post_api)
+- [POST /api](docs/game-api.md#POST%20%2Fapi)
 
 ### Shop endpoints
 
-- [POST /shop/exchange](docs/shop.md#post_shop_exchange)
-- [POST /shop/purchase](docs/shop.md#post_shop_purchase)
-- [GET /shop/v/success](docs/shop.md#get_shop_v_success)
-- [GET /shop/v/cancel](docs/shop.md#get_shop_v_cancel)
+- [POST /shop/exchange](docs/shop.md#POST%20%2Fshop%2Fexchange)
+- [POST /shop/purchase](docs/shop.md#POST%20%2Fshop%2Fpurchase)
+- [GET /shop/v/success](docs/shop.md#GET%20%2Fshop%2Fv%2Fsuccess)
+- [GET /shop/v/cancel](docs/shop.md#GET%20%2Fshop%2Fv%2Fcancel)
 
 ### Profile endpoints
 
-- [GET /wizzard](docs/shop.md#get_wizzard)
-- [POST /wizzard/edit](docs/shop.md#post_wizzard_edit)
+- [GET /wizzard](docs/wizzard.md#GET%20%2Fwizzard)
+- [POST /wizzard/edit](docs/wizzard.md#POST%20%2Fwizzard%2Fedit)
 
 ## License
 
