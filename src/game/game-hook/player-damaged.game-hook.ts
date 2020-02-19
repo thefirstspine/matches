@@ -25,7 +25,7 @@ export class PlayerDamagedGameHook implements IGameHook {
     private readonly messagingService: MessagingService,
   ) {}
 
-  async execute(gameInstance: IGameInstance, params: {gameCard: IGameCard}): Promise<boolean> {
+  async execute(gameInstance: IGameInstance, params: {gameCard: IGameCard, source: IGameCard, lifeChanged: number}): Promise<boolean> {
     if (params.gameCard && params.gameCard.currentStats.life <= 0
        && gameInstance.status === 'active') { // Guard here in case of multiple hook called
       // TODO: In a game instance with more than two player this does NOT work
