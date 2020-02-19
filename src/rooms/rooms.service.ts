@@ -26,7 +26,7 @@ export class RoomsService {
 
   async sendMessageToRoom(subject: string, room: string, message: IMessage): Promise<IMessageCreated> {
     return this.sendRequest<IMessageCreated>(
-      `subjects/${subject}/rooms/${room}/messages`,
+      `subjects/${subject}/rooms/${room}/messages/secure`,
       message,
       'post');
   }
