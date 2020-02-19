@@ -19,6 +19,27 @@ export class ActionExecutedGameHook implements IGameHook {
         c.currentStats.top.strenght -= c.metadata.auraStrenght;
         c.metadata.auraStrenght = 0;
       }
+      if (c.metadata?.jesterStrenght) {
+        c.currentStats.bottom.strenght -= c.metadata.jesterStrenght;
+        c.currentStats.left.strenght -= c.metadata.jesterStrenght;
+        c.currentStats.right.strenght -= c.metadata.jesterStrenght;
+        c.currentStats.top.strenght -= c.metadata.jesterStrenght;
+        c.metadata.jesterStrenght = 0;
+      }
+    });
+
+    // Count the jesters
+    const jesters: number = cardsOnBoard.filter((c) => c.card.id === 'jester').length;
+
+    // Increase jester's strength
+    cardsOnBoard.forEach((c: IGameCard) => {
+      if (c.card.id === 'jester') {
+        c.currentStats.bottom.strenght += jesters * 2;
+        c.currentStats.left.strenght += jesters * 2;
+        c.currentStats.right.strenght += jesters * 2;
+        c.currentStats.top.strenght += jesters * 2;
+        c.metadata.jesterStrenght = jesters * 2;
+      }
     });
 
     // Find the cards with aura
@@ -52,6 +73,7 @@ export class ActionExecutedGameHook implements IGameHook {
         }
       });
     });
+
     return true;
   }
 
