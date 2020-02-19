@@ -21,7 +21,7 @@ export class BotsService {
           },
         }),
         headers: {
-          'Authorization': `Bearer ${env.config.BOTS_TOKEN}`,
+          'X-Client-Cert': Buffer.from(env.config.BOTS_PUBLIC_KEY).toString('base64'),
           'Content-Type': 'application/json',
         },
       },
