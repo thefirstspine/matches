@@ -81,7 +81,7 @@ export class ShopService {
         body: JSON.stringify(body),
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${env.config.SHOP_TOKEN}`,
+          'X-Client-Cert': Buffer.from(env.config.SHOP_PUBLIC_KEY).toString('base64'),
         },
       },
     );
@@ -108,7 +108,7 @@ export class ShopService {
         {
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${env.config.SHOP_TOKEN}`,
+            'X-Client-Cert': Buffer.from(env.config.SHOP_PUBLIC_KEY).toString('base64'),
           },
         },
       );
