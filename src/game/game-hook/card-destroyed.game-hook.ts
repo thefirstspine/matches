@@ -23,7 +23,7 @@ export class CardDestroyedGameHook implements IGameHook {
   ) {}
 
   async execute(gameInstance: IGameInstance, params: {gameCard: IGameCard, source: IGameCard}): Promise<boolean> {
-    if (params.gameCard.currentStats.capacities && params.gameCard.currentStats.capacities.includes('burdenEarth')) {
+    if (params.gameCard?.currentStats?.capacities?.includes('burdenEarth')) {
       // On a card with "burdenEarth" capacity, place a Burden Earth card
       const burdenEarth: ICard = await this.restService.card('burden-earth');
       const randomId: number = randBetween(0, Number.MAX_SAFE_INTEGER);
@@ -38,6 +38,30 @@ export class CardDestroyedGameHook implements IGameHook {
         },
       };
       gameInstance.cards.push(burdenEarthGameCard);
+    }
+
+    if (params.gameCard?.currentStats?.capacities?.includes('treason') && params.gameCard.user !== params?.source?.user) {
+      // On a card with "treason" capacity, replace the card at the same position only on an empty square
+      const card: IGameCard|undefined = gameInstance.cards.find((c: IGameCard) => {
+        return c !== params.gameCard &&
+          c.coords?.x === params.gameCard.coords?.x &&
+          c.coords?.y === params.gameCard.coords?.y &&
+          (
+            card.card.type === 'creature' || card.card.type === 'artifact' || card.card.type === 'player' ||
+            card.card.id === 'ditch' || card.card.id === 'burden-earth'
+          );
+      });
+      if (!card) {
+        // The square is free, replace it
+        const newCard: IGameCard = JSON.parse(JSON.stringify(params.gameCard));
+        newCard.location = 'board';
+        newCard.user = params.source.user;
+        newCard.currentStats = JSON.parse(JSON.stringify(newCard.card.stats));
+        if (newCard.currentStats.capacities) {
+          newCard.currentStats.capacities = newCard.currentStats.capacities.filter(c => c !== 'treason');
+        }
+        gameInstance.cards.push(newCard);
+      }
     }
 
     // Discard the card
