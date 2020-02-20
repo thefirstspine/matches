@@ -22,7 +22,7 @@ export class CardDestroyedGameHook implements IGameHook {
     private readonly restService: RestService,
   ) {}
 
-  async execute(gameInstance: IGameInstance, params: {gameCard: IGameCard}): Promise<boolean> {
+  async execute(gameInstance: IGameInstance, params: {gameCard: IGameCard, source: IGameCard}): Promise<boolean> {
     if (params.gameCard.currentStats.capacities && params.gameCard.currentStats.capacities.includes('burdenEarth')) {
       // On a card with "burdenEarth" capacity, place a Burden Earth card
       const burdenEarth: ICard = await this.restService.card('burden-earth');

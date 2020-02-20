@@ -93,8 +93,13 @@ export class InsanesRunEffectGameWorker implements IGameWorker, IHasGameHookServ
     }
     cardTarget.location = 'discard';
 
+    // Get the player card to identify the source
+    const playerCard: IGameCard = gameInstance.cards.find((c) => {
+      return c.card.type === 'player' && c.user === gameAction.user;
+    });
+
     // Dispatch event
-    await this.gameHookService.dispatch(gameInstance, `card:destroyed:${cardTarget.card.id}`, {gameCard: cardTarget});
+    await this.gameHookService.dispatch(gameInstance, `card:destroyed:${cardTarget.card.id}`, {gameCard: cardTarget, source: playerCard});
 
     // Send message to rooms
     this.arenaRoomsService.sendMessageForGame(
