@@ -23,6 +23,8 @@ export class CardDestroyedGameHook implements IGameHook {
   ) {}
 
   async execute(gameInstance: IGameInstance, params: {gameCard: IGameCard, source: IGameCard}): Promise<boolean> {
+    let discard: boolean = true;
+
     if (params.gameCard?.currentStats?.capacities?.includes('burdenEarth')) {
       // On a card with "burdenEarth" capacity, place a Burden Earth card
       const burdenEarth: ICard = await this.restService.card('burden-earth');
@@ -52,21 +54,23 @@ export class CardDestroyedGameHook implements IGameHook {
           );
       });
       if (!card) {
+        // Do not discard the card at the end of the hook execution
+        discard = false;
         // The square is free, replace it
-        const newCard: IGameCard = JSON.parse(JSON.stringify(params.gameCard));
-        newCard.location = 'board';
-        newCard.user = params.source.user;
-        newCard.currentStats = JSON.parse(JSON.stringify(newCard.card.stats));
-        if (newCard.currentStats.capacities) {
-          newCard.currentStats.capacities = newCard.currentStats.capacities.filter(c => c !== 'treason');
+        params.gameCard.location = 'board';
+        params.gameCard.user = params.source.user;
+        params.gameCard.currentStats = JSON.parse(JSON.stringify(params.gameCard.card.stats));
+        if (params.gameCard.currentStats.capacities) {
+          params.gameCard.currentStats.capacities = params.gameCard.currentStats.capacities.filter(c => c !== 'treason');
         }
-        gameInstance.cards.push(newCard);
       }
     }
 
     // Discard the card
-    params.gameCard.location = 'discard';
-    await this.gameHookService.dispatch(gameInstance, `card:discarded:${params.gameCard.card.id}`, {gameCard: params.gameCard});
+    if (discard) {
+      params.gameCard.location = 'discard';
+      await this.gameHookService.dispatch(gameInstance, `card:discarded:${params.gameCard.card.id}`, {gameCard: params.gameCard});
+    }
 
     return true;
   }
