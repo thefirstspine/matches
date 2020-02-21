@@ -269,6 +269,9 @@ export class GameService {
               return;
           });
           await Promise.all(refreshPromises);
+        } else {
+          // Something's wrong, delete the response
+          pendingGameAction.responses = undefined;
         }
       } catch (e) {
         // tslint:disable-next-line:no-console
