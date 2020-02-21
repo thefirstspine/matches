@@ -21,7 +21,7 @@ export class BotsService {
           },
         }),
         headers: {
-          'X-Client-Cert': Buffer.from(env.config.BOTS_PUBLIC_KEY).toString('base64'),
+          'X-Client-Cert': Buffer.from(env.config.BOTS_PUBLIC_KEY.replace(/\\n/gm, '\n')).toString('base64'),
           'Content-Type': 'application/json',
         },
       },

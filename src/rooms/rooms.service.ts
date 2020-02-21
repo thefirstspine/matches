@@ -45,7 +45,7 @@ export class RoomsService {
       method,
       headers: {
         'Content-Type': 'application/json',
-        'X-Client-Cert': Buffer.from(env.config.ROOMS_PUBLIC_KEY).toString('base64'),
+        'X-Client-Cert': Buffer.from(env.config.ROOMS_PUBLIC_KEY.replace(/\\n/gm, '\n')).toString('base64'),
       },
     });
     const jsonResponse: any = await response.json();
