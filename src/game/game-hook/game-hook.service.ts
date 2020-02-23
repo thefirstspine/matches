@@ -21,6 +21,7 @@ import { TournamentCreatedGameHook } from './tournament-created.game-hook';
 import { InsanesRunDestroyedGameHook } from './insanes-run-destroyed.game-hook';
 import { MonstrousPortalDamagedGameHook } from './monstrous-portal-damaged.game-hook';
 import { VolkhaDestroyedGameHook } from './volkha-destroyed.game-hook';
+import { FpeCreatedGameHook } from './fpe-created.game-hook';
 
 /**
  * Main service that manages game hooks.
@@ -75,6 +76,7 @@ export class GameHookService extends BaseGameService<IGameHook> {
     this.subscribe('card:spell:used', this.createInjectable(SpellUsedGameHook, injectedProps));
     this.subscribe('card:placed:soul-of-a-sacrified-hunter', this.createInjectable(SoulOfASacrifiedHunterPlacesGameHook, injectedProps));
     this.subscribe('game:created:tournament', this.createInjectable(TournamentCreatedGameHook, injectedProps));
+    this.subscribe('game:created:fpe', this.createInjectable(FpeCreatedGameHook, injectedProps));
     this.subscribe('game:phaseChanged:actions', this.createInjectable(PhaseActionsGameHook, injectedProps));
   }
 
