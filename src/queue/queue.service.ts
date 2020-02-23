@@ -118,7 +118,7 @@ export class QueueService {
   ): Promise<IGameUser[]> {
     // Exit method if user is not in the queue
     if (!this.isUserInQueue(gameTypeId, user)) {
-      throw new Error('User not in a the queue.');
+      throw new Error('User not in the queue.');
     }
 
     // Check queue availability
@@ -158,11 +158,6 @@ export class QueueService {
     gameTypeId: string,
     user: number,
   ): IGameUser[] {
-    // Exit method if user is not in the queue
-    if (!this.isUserInQueue(gameTypeId, user)) {
-      throw new Error('User not in a the queue.');
-    }
-
     // Check queue availability
     if (!Array.isArray(this.queue[gameTypeId])) {
       throw new Error('Queue not available. Check the game type ID or retry in a few minutes.');
