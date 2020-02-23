@@ -23,7 +23,7 @@ export class WizzardService {
         history: [],
         triumphs: ['wizzard'],
         purchases: [],
-        avatar: ['mara', 'insane', 'merlin'][randBetween(0, 2)],
+        avatar: 'applicant',
         title: 'wizzard',
       };
       this.messagingService.sendMessage([wizzard.id], 'TheFirstSpine:account', wizzard);
