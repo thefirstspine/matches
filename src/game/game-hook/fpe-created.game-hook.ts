@@ -1,14 +1,15 @@
 import { IGameHook } from './game-hook.interface';
 import { Injectable } from '@nestjs/common';
-import { IGameInstance, IGameUser } from '../../@shared/arena-shared/game';
+import { IGameInstance, IGameAction } from '../../@shared/arena-shared/game';
 import { RestService } from '../../rest/rest.service';
-import { ICycle } from '../../@shared/rest-shared/entities';
 import { ICard, ICardStat } from '../../@shared/rest-shared/card';
-import { randBetween } from '../../utils/maths.utils';
-import { shuffle } from '../../utils/array.utils';
+import { IHasGameWorkerService } from '../injections.interface';
+import { GameWorkerService } from '../game-worker/game-worker.service';
 
 @Injectable()
-export class FpeCreatedGameHook implements IGameHook {
+export class FpeCreatedGameHook implements IGameHook, IHasGameWorkerService {
+
+  public gameWorkerService: GameWorkerService;
 
   constructor(
     private readonly restService: RestService,
@@ -128,47 +129,8 @@ export class FpeCreatedGameHook implements IGameHook {
     ];
 
     // Add the first action
-    gameInstance.actions.current = [
-      {
-        type: 'fpe-1',
-        createdAt: Date.now() / 1000,
-        description: {
-          en: '',
-          fr: '',
-        },
-        priority: 10,
-        subactions: [
-          {
-            type: 'accept',
-            description: {
-              fr: `Oui, c'est cette bataille que tu as perdu. Mais tu aurais pu gagner.`,
-              en: ``,
-            },
-            params: {
-            },
-          },
-          {
-            type: 'accept',
-            description: {
-              fr: `Tu viens de commencer ton tour. Tu peux défausser une carte, et piocher pour avoir 6 cartes en main.`,
-              en: ``,
-            },
-            params: {
-            },
-          },
-          {
-            type: 'accept',
-            description: {
-              fr: `Défausses-toi du Soin, il ne te servira à rien.`,
-              en: ``,
-            },
-            params: {
-            },
-          },
-        ],
-        user: gameInstance.users[0].user,
-      },
-    ];
+    const action: IGameAction = await this.gameWorkerService.getWorker('fpe-1').create(gameInstance, {user: gameInstance.users[0].user});
+    gameInstance.actions.current = [action];
 
     return true;
   }
