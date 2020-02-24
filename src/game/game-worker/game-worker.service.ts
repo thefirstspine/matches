@@ -26,6 +26,9 @@ import { InsanesRunEffectGameWorker } from './insanes-run-effect.game-worker';
 import { MonstrousPortalEffectGameWorker } from './monstrous-portal-effect.game-worker';
 import { EndTurnGameWorker } from './end-turn.game-worker';
 import { VolkaEffectGameWorker } from './volka-effect.game-worker';
+import { Fpe1GameWorker } from './fpe/fpe-1';
+import { Fpe2GameWorker } from './fpe/fpe-2';
+import { Fpe3GameWorker } from './fpe/fpe-3';
 
 /**
  * Main service that manages game workers. Each game worker is responsible of a game action type. This service
@@ -84,6 +87,9 @@ export class GameWorkerService extends BaseGameService<IGameWorker> {
     this.createInjectable(MonstrousPortalEffectGameWorker, injectedProps);
     this.createInjectable(EndTurnGameWorker, injectedProps);
     this.createInjectable(VolkaEffectGameWorker, injectedProps);
+    this.createInjectable(Fpe1GameWorker, injectedProps);
+    this.createInjectable(Fpe2GameWorker, injectedProps);
+    this.createInjectable(Fpe3GameWorker, injectedProps);
   }
 
   /**
