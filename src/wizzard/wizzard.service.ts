@@ -13,19 +13,14 @@ export class WizzardService {
   ) {}
 
   getWizzard(user: number): IWizzard {
+    // The user "0" is a default wizzard
+    if (user === 0) {
+      return this.getDefaultWizzardData(0);
+    }
+
     let wizzard: IWizzard|null = this.wizzardsStorageService.get(user);
     if (!wizzard) {
-      wizzard = {
-        id: user,
-        name: this.generateWizzardName(),
-        version: 0.6,
-        items: [],
-        history: [],
-        triumphs: ['wizzard'],
-        purchases: [],
-        avatar: 'applicant',
-        title: 'wizzard',
-      };
+      wizzard = this.getDefaultWizzardData(user);
       this.messagingService.sendMessage([wizzard.id], 'TheFirstSpine:account', wizzard);
       this.wizzardsStorageService.save(wizzard);
     }
@@ -35,6 +30,20 @@ export class WizzardService {
     }
 
     return wizzard;
+  }
+
+  getDefaultWizzardData(user: number): IWizzard {
+    return {
+      id: user,
+      name: '',
+      version: 0.6,
+      items: [],
+      history: [],
+      triumphs: ['wizzard'],
+      purchases: [],
+      avatar: 'applicant',
+      title: 'wizzard',
+    };
   }
 
   migrate(wizzard: any): boolean {
@@ -78,46 +87,10 @@ export class WizzardService {
     if (wizzard.version === 0.5) {
       wizzard.version = 0.6;
       migrated = true;
-      wizzard.name = this.generateWizzardName();
+      wizzard.name = '';
     }
 
     return migrated;
-  }
-
-  generateWizzardName(): string {
-    const dict: string[] = [
-      'Urigorim',
-      'Crodus',
-      'Enitor',
-      'Ukey',
-      'Kretorn',
-      'Ukey',
-      'Anofaris',
-      'Elvebin',
-      'Olvabahn',
-      'Vronitor',
-      'Omakelis',
-      'Puhion',
-      'Puharith',
-      'Uldor',
-      'Uvius',
-      'Gevius',
-      'Ehion',
-      'Azaharis',
-      'Irrodelis',
-      'Ohaen',
-      'Oneas',
-      'Onneas',
-      'Hivius',
-      'Orosim',
-      'Ovius',
-      'Odel',
-      'Opan',
-      'Ovior',
-      'Ozith',
-      'Urrarnas',
-    ];
-    return dict[randBetween(0, dict.length - 1)];
   }
 
 }
