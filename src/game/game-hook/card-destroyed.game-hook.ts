@@ -46,11 +46,12 @@ export class CardDestroyedGameHook implements IGameHook {
       // On a card with "treason" capacity, replace the card at the same position only on an empty square
       const card: IGameCard|undefined = gameInstance.cards.find((c: IGameCard) => {
         return c !== params.gameCard &&
+          c.location === 'board' &&
           c.coords?.x === params.gameCard.coords?.x &&
           c.coords?.y === params.gameCard.coords?.y &&
           (
-            card.card.type === 'creature' || card.card.type === 'artifact' || card.card.type === 'player' ||
-            card.card.id === 'ditch' || card.card.id === 'burden-earth'
+            c.card.type === 'creature' || c.card.type === 'artifact' || c.card.type === 'player' ||
+            c.card.id === 'ditch' || c.card.id === 'burden-earth'
           );
       });
       if (!card) {
