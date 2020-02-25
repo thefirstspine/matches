@@ -12,19 +12,19 @@ export class ActionExecutedGameHook implements IGameHook {
 
     // Reset all cards stats on the board
     cardsOnBoard.forEach((c: IGameCard) => {
-      if (c.metadata?.auraStrenght) {
-        c.currentStats.bottom.strenght -= c.metadata.auraStrenght;
-        c.currentStats.left.strenght -= c.metadata.auraStrenght;
-        c.currentStats.right.strenght -= c.metadata.auraStrenght;
-        c.currentStats.top.strenght -= c.metadata.auraStrenght;
-        c.metadata.auraStrenght = 0;
+      if (c.metadata?.aurastrength) {
+        c.currentStats.bottom.strength -= c.metadata.aurastrength;
+        c.currentStats.left.strength -= c.metadata.aurastrength;
+        c.currentStats.right.strength -= c.metadata.aurastrength;
+        c.currentStats.top.strength -= c.metadata.aurastrength;
+        c.metadata.aurastrength = 0;
       }
-      if (c.metadata?.jesterStrenght) {
-        c.currentStats.bottom.strenght -= c.metadata.jesterStrenght;
-        c.currentStats.left.strenght -= c.metadata.jesterStrenght;
-        c.currentStats.right.strenght -= c.metadata.jesterStrenght;
-        c.currentStats.top.strenght -= c.metadata.jesterStrenght;
-        c.metadata.jesterStrenght = 0;
+      if (c.metadata?.jesterstrength) {
+        c.currentStats.bottom.strength -= c.metadata.jesterstrength;
+        c.currentStats.left.strength -= c.metadata.jesterstrength;
+        c.currentStats.right.strength -= c.metadata.jesterstrength;
+        c.currentStats.top.strength -= c.metadata.jesterstrength;
+        c.metadata.jesterstrength = 0;
       }
     });
 
@@ -34,11 +34,11 @@ export class ActionExecutedGameHook implements IGameHook {
     // Increase jester's strength
     cardsOnBoard.forEach((c: IGameCard) => {
       if (c.card.id === 'jester') {
-        c.currentStats.bottom.strenght += jesters * 2;
-        c.currentStats.left.strenght += jesters * 2;
-        c.currentStats.right.strenght += jesters * 2;
-        c.currentStats.top.strenght += jesters * 2;
-        c.metadata.jesterStrenght = jesters * 2;
+        c.currentStats.bottom.strength += jesters * 2;
+        c.currentStats.left.strength += jesters * 2;
+        c.currentStats.right.strength += jesters * 2;
+        c.currentStats.top.strength += jesters * 2;
+        c.metadata.jesterstrength = jesters * 2;
       }
     });
 
@@ -63,12 +63,12 @@ export class ActionExecutedGameHook implements IGameHook {
             c.coords.y === position.y;
         });
         if (cardTarget !== undefined) {
-          cardTarget.currentStats.bottom.strenght += 2;
-          cardTarget.currentStats.top.strenght += 2;
-          cardTarget.currentStats.right.strenght += 2;
-          cardTarget.currentStats.left.strenght += 2;
-          cardTarget.metadata.auraStrenght = cardTarget.metadata.auraStrenght ?
-            cardTarget.metadata.auraStrenght + 2 :
+          cardTarget.currentStats.bottom.strength += 2;
+          cardTarget.currentStats.top.strength += 2;
+          cardTarget.currentStats.right.strength += 2;
+          cardTarget.currentStats.left.strength += 2;
+          cardTarget.metadata.aurastrength = cardTarget.metadata.aurastrength ?
+            cardTarget.metadata.aurastrength + 2 :
             2;
         }
       });

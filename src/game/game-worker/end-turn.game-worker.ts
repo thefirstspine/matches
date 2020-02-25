@@ -105,10 +105,10 @@ export class EndTurnGameWorker implements IGameWorker, IHasGameHookService, IHas
         c.metadata = c.metadata ? c.metadata : {};
         c.metadata.growBonus = c.metadata.growBonus ? c.metadata.growBonus + 1 : 1;
         if (c.metadata.growBonus <= 5) {
-          c.currentStats.bottom.strenght += 2;
-          c.currentStats.left.strenght += 2;
-          c.currentStats.right.strenght += 2;
-          c.currentStats.top.strenght += 2;
+          c.currentStats.bottom.strength += 2;
+          c.currentStats.left.strength += 2;
+          c.currentStats.right.strength += 2;
+          c.currentStats.top.strength += 2;
         }
       }
 

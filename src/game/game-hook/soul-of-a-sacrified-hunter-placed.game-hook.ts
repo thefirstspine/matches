@@ -38,17 +38,17 @@ export class SoulOfASacrifiedHunterPlacesGameHook implements IGameHook {
 
     // Set card current stats
     params.gameCard.currentStats.life += life;
-    params.gameCard.currentStats.bottom.strenght += str;
-    params.gameCard.currentStats.left.strenght += str;
-    params.gameCard.currentStats.right.strenght += str;
-    params.gameCard.currentStats.top.strenght += str;
+    params.gameCard.currentStats.bottom.strength += str;
+    params.gameCard.currentStats.left.strength += str;
+    params.gameCard.currentStats.right.strength += str;
+    params.gameCard.currentStats.top.strength += str;
 
     // Act like this is the original stats to avoid bugs in healing
     params.gameCard.card.stats.life += life;
-    params.gameCard.card.stats.bottom.strenght += str;
-    params.gameCard.card.stats.left.strenght += str;
-    params.gameCard.card.stats.right.strenght += str;
-    params.gameCard.card.stats.top.strenght += str;
+    params.gameCard.card.stats.bottom.strength += str;
+    params.gameCard.card.stats.left.strength += str;
+    params.gameCard.card.stats.right.strength += str;
+    params.gameCard.card.stats.top.strength += str;
 
     return true;
   }

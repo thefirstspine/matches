@@ -120,20 +120,20 @@ export class ConfrontsGameWorker implements IGameWorker, IHasGameHookService, IH
     let lifeLostTo = 0;
     let lifeLostFrom = 0;
     if (direction === 'bottom') {
-      lifeLostTo = cardFromRotated.currentStats.bottom.strenght - cardToRotated.currentStats.top.defense;
-      lifeLostFrom = cardToRotated.currentStats.top.strenght - cardFromRotated.currentStats.bottom.defense;
+      lifeLostTo = cardFromRotated.currentStats.bottom.strength - cardToRotated.currentStats.top.defense;
+      lifeLostFrom = cardToRotated.currentStats.top.strength - cardFromRotated.currentStats.bottom.defense;
     }
     if (direction === 'top') {
-      lifeLostTo = cardFromRotated.currentStats.top.strenght - cardToRotated.currentStats.bottom.defense;
-      lifeLostFrom = cardToRotated.currentStats.bottom.strenght - cardFromRotated.currentStats.top.defense;
+      lifeLostTo = cardFromRotated.currentStats.top.strength - cardToRotated.currentStats.bottom.defense;
+      lifeLostFrom = cardToRotated.currentStats.bottom.strength - cardFromRotated.currentStats.top.defense;
     }
     if (direction === 'left') {
-      lifeLostTo = cardFromRotated.currentStats.left.strenght - cardToRotated.currentStats.right.defense;
-      lifeLostFrom = cardToRotated.currentStats.right.strenght - cardFromRotated.currentStats.left.defense;
+      lifeLostTo = cardFromRotated.currentStats.left.strength - cardToRotated.currentStats.right.defense;
+      lifeLostFrom = cardToRotated.currentStats.right.strength - cardFromRotated.currentStats.left.defense;
     }
     if (direction === 'right') {
-      lifeLostTo = cardFromRotated.currentStats.right.strenght - cardToRotated.currentStats.left.defense;
-      lifeLostFrom = cardToRotated.currentStats.left.strenght - cardFromRotated.currentStats.right.defense;
+      lifeLostTo = cardFromRotated.currentStats.right.strength - cardToRotated.currentStats.left.defense;
+      lifeLostFrom = cardToRotated.currentStats.left.strength - cardFromRotated.currentStats.right.defense;
     }
 
     // Apply damages
