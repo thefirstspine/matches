@@ -109,7 +109,9 @@ export class SpellAlterTheFateGameWorker implements IGameWorker, IHasGameHookSer
       this.logService.warning('Target not found', gameAction);
       return false;
     }
-    cardAltered.currentStats.capacities.push('treason');
+    cardAltered.currentStats.capacities = cardAltered.currentStats.capacities ?
+      [...cardAltered.currentStats.capacities, 'treason'] :
+      ['treason'];
 
     // Dispatch event
     await this.gameHookService.dispatch(gameInstance, `card:spell:used:${cardUsed.card.id}`, {gameCard: cardUsed});
