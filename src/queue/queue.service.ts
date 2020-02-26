@@ -135,13 +135,6 @@ export class QueueService {
     this.queue[gameTypeId].forEach((queueUser: IQueueUser) => {
       if (queueUser.user === user) {
         queueUser.queueExpiresAt = Date.now() + (QueueService.QUEUE__EXPIRATION_TIME * 1000);
-
-        // On empty queue and user is waiting for more than 60 seconds, call a bot
-        if (gameType.matchmakingMode === 'asap' &&
-          this.queue[gameTypeId].length < gameType.players.length &&
-          queueUser.queueEnteredAt + (60 * 1000) >= Date.now()) {
-          this.botsService.askForABot(gameTypeId);
-        }
       }
     });
 
@@ -169,6 +162,48 @@ export class QueueService {
   }
 
   /**
+   * Spawn bots on all game types
+   */
+  async processBotSpawns() {
+    return Promise.all(Object.keys(this.queue).map(this.processBotSpawnsFor.bind(this)));
+  }
+
+  /**
+   * Spawn bots when needed for a particular game type
+   * @param gameTypeId
+   */
+  async processBotSpawnsFor(gameTypeId: string): Promise<void> {
+    // Load game type
+    const gameType: IGameType = await this.restService.gameType(gameTypeId);
+
+    // Get users in queue
+    const queueUsers: IQueueUser[] = this.getUsersInQueue(gameType.id);
+
+    // On empty queue exit method
+    if (queueUsers.length <= 0) {
+      return;
+    }
+
+    // On full queue, exit method
+    if (queueUsers.length >= gameType.players.length) {
+      return;
+    }
+
+    // The matchmaking mode should be on "asap"
+    if (gameType.matchmakingMode !== 'asap') {
+      return;
+    }
+
+    // Spawn bot only on queue older than 60 seconds
+    if (queueUsers[0].queueEnteredAt + (60 * 1000) < Date.now()) {
+      return;
+    }
+
+    // On empty queue and user is waiting for more than 60 seconds, call a bot
+    this.botsService.askForABot(gameTypeId);
+  }
+
+  /**
    * Process matchmackings for all the available game types.
    */
   async processMatchmakings() {
@@ -184,7 +219,7 @@ export class QueueService {
     const gameType: IGameType = await this.restService.gameType(gameTypeId);
 
     // Get users in queue
-    const queueUsers: IGameUser[] = this.getUsersInQueue(gameType.id);
+    const queueUsers: IQueueUser[] = this.getUsersInQueue(gameType.id);
     const queueWizzards: IWizzard[] = queueUsers.map((u: IGameUser) => {
       return this.wizzardService.getWizzard(u.user);
     });
@@ -278,7 +313,7 @@ export class QueueService {
    * Get users in a queue
    * @param gameTypeId
    */
-  getUsersInQueue(gameTypeId): IGameUser[] {
+  getUsersInQueue(gameTypeId): IQueueUser[] {
     // Check queue availability
     if (!Array.isArray(this.queue[gameTypeId])) {
       throw new Error('Queue not available. Check the game type ID or retry in a few minutes.');
