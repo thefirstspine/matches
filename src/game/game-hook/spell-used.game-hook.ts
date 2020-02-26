@@ -1,6 +1,9 @@
 import { IGameHook } from './game-hook.interface';
 import { Injectable } from '@nestjs/common';
-import { IGameInstance, IGameCard, IGameAction } from '../../@shared/arena-shared/game';
+import { IGameInstance, IGameCard, IGameAction, IGameActionPassed } from '../../@shared/arena-shared/game';
+import { IHasGameWorkerService } from '../injections.interface';
+import { GameWorkerService } from '../game-worker/game-worker.service';
+import { IGameWorker } from '../game-worker/game-worker.interface';
 
 /**
  * This subscriber is executed once a 'card:spell:used' event is thrown. It wil delete old spells actions.
@@ -8,7 +11,9 @@ import { IGameInstance, IGameCard, IGameAction } from '../../@shared/arena-share
  * @param params
  */
 @Injectable()
-export class SpellUsedGameHook implements IGameHook {
+export class SpellUsedGameHook implements IGameHook, IHasGameWorkerService {
+
+  public gameWorkerService: GameWorkerService;
 
   async execute(gameInstance: IGameInstance, params: {gameCard: IGameCard}): Promise<boolean> {
     // Add strength to the Insane's Echo card
@@ -22,12 +27,15 @@ export class SpellUsedGameHook implements IGameHook {
       });
 
     // Get the spells in the hand & delete the associated actions
-    // TODO: filter here with an Ether
     gameInstance.cards
       .filter((card: IGameCard) => card.location === 'hand' && card.user === params.gameCard.user && card.card.type === 'spell')
       .forEach((card: IGameCard) => {
         const actions: IGameAction[] = gameInstance.actions.current.filter((a: IGameAction) => a.type === `spell-${card.card.id}`);
         actions.forEach((action: IGameAction) => {
+          if (action.type === `spell-${params.gameCard.id}`) {
+            // Skip to delete that spell
+            return;
+          }
           gameInstance.actions.current = gameInstance.actions.current.filter((a: IGameAction) => a !== action);
           gameInstance.actions.previous.push({
             ...action,
@@ -35,6 +43,40 @@ export class SpellUsedGameHook implements IGameHook {
           });
         });
       });
+
+    // Count ether used in that turn
+    const actionsAfterThrow: IGameActionPassed[] = [];
+    let throwFound: boolean = false;
+    gameInstance.actions.previous.reverse().forEach((a: IGameActionPassed) => {
+      if (a.type === 'throw-cards') {
+        throwFound = true;
+      }
+      if (!throwFound) {
+        actionsAfterThrow.push(a);
+      }
+    });
+    const etherUsed: number = actionsAfterThrow
+      .filter((a) => a.type === 'spell-ether' && a.responses)
+      .length + (params.gameCard.card.id === 'ether' ? 1 : 0); // +1 for an ether used now, since the action is not passed yet
+
+    // Count spell used in that turn
+    const spellUsed: number = actionsAfterThrow
+      .filter((a) => a.type !== 'spell-ether' && /^spell-/.test(a.type) && a.responses && a.responses.length)
+      .length;
+
+    // Generate actions based ether used
+    if (etherUsed - spellUsed > 0) {
+      const promises: Array<Promise<IGameAction>> = [];
+      gameInstance.cards.filter((card: IGameCard) => card.location === 'hand' && card.user === params.gameCard.user && card.card.type === 'spell')
+        .forEach((card: IGameCard) => {
+          const worker: IGameWorker|undefined = this.gameWorkerService.getWorker(`spell-${card.card.id}`);
+          if (worker) {
+            promises.push(worker.create(gameInstance, {user: params.gameCard.user}));
+          }
+        });
+      const actions: IGameAction[] = await Promise.all(promises);
+      gameInstance.actions.current.push(...actions);
+    }
 
     return true;
   }
