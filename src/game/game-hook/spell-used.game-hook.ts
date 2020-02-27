@@ -65,7 +65,7 @@ export class SpellUsedGameHook implements IGameHook, IHasGameWorkerService {
       .length;
 
     // Generate actions based ether used
-    if (etherUsed - spellUsed > 0) {
+    if ((etherUsed * 2) - spellUsed > 0) {
       const promises: Array<Promise<IGameAction>> = [];
       gameInstance.cards.filter((card: IGameCard) => card.location === 'hand' && card.user === params.gameCard.user && card.card.type === 'spell')
         .forEach((card: IGameCard) => {
