@@ -37,7 +37,7 @@ export class RoomsService {
    * @param data
    * @param method
    */
-  protected async sendRequest<T>(endpoint: string, data: any, method: 'get'|'post' = 'get'): Promise<T> {
+  protected async sendRequest<T>(endpoint: string, data: any, method: 'get'|'post' = 'get'): Promise<T|null> {
     this.logService.info('Send message to room service', {endpoint, data});
     const url: string = `${env.config.ROOMS_URL}/api/${endpoint}`;
     const response: Response = await fetch(url, {
@@ -49,10 +49,11 @@ export class RoomsService {
       },
     });
     const jsonResponse: any = await response.json();
-    this.logService.info('Response from rooms service', jsonResponse);
     if (response.status >= 400) {
-      throw new Error(JSON.stringify(jsonResponse));
+      this.logService.error('Error from rooms service', jsonResponse);
+      return null;
     }
+    this.logService.info('Response from rooms service', jsonResponse);
     return jsonResponse as T;
   }
 
