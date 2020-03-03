@@ -25,6 +25,10 @@ export class FpeCreatedGameHook implements IGameHook, IHasGameWorkerService {
     const bansheeCard: ICard = await this.restService.card('banshee');
     const theTowerCard: ICard = await this.restService.card('the-tower');
     const summonerCard: ICard = await this.restService.card('summoner');
+    const barbersCard: ICard = await this.restService.card('barbers');
+    const veneniagoraCard: ICard = await this.restService.card('veneniagora');
+    const ruinCard: ICard = await this.restService.card('ruin');
+    const putrefactionCard: ICard = await this.restService.card('putrefaction');
 
     // Add an opponent
     gameInstance.users.push({
@@ -124,6 +128,36 @@ export class FpeCreatedGameHook implements IGameHook, IHasGameWorkerService {
         location: 'board',
         coords: { x: 3, y: 6 },
         currentStats: damagedSummonerStats,
+        metadata: {},
+      },
+      {
+        id: 'fpe_11',
+        card: barbersCard,
+        user: gameInstance.users[0].user,
+        location: 'deck',
+        currentStats: JSON.parse(JSON.stringify(barbersCard.stats)),
+        metadata: {},
+      },
+      {
+        id: 'fpe_12',
+        card: veneniagoraCard,
+        user: gameInstance.users[0].user,
+        location: 'deck',
+        currentStats: JSON.parse(JSON.stringify(veneniagoraCard.stats)),
+        metadata: {},
+      },
+      {
+        id: 'fpe_13',
+        card: ruinCard,
+        user: gameInstance.users[0].user,
+        location: 'deck',
+        metadata: {},
+      },
+      {
+        id: 'fpe_14',
+        card: putrefactionCard,
+        user: gameInstance.users[0].user,
+        location: 'deck',
         metadata: {},
       },
     ];
