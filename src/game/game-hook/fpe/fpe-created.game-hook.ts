@@ -1,10 +1,10 @@
-import { IGameHook } from './game-hook.interface';
+import { IGameHook } from '../game-hook.interface';
 import { Injectable } from '@nestjs/common';
-import { IGameInstance, IGameAction } from '../../@shared/arena-shared/game';
-import { RestService } from '../../rest/rest.service';
-import { ICard, ICardStat } from '../../@shared/rest-shared/card';
-import { IHasGameWorkerService } from '../injections.interface';
-import { GameWorkerService } from '../game-worker/game-worker.service';
+import { IGameInstance, IGameAction } from '../../../@shared/arena-shared/game';
+import { RestService } from '../../../rest/rest.service';
+import { ICard, ICardStat } from '../../../@shared/rest-shared/card';
+import { IHasGameWorkerService } from '../../injections.interface';
+import { GameWorkerService } from '../../game-worker/game-worker.service';
 
 @Injectable()
 export class FpeCreatedGameHook implements IGameHook, IHasGameWorkerService {
