@@ -29,7 +29,7 @@ export class Fpe5GameWorker implements IGameWorker, IHasGameHookService, IHasGam
    */
   public async create(gameInstance: IGameInstance, data: {user: number}): Promise<IGameAction> {
     return {
-      type: 'fpe-3',
+      type: 'fpe-5',
       createdAt: Date.now(),
       description: {
         en: '',
