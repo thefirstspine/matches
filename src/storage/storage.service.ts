@@ -51,6 +51,14 @@ export abstract class StorageService<T extends ISaveable> {
   }
 
   /**
+   * Get the IDs of the entities found on the disk
+   */
+  public getIds(): number[] {
+    const files: string[] = fs.readdirSync(this.getDirDataSave());
+    return files.sort((a, b) => parseInt(a, 10) > parseInt(b, 10) ? -1 : 1).map((f: string) => parseInt(f, 10));
+  }
+
+  /**
    * Get the next ID of the ISaveable object.
    */
   public getNextId(): number {
@@ -58,7 +66,7 @@ export abstract class StorageService<T extends ISaveable> {
     if (files.length === 0) {
       return 1;
     }
-    const filesReversed: string[] = files.sort((a, b) => parseInt(a, 10) > parseInt(b, 10) ? 1 : -1).reverse();
+    const filesReversed: string[] = files.sort((a, b) => parseInt(a, 10) > parseInt(b, 10) ? -1 : 1);
     return parseInt(filesReversed[0], 10) + 1;
   }
 
