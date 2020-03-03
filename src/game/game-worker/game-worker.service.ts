@@ -36,6 +36,7 @@ import { SpellAchieveGameWorker } from './spell-achieve.game-worker';
 import { Fpe4GameWorker } from './fpe/fpe-4';
 import { Fpe5GameWorker } from './fpe/fpe-5';
 import { Fpe6GameWorker } from './fpe/fpe-6';
+import { Fpe7GameWorker } from './fpe/fpe-7';
 
 /**
  * Main service that manages game workers. Each game worker is responsible of a game action type. This service
@@ -104,6 +105,7 @@ export class GameWorkerService extends BaseGameService<IGameWorker> {
     this.createInjectable(Fpe4GameWorker, injectedProps);
     this.createInjectable(Fpe5GameWorker, injectedProps);
     this.createInjectable(Fpe6GameWorker, injectedProps);
+    this.createInjectable(Fpe7GameWorker, injectedProps);
   }
 
   /**
