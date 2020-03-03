@@ -87,6 +87,16 @@ export class Fpe2GameWorker implements IGameWorker, IHasGameHookService, IHasGam
       return this.gameHookService.dispatch(gameInstance, `card:discarded:${c.card.id}`, {gameCard: c});
     }));
 
+    // Pick the new cards
+    const currentCards: number = gameInstance.cards.filter(c => c.location === 'hand' && c.user === gameAction.user).length;
+    for (let i = currentCards; i < 6; i ++) {
+      const card = gameInstance.cards.find(c => c.location === 'deck' && c.user === gameAction.user);
+      if (card) {
+        card.location = 'hand';
+        await this.gameHookService.dispatch(gameInstance, `game:card:picked:${card.card.id}`);
+      }
+    }
+
     // Send message to rooms
     const numCards: number = responseHandIndexes.length;
     this.arenaRoomsService.sendMessageForGame(
