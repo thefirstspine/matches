@@ -39,6 +39,10 @@ export class RestService {
     return this.single('cycles', 'current');
   }
 
+  public async cycle(id: string): Promise<ICycle> {
+    return this.single('cycles', id);
+  }
+
   public async list<T>(resource: string): Promise<T[]> {
     const response: Response = await fetch(`${env.config.REST_URL}/rest/${resource}`);
     const json = await response.json();

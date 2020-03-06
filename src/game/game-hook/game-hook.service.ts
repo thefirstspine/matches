@@ -21,7 +21,7 @@ import { TournamentCreatedGameHook } from './tournament-created.game-hook';
 import { InsanesRunDestroyedGameHook } from './insanes-run-destroyed.game-hook';
 import { MonstrousPortalDamagedGameHook } from './monstrous-portal-damaged.game-hook';
 import { VolkhaDestroyedGameHook } from './volkha-destroyed.game-hook';
-import { FpeCreatedGameHook } from './fpe-created.game-hook';
+import { FpeCreatedGameHook } from './fpe/fpe-created.game-hook';
 
 /**
  * Main service that manages game hooks.

@@ -45,16 +45,8 @@ export class SpellUsedGameHook implements IGameHook, IHasGameWorkerService {
       });
 
     // Count ether used in that turn
-    const actionsAfterThrow: IGameActionPassed[] = [];
-    let throwFound: boolean = false;
-    gameInstance.actions.previous.reverse().forEach((a: IGameActionPassed) => {
-      if (a.type === 'throw-cards') {
-        throwFound = true;
-      }
-      if (!throwFound) {
-        actionsAfterThrow.push(a);
-      }
-    });
+    const actionsAfterThrowIndex: number = gameInstance.actions.previous.reverse().findIndex((a: IGameActionPassed) => a.type === 'throw-cards');
+    const actionsAfterThrow: IGameActionPassed[] = gameInstance.actions.previous.slice(0, actionsAfterThrowIndex + 1);
     const etherUsed: number = actionsAfterThrow
       .filter((a) => a.type === 'spell-ether' && a.responses)
       .length + (params.gameCard.card.id === 'ether' ? 1 : 0); // +1 for an ether used now, since the action is not passed yet
