@@ -1,4 +1,4 @@
-import { Controller, Get, UseGuards, Req, Post } from '@nestjs/common';
+import { Controller, Get, UseGuards, Req, Post, Param, HttpException } from '@nestjs/common';
 import { WizzardService } from './wizzard.service';
 import { WizzardsStorageService } from '../storage/wizzards.storage.service';
 import { AuthGuard } from '../@shared/auth-shared/auth.guard';
@@ -6,7 +6,12 @@ import { IWizzard } from '../@shared/arena-shared/wizzard';
 import { IAvatar } from '../@shared/rest-shared/entities';
 import { RestService } from '../rest/rest.service';
 import { MessagingService } from '../@shared/messaging-shared/messaging.service';
+import { CertificateGuard } from 'src/certificate.guard';
+import { mergeLootsInItems } from 'src/utils/game.utils';
 
+/**
+ * Main wizard endpoint
+ */
 @Controller('wizzard')
 export class WizzardController {
 
@@ -17,12 +22,20 @@ export class WizzardController {
     private readonly messagingService: MessagingService,
   ) {}
 
+  /**
+   * Get the current wizard
+   * @param request
+   */
   @Get()
   @UseGuards(AuthGuard)
   async main(@Req() request: any) {
     return this.wizzardService.getWizzard(request.user);
   }
 
+  /**
+   * Edit public fields of a wizard
+   * @param request
+   */
   @Post('edit')
   @UseGuards(AuthGuard)
   async editAvatar(@Req() request: any) {
@@ -48,6 +61,31 @@ export class WizzardController {
 
     // Return account data
     return wizzard;
+  }
+
+  /**
+   * Add some rewards to a wizard. This endpoint is private.
+   * @param request
+   * @param id
+   */
+  @Post('reward/:id')
+  @UseGuards(CertificateGuard)
+  async reward(@Req() request: any, @Param('id') id) {
+    // Get the parameters
+    const name = request.body.name;
+    const num = parseInt(request.body.num, 10);
+
+    // Validate parameterts
+    if (!name || !num) {
+      throw new HttpException('`name` and `num` are required. `num` must be an integer.', 400);
+    }
+
+    // Load the wizzard
+    const wizard = this.wizzardService.getWizzard(id);
+
+    // Add the loots & save the wizard
+    mergeLootsInItems(wizard.items, [{name, num}]);
+    this.wizzardsStorageService.save(wizard);
   }
 
 }
