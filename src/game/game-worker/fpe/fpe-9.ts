@@ -14,7 +14,7 @@ export class Fpe9GameWorker implements IGameWorker, IHasGameHookService {
 
   public gameHookService: GameHookService;
 
-  readonly type: string = 'start-confronts';
+  readonly type: string = 'fpe-9';
 
   constructor(
     private readonly gameWorkerService: GameWorkerService,
