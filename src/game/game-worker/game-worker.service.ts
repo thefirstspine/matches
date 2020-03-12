@@ -39,6 +39,7 @@ import { Fpe6GameWorker } from './fpe/fpe-6';
 import { Fpe7GameWorker } from './fpe/fpe-7';
 import { Fpe8GameWorker } from './fpe/fpe-8';
 import { Fpe9GameWorker } from './fpe/fpe-9';
+import { Fpe10GameWorker } from './fpe/fpe-10';
 
 /**
  * Main service that manages game workers. Each game worker is responsible of a game action type. This service
@@ -110,6 +111,7 @@ export class GameWorkerService extends BaseGameService<IGameWorker> {
     this.createInjectable(Fpe7GameWorker, injectedProps);
     this.createInjectable(Fpe8GameWorker, injectedProps);
     this.createInjectable(Fpe9GameWorker, injectedProps);
+    this.createInjectable(Fpe10GameWorker, injectedProps);
   }
 
   /**
