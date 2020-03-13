@@ -49,6 +49,15 @@ export class Fpe14GameWorker implements IGameWorker, IHasGameHookService, IHasGa
           params: {
           },
         },
+        {
+          type: 'accept',
+          description: {
+            fr: `Très bien, c'est de nouveau ton tour. Défausses-toi des barbelés, tu n'en aura pas besoin.`,
+            en: ``,
+          },
+          params: {
+          },
+        },
       ],
       user: gameInstance.users[0].user,
     };
