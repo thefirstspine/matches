@@ -27,6 +27,7 @@ export class FpeCreatedGameHook implements IGameHook, IHasGameWorkerService {
     const summonerCard: ICard = await this.restService.card('summoner');
     const barbersCard: ICard = await this.restService.card('barbers');
     const veneniagoraCard: ICard = await this.restService.card('veneniagora');
+    const deadlyViperCard: ICard = await this.restService.card('deadly-viper');
     const ruinCard: ICard = await this.restService.card('ruin');
     const putrefactionCard: ICard = await this.restService.card('putrefaction');
 
@@ -57,10 +58,10 @@ export class FpeCreatedGameHook implements IGameHook, IHasGameWorkerService {
       },
       {
         id: 'fpe_2',
-        card: foxCard,
+        card: barbersCard,
         user: gameInstance.users[0].user,
         location: 'hand',
-        currentStats: JSON.parse(JSON.stringify(foxCard.stats)),
+        currentStats: JSON.parse(JSON.stringify(barbersCard.stats)),
         metadata: {},
       },
       {
@@ -140,10 +141,10 @@ export class FpeCreatedGameHook implements IGameHook, IHasGameWorkerService {
       },
       {
         id: 'fpe_12',
-        card: veneniagoraCard,
+        card: deadlyViperCard,
         user: gameInstance.users[0].user,
         location: 'deck',
-        currentStats: JSON.parse(JSON.stringify(veneniagoraCard.stats)),
+        currentStats: JSON.parse(JSON.stringify(deadlyViperCard.stats)),
         metadata: {},
       },
       {
