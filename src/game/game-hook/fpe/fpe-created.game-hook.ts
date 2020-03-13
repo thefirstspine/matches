@@ -172,6 +172,7 @@ export class FpeCreatedGameHook implements IGameHook, IHasGameWorkerService {
         id: 'fpe_17',
         card: veneniagoraCard,
         user: gameInstance.users[0].user,
+        currentStats: JSON.parse(JSON.stringify(veneniagoraCard.stats)),
         location: 'deck',
         metadata: {},
       },
