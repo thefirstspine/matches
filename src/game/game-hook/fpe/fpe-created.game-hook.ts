@@ -161,6 +161,20 @@ export class FpeCreatedGameHook implements IGameHook, IHasGameWorkerService {
         location: 'deck',
         metadata: {},
       },
+      {
+        id: 'fpe_16',
+        card: healCard,
+        user: gameInstance.users[0].user,
+        location: 'deck',
+        metadata: {},
+      },
+      {
+        id: 'fpe_17',
+        card: veneniagoraCard,
+        user: gameInstance.users[0].user,
+        location: 'deck',
+        metadata: {},
+      },
     ];
 
     // Add the first action
