@@ -54,6 +54,9 @@ export class WizzardController {
     wizzard.title = request.body.title && wizzard.triumphs.includes(request.body.title)
       ? request.body.title
       : wizzard.title;
+    wizzard.name = request.body.name && request.body.name.length >= 5
+      ? request.body.name
+      : wizzard.name;
 
     // Cold save account
     this.messagingService.sendMessage([wizzard.id], 'TheFirstSpine:account', wizzard);
