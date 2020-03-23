@@ -20,9 +20,9 @@
     "test:game": "jest src/game/"
   },
   "dependencies": {
-    "@nestjs/common": "^6.11.8",
-    "@nestjs/core": "^6.11.8",
-    "@nestjs/platform-express": "^6.11.8",
+    "@nestjs/common": "^6.11.11",
+    "@nestjs/core": "^6.11.11",
+    "@nestjs/platform-express": "^6.11.11",
     "@types/dotenv": "^6.1.1",
     "@types/node-fetch": "^2.5.0",
     "@types/winston": "^2.4.4",
