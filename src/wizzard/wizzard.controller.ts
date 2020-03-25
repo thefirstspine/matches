@@ -6,8 +6,8 @@ import { IWizzard } from '../@shared/arena-shared/wizzard';
 import { IAvatar } from '../@shared/rest-shared/entities';
 import { RestService } from '../rest/rest.service';
 import { MessagingService } from '../@shared/messaging-shared/messaging.service';
-import { CertificateGuard } from 'src/certificate.guard';
-import { mergeLootsInItems } from 'src/utils/game.utils';
+import { CertificateGuard } from '../certificate.guard';
+import { mergeLootsInItems } from '../utils/game.utils';
 
 /**
  * Main wizard endpoint
