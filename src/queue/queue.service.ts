@@ -48,8 +48,9 @@ export class QueueService {
     gameTypeId: string,
     user: number,
     destiny: destiny,
-    origin: origin|undefined,
-    style: string|undefined,
+    origin?: origin,
+    style?: string,
+    cover?: string,
   ): Promise<IGameUser[]> {
     // Exit method if user is in a queue
     if (this.isUserInAllQueues(user)) {
@@ -65,6 +66,12 @@ export class QueueService {
     style = style ? style : '';
     if (style !== '' && !this.wizzardService.getWizzard(user).items.find((i: IWizzardItem) => i.name === `style-${style}`)) {
       throw new Error('User does not own the style.');
+    }
+
+    // Exit method if user has not the cover
+    cover = cover ? cover : '';
+    if (cover !== '' && !this.wizzardService.getWizzard(user).items.find((i: IWizzardItem) => i.name === `cover-${style}`)) {
+      throw new Error('User does not own the cover.');
     }
 
     // Load game type
@@ -94,6 +101,7 @@ export class QueueService {
       destiny,
       origin,
       style,
+      cover,
       queueExpiresAt: Date.now() + (QueueService.QUEUE__EXPIRATION_TIME * 1000),
       queueEnteredAt: Date.now(),
     });

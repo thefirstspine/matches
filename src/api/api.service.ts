@@ -46,6 +46,7 @@ export class ApiService {
       request.params.destiny,
       request.params.origin,
       request.params.style,
+      request.params.cover,
     );
 
     return {
