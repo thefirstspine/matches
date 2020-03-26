@@ -111,6 +111,11 @@ export class PlayerDamagedGameHook implements IGameHook {
       }
     }
 
+    // Register triumph for FPE
+    if (gameInstance.gameTypeId === 'fpe' && !wizzard.triumphs.includes('wizzard')) {
+      wizzard.triumphs.push('wizzard');
+    }
+
     // Save wizard
     this.messagingService.sendMessage([wizzard.id], 'TheFirstSpine:account', wizzard);
     this.wizzardsStorageService.save(wizzard);
