@@ -70,7 +70,7 @@ export class QueueService {
 
     // Exit method if user has not the cover
     cover = cover ? cover : '';
-    if (cover !== '' && !this.wizzardService.getWizzard(user).items.find((i: IWizzardItem) => i.name === `cover-${style}`)) {
+    if (cover !== '' && !this.wizzardService.getWizzard(user).items.find((i: IWizzardItem) => i.name === `cover-${cover}`)) {
       throw new Error('User does not own the cover.');
     }
 
