@@ -88,7 +88,7 @@ export class QueueService {
     }
 
     // Check origin
-    if ((gameType.destinies.length === 0 && origin !== undefined) || (gameType.origins.includes(origin))) {
+    if ((gameType.origins.length === 0 && origin !== undefined) || !(gameType.origins.includes(origin))) {
       throw new Error('Origin not allowed in that game type.');
     }
 
