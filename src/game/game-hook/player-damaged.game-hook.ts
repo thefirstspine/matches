@@ -36,6 +36,15 @@ export class PlayerDamagedGameHook implements IGameHook {
       // Get the game type
       const gameType = await this.restService.gameType(gameInstance.gameTypeId);
 
+      // Get aditionnal triumphs based on opponents
+      const additionalTriumphs: string[] = [];
+      if (losers.find((user: IGameUser) => user.user === 933)) {
+        additionalTriumphs.push('silentist');
+      }
+      if (losers.find((user: IGameUser) => user.user === 934)) {
+        additionalTriumphs.push('predator');
+      }
+
       // Generate results & register history
       const result: IGameResult[] = [];
       losers.forEach((gameUser: IGameUser) => {
@@ -44,7 +53,8 @@ export class PlayerDamagedGameHook implements IGameHook {
           gameUser,
           gameInstance,
           gameType.loots.defeat,
-          result);
+          result,
+          []);
       });
 
       winners.forEach((gameUser: IGameUser) => {
@@ -53,7 +63,8 @@ export class PlayerDamagedGameHook implements IGameHook {
           gameUser,
           gameInstance,
           gameType.loots.victory,
-          result);
+          result,
+          additionalTriumphs);
       });
 
       // Register result
@@ -81,6 +92,7 @@ export class PlayerDamagedGameHook implements IGameHook {
     gameInstance: IGameInstance,
     loot: ILoot[],
     result: IGameResult[],
+    additionalTriumphs: string[],
   ) {
     // Get wizard's account
     const wizzard: IWizzard = this.wizzardService.getWizzard(gameUser.user);
@@ -115,6 +127,13 @@ export class PlayerDamagedGameHook implements IGameHook {
     if (gameInstance.gameTypeId === 'fpe' && !wizzard.triumphs.includes('wizzard')) {
       wizzard.triumphs.push('wizzard');
     }
+
+    // Register other triumphs
+    additionalTriumphs.forEach((t: string) => {
+      if (!wizzard.triumphs.includes(t)) {
+        wizzard.triumphs.push(t);
+      }
+    });
 
     // Save wizard
     this.messagingService.sendMessage([wizzard.id], 'TheFirstSpine:account', wizzard);
