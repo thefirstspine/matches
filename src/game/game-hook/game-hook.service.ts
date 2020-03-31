@@ -22,6 +22,9 @@ import { InsanesRunDestroyedGameHook } from './insanes-run-destroyed.game-hook';
 import { MonstrousPortalDamagedGameHook } from './monstrous-portal-damaged.game-hook';
 import { VolkhaDestroyedGameHook } from './volkha-destroyed.game-hook';
 import { FpeCreatedGameHook } from './fpe/fpe-created.game-hook';
+import { GuardianDestroyedGameHook } from './guardian-destroyed.game-hook';
+import { CaduceusDestroyedGameHook } from './caduceus-destroyed.game-hook';
+import { CaduceusPlacesGameHook } from './caduceus-placed.game-hook';
 
 /**
  * Main service that manages game hooks.
@@ -78,6 +81,9 @@ export class GameHookService extends BaseGameService<IGameHook> {
     this.subscribe('game:created:tournament', this.createInjectable(TournamentCreatedGameHook, injectedProps));
     this.subscribe('game:created:fpe', this.createInjectable(FpeCreatedGameHook, injectedProps));
     this.subscribe('game:phaseChanged:actions', this.createInjectable(PhaseActionsGameHook, injectedProps));
+    this.subscribe('card:destroyed:guardian', this.createInjectable(GuardianDestroyedGameHook, injectedProps));
+    this.subscribe('card:destroyed:caduceus', this.createInjectable(CaduceusDestroyedGameHook, injectedProps));
+    this.subscribe('card:placed:caduceus', this.createInjectable(CaduceusPlacesGameHook, injectedProps));
   }
 
   /**
