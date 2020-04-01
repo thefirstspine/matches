@@ -192,8 +192,8 @@ export class QueueService {
       return;
     }
 
-    // On full queue, exit method
-    if (queueUsers.length >= gameType.players.length) {
+    // On queue with more than two users, exit method
+    if (queueUsers.length >= 2) {
       return;
     }
 
@@ -202,8 +202,8 @@ export class QueueService {
       return;
     }
 
-    // Spawn bot only on queue older than 60 seconds
-    if (queueUsers[0].queueEnteredAt + (60 * 1000) < Date.now()) {
+    // Spawn bot only on queue older than 90 seconds
+    if (Date.now() - queueUsers[0].queueEnteredAt < (90 * 1000)) {
       return;
     }
 
