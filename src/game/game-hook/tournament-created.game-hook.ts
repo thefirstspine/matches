@@ -16,20 +16,20 @@ export class TournamentCreatedGameHook implements IGameHook {
 
   async execute(gameInstance: IGameInstance, params: {gameInstance: IGameInstance}): Promise<boolean> {
     const cycle: ICycle = await this.restService.currentCycle();
-    if (cycle.id === 'great-old-2020') {
-      // Get the "great-old-egg" card
-      const greatOldCard: ICard = await this.restService.card('great-old-egg');
-      // Add the cards "great-old-egg"
+    if (cycle.id === 'great-ancient-2020') {
+      // Get the "great-ancient-egg" card
+      const greatAncientCard: ICard = await this.restService.card('great-ancient-egg');
+      // Add the cards "great-ancient-egg"
       gameInstance.users.forEach((u: IGameUser) => {
         for (let i = 0; i < 4; i ++) {
           const randomId: number = randBetween(0, Number.MAX_SAFE_INTEGER);
           gameInstance.cards.push({
-            card: greatOldCard,
+            card: greatAncientCard,
             id: `${gameInstance.id}_${randomId}`,
             location: 'deck',
             user: u.user,
             metadata: {},
-            currentStats: JSON.parse(JSON.stringify(greatOldCard.stats)),
+            currentStats: JSON.parse(JSON.stringify(greatAncientCard.stats)),
           });
         }
       });

@@ -113,21 +113,21 @@ export class EndTurnGameWorker implements IGameWorker, IHasGameHookService, IHas
       }
 
       // Replace the "Great Old" cards
-      if (c.location === 'board' && c.user === nextUser && c.card.id === 'great-old-egg') {
-        const juvenileGreatOldPromise: Promise<ICard> = this.restService.card('juvenile-great-old');
-        juvenileGreatOldPromise.then((replacement: ICard) => {
+      if (c.location === 'board' && c.user === nextUser && c.card.id === 'great-ancient-egg') {
+        const juvenilegreatAncientPromise: Promise<ICard> = this.restService.card('juvenile-great-ancient');
+        juvenilegreatAncientPromise.then((replacement: ICard) => {
           c.card = replacement;
           c.currentStats = replacement.stats;
         });
-        promises.push(juvenileGreatOldPromise);
+        promises.push(juvenilegreatAncientPromise);
       }
-      if (c.location === 'board' && c.user === nextUser && c.card.id === 'juvenile-great-old') {
-        const greatOldPromise: Promise<ICard> = this.restService.card('great-old');
-        greatOldPromise.then((replacement: ICard) => {
+      if (c.location === 'board' && c.user === nextUser && c.card.id === 'juvenile-great-ancient') {
+        const greatAncientPromise: Promise<ICard> = this.restService.card('great-ancient');
+        greatAncientPromise.then((replacement: ICard) => {
           c.card = replacement;
           c.currentStats = replacement.stats;
         });
-        promises.push(greatOldPromise);
+        promises.push(greatAncientPromise);
       }
     });
 
