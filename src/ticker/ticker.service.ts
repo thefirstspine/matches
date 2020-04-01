@@ -35,11 +35,13 @@ export class TickerService {
       this.logService.error(`Ticker queue expiration error`, {name: e.name, message: e.message, stack: e.stack});
     }
 
-    // Look for pending actions every tick
-    try {
-      await this.queueService.processBotSpawns();
-    } catch (e) {
-      this.logService.error(`Ticker bots spawn error`, {name: e.name, message: e.message, stack: e.stack});
+    // Look for spawn bots every 15 tick
+    if (this.tickCount % 15 === 0) {
+      try {
+        await this.queueService.processBotSpawns();
+      } catch (e) {
+        this.logService.error(`Ticker bots spawn error`, {name: e.name, message: e.message, stack: e.stack});
+      }
     }
 
     // Manages matchmaking every 60 ticks
