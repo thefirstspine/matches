@@ -320,4 +320,14 @@ export class GameService {
     return Promise.all(this.getGameInstances().map(this.processActionsFor.bind(this)));
   }
 
+  /**
+   * Closes a game
+   * @param id
+   */
+  closeGame(id: number) {
+    if (this.gameInstances[id]) {
+      this.gameInstances[id].status = 'closed';
+    }
+  }
+
 }
