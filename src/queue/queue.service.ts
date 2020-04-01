@@ -194,8 +194,8 @@ export class QueueService {
       return;
     }
 
-    // Spawn bot only on queue older than 60 seconds
-    if (queueUsers[0].queueEnteredAt + (60 * 1000) < Date.now()) {
+    // Spawn bot only on queue older than 90 seconds
+    if (queueUsers[0].queueEnteredAt + (90 * 1000) < Date.now()) {
       return;
     }
 
