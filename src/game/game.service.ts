@@ -13,7 +13,7 @@ import { ArenaRoomsService } from '../rooms/arena-rooms.service';
 import { MessagingService } from '../@shared/messaging-shared/messaging.service';
 import { GameWorkerService } from './game-worker/game-worker.service';
 import { GameHookService } from './game-hook/game-hook.service';
-import { destiny, origin } from 'src/@shared/rest-shared/base';
+import { destiny, origin } from '../@shared/rest-shared/base';
 
 /**
  * Service to manage game instances

@@ -6,7 +6,7 @@ import { GameHookService } from '../game-hook/game-hook.service';
 import { IHasGameHookService, IHasGameWorkerService } from '../injections.interface';
 import { ArenaRoomsService } from '../../rooms/arena-rooms.service';
 import { GameWorkerService } from './game-worker.service';
-import { ICardCoords } from 'src/@shared/rest-shared/card';
+import { ICardCoords } from '../../@shared/rest-shared/card';
 
 /**
  * When Volk'ha dies, the player can chose to replace him elsewhere around him.

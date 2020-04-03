@@ -1,6 +1,5 @@
 import { IGameWorker } from '../game-worker.interface';
-import { IGameInstance, IGameAction, IGameCard, ISubActionMoveCardToDiscard } from '../../../@shared/arena-shared/game';
-import { isArray } from 'util';
+import { IGameInstance, IGameAction, IGameCard } from '../../../@shared/arena-shared/game';
 import { LogService } from '../../../@shared/log-shared/log.service';
 import { Injectable } from '@nestjs/common';
 import { GameHookService } from '../../game-hook/game-hook.service';
@@ -8,7 +7,7 @@ import { IHasGameHookService, IHasGameWorkerService } from '../../injections.int
 import { ArenaRoomsService } from '../../../rooms/arena-rooms.service';
 import { GameWorkerService } from '../game-worker.service';
 import { RestService } from '../../../rest/rest.service';
-import { ICard } from 'src/@shared/rest-shared/card';
+import { ICard } from '../../../@shared/rest-shared/card';
 
 /**
  * At the beggining of his turn, the player can throw to the discard one or more cards.

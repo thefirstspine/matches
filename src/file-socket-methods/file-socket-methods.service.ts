@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { GameService } from 'src/game/game.service';
+import { GameService } from '../game/game.service';
 
 @Injectable()
 export class FileSocketMethodsService {
