@@ -21,9 +21,16 @@ import { GameWorkerService } from './game/game-worker/game-worker.service';
 import { GameHookService } from './game/game-hook/game-hook.service';
 import { BotsService } from './bots/bots.service';
 import { IndexController } from './index/index.controller';
+import { FileSocketModule } from 'nest-filesocket';
+import { FileSocketMethodsService } from './file-socket-methods/file-socket-methods.service';
 
 @Module({
-  imports: [],
+  imports: [
+    FileSocketModule.forRoot({
+      methodsMap: FileSocketMethodsService.fileSocketMethods,
+      socketFile: __dirname + '/../socket',
+    }),
+  ],
   controllers: [ApiController, TickerController, WizzardController, ShopController, IndexController],
   providers: [
     ApiService,
@@ -43,6 +50,7 @@ import { IndexController } from './index/index.controller';
     GameWorkerService,
     GameHookService,
     BotsService,
+    FileSocketMethodsService,
   ],
 })
 export class AppModule {}

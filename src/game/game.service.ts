@@ -13,6 +13,7 @@ import { ArenaRoomsService } from '../rooms/arena-rooms.service';
 import { MessagingService } from '../@shared/messaging-shared/messaging.service';
 import { GameWorkerService } from './game-worker/game-worker.service';
 import { GameHookService } from './game-hook/game-hook.service';
+import { destiny, origin } from 'src/@shared/rest-shared/base';
 
 /**
  * Service to manage game instances
@@ -64,17 +65,23 @@ export class GameService {
     const gameType: IGameType = await this.restService.gameType(gameTypeId);
     const cards: IGameCard[] = [];
     users.forEach((gameUser: IGameUser, index: number) => {
-      const origin: IDeck = decks.find((d: IDeck) => d.id === gameUser.destiny);
-      origin.cards.map((card: ICard) => {
-        const randomId: number = randBetween(0, Number.MAX_SAFE_INTEGER);
-        cards.push({
-          user: gameUser.user,
-          location: card.type === 'player' ? 'board' : 'deck',
-          coords: card.type === 'player' ? gameType.players[index] : undefined,
-          id: `${this.nextId}_${randomId}`,
-          currentStats: card.stats ? JSON.parse(JSON.stringify(card.stats)) : undefined,
-          metadata: {},
-          card: JSON.parse(JSON.stringify(card)),
+      const decksToMix: Array<destiny|origin> = [gameUser.destiny];
+      if (gameUser.origin) {
+        decksToMix.push(gameUser.origin);
+      }
+      decksToMix.forEach((deckToMix: string) => {
+        const deck: IDeck = decks.find((d: IDeck) => d.id === deckToMix);
+        deck.cards.forEach((card: ICard) => {
+          const randomId: number = randBetween(0, Number.MAX_SAFE_INTEGER);
+          cards.push({
+            user: gameUser.user,
+            location: card.type === 'player' ? 'board' : 'deck',
+            coords: card.type === 'player' ? gameType.players[index] : undefined,
+            id: `${this.nextId}_${randomId}`,
+            currentStats: card.stats ? JSON.parse(JSON.stringify(card.stats)) : undefined,
+            metadata: {},
+            card: JSON.parse(JSON.stringify(card)),
+          });
         });
       });
     });
@@ -311,6 +318,16 @@ export class GameService {
   async lookForPendingActions() {
     // Main loop on the games instances
     return Promise.all(this.getGameInstances().map(this.processActionsFor.bind(this)));
+  }
+
+  /**
+   * Closes a game
+   * @param id
+   */
+  closeGame(id: number) {
+    if (this.gameInstances[id]) {
+      this.gameInstances[id].status = 'closed';
+    }
   }
 
 }
