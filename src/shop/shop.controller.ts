@@ -70,12 +70,12 @@ export class ShopController {
 
   @Get('v/success')
   vSuccess() {
-    return fs.readFileSync(`${__dirname}/../assets/arena-shop-success.html`).toString();
+    return fs.readFileSync(`${__dirname}/../../assets/arena-shop-success.html`).toString();
   }
 
   @Get('v/cancel')
   vCancel() {
-    return fs.readFileSync(`${__dirname}/../assets/arena-shop-cancel.html`).toString();
+    return fs.readFileSync(`${__dirname}/../../assets/arena-shop-cancel.html`).toString();
   }
 
 }
