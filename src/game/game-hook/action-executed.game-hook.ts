@@ -31,8 +31,9 @@ export class ActionExecutedGameHook implements IGameHook {
     // Count the jesters
     const jesters: number = cardsOnBoard.filter((c) => c.card.id === 'jester').length;
 
-    // Increase jester's strength
+    // Main loop for cards on board
     cardsOnBoard.forEach((c: IGameCard) => {
+      // Increase jester's strength
       if (c.card.id === 'jester') {
         c.currentStats.bottom.strength += jesters * 2;
         c.currentStats.left.strength += jesters * 2;
@@ -40,37 +41,34 @@ export class ActionExecutedGameHook implements IGameHook {
         c.currentStats.top.strength += jesters * 2;
         c.metadata.jesterstrength = jesters * 2;
       }
-    });
 
-    // Find the cards with aura
-    const cardsWithAura: IGameCard[] = cardsOnBoard.filter((c: IGameCard) => {
-      return ['top', 'bottom', 'left', 'right'].find((s) => c?.currentStats?.[s]?.capacity === 'aura') !== undefined;
-    });
-
-    // Increase stats
-    cardsWithAura.forEach((card: IGameCard) => {
-      [
-        {x: card.coords.x + 1, y: card.coords.y},
-        {x: card.coords.x - 1, y: card.coords.y},
-        {x: card.coords.x, y: card.coords.y + 1},
-        {x: card.coords.x, y: card.coords.y - 1},
-      ].forEach((position: ICardCoords) => {
-        // Find a card on the board, with the same user to the position
-        const cardTarget: IGameCard|undefined = cardsOnBoard.find((c: IGameCard) => {
-          return ['artifact', 'creature'].includes(c.card.type) &&
-            c.user === card.user &&
-            c.coords.x === position.x &&
-            c.coords.y === position.y;
-        });
-        if (cardTarget !== undefined) {
-          cardTarget.currentStats.bottom.strength += 2;
-          cardTarget.currentStats.top.strength += 2;
-          cardTarget.currentStats.right.strength += 2;
-          cardTarget.currentStats.left.strength += 2;
-          cardTarget.metadata.aurastrength = cardTarget.metadata.aurastrength ?
-            cardTarget.metadata.aurastrength + 2 :
-            2;
-        }
+      // Increase aura
+      const sides = [
+        {x: c.coords.x + 1, y: c.coords.y},
+        {x: c.coords.x - 1, y: c.coords.y},
+        {x: c.coords.x, y: c.coords.y + 1},
+        {x: c.coords.x, y: c.coords.y - 1},
+      ];
+      ['right', 'left', 'bottom', 'top'].forEach((side: string, sideIndex: number) => {
+        if (c?.currentStats?.[side]?.capacity === 'aura') {
+          const position: ICardCoords = sides[sideIndex];
+          // Find a card on the board, with the same user to the position
+          const cardTarget: IGameCard|undefined = cardsOnBoard.find((c: IGameCard) => {
+            return ['artifact', 'creature'].includes(c.card.type) &&
+              c.user === c.user &&
+              c.coords.x === position.x &&
+              c.coords.y === position.y;
+          });
+          if (cardTarget !== undefined) {
+            cardTarget.currentStats.bottom.strength += 2;
+            cardTarget.currentStats.top.strength += 2;
+            cardTarget.currentStats.right.strength += 2;
+            cardTarget.currentStats.left.strength += 2;
+            cardTarget.metadata.aurastrength = cardTarget.metadata.aurastrength ?
+              cardTarget.metadata.aurastrength + 2 :
+              2;
+          }
+          }
       });
     });
 
