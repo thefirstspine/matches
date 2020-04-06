@@ -62,15 +62,18 @@ export class QueueService {
       throw new Error('User already in a game instance.');
     }
 
+    // Get the wizard to validate data
+    const wizard: IWizzard = this.wizzardService.getWizzard(user);
+
     // Exit method if user has not the style
     style = style ? style : '';
-    if (style !== '' && !this.wizzardService.getWizzard(user).items.find((i: IWizzardItem) => i.name === `style-${style}`)) {
+    if (style !== '' && !wizard.items.find((i: IWizzardItem) => i.name === `style-${style}`)) {
       throw new Error('User does not own the style.');
     }
 
     // Exit method if user has not the cover
     cover = cover ? cover : '';
-    if (cover !== '' && !this.wizzardService.getWizzard(user).items.find((i: IWizzardItem) => i.name === `cover-${cover}`)) {
+    if (cover !== '' && !wizard.items.find((i: IWizzardItem) => i.name === `cover-${cover}`)) {
       throw new Error('User does not own the cover.');
     }
 
@@ -98,6 +101,7 @@ export class QueueService {
     this.queue[gameTypeId] = this.queue[gameTypeId] ? this.queue[gameTypeId] : [];
     this.queue[gameTypeId].push({
       user,
+      name: wizard.name,
       destiny,
       origin,
       style,
