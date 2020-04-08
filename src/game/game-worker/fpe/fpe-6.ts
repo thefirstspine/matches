@@ -118,7 +118,7 @@ export class Fpe6GameWorker implements IGameWorker, IHasGameHookService, IHasGam
       gameAction.user);
 
     // Add next the action
-    const action: IGameAction = await this.gameWorkerService.getWorker('fpe-7').create(gameInstance, {user: gameAction.user});
+    const action: IGameAction = await this.gameWorkerService.getWorker('fpe-8').create(gameInstance, {user: gameAction.user});
     gameInstance.actions.current.push(action);
 
     return true;

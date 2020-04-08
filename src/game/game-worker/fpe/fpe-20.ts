@@ -43,7 +43,6 @@ export class Fpe20GameWorker implements IGameWorker, IHasGameHookService, IHasGa
       },
       user: data.user as number,
       priority: 1,
-      expiresAt: Date.now() + (30 * 1000), // expires in 30 seconds
       subactions: [
         {
           type: 'selectCoupleOnBoard',

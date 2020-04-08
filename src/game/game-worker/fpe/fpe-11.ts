@@ -8,10 +8,11 @@ import { LogService } from '../../../@shared/log-shared/log.service';
 import { Injectable } from '@nestjs/common';
 import { cardSide } from '../../../@shared/rest-shared/base';
 import { GameWorkerService } from './../game-worker.service';
-import { ICardCoords } from '../../../@shared/rest-shared/card';
+import { ICardCoords, ICard } from '../../../@shared/rest-shared/card';
 import { GameHookService } from '../../game-hook/game-hook.service';
 import { IHasGameHookService, IHasGameWorkerService } from '../../injections.interface';
 import { ArenaRoomsService } from '../../../rooms/arena-rooms.service';
+import { RestService } from '../../../rest/rest.service';
 
 /**
  * The main confrontation game worker. Normally a confrontation is closing the turn of the player. This worker
@@ -28,6 +29,7 @@ export class Fpe11GameWorker implements IGameWorker, IHasGameHookService, IHasGa
   constructor(
     private readonly logService: LogService,
     private readonly arenaRoomsService: ArenaRoomsService,
+    private readonly restService: RestService,
   ) {}
 
   /**
@@ -43,7 +45,6 @@ export class Fpe11GameWorker implements IGameWorker, IHasGameHookService, IHasGa
       },
       user: data.user as number,
       priority: 1,
-      expiresAt: Date.now() + (30 * 1000), // expires in 30 seconds
       subactions: [
         {
           type: 'selectCoupleOnBoard',
@@ -163,7 +164,7 @@ export class Fpe11GameWorker implements IGameWorker, IHasGameHookService, IHasGa
     }
 
     // End turn
-    const endTurnAction: IGameAction = await this.gameWorkerService.getWorker('fpe-12').create(gameInstance, {user: gameAction.user});
+    const endTurnAction: IGameAction = await this.gameWorkerService.getWorker('fpe-15').create(gameInstance, {user: gameAction.user});
     gameInstance.actions.current.push(endTurnAction);
 
     // Send message to rooms
@@ -174,6 +175,19 @@ export class Fpe11GameWorker implements IGameWorker, IHasGameHookService, IHasGa
         en: ``,
       },
       gameAction.user);
+
+    // Add a barbers in front of the ennemy
+    const barbersCard: ICard = await this.restService.card('barbers');
+    const barbersGameCard: IGameCard = {
+      id: 'fpe_15',
+      card: barbersCard,
+      user: 0,
+      location: 'board',
+      coords: { x: 3, y: 5 },
+      currentStats: JSON.parse(JSON.stringify(barbersCard.stats)),
+      metadata: {},
+    };
+    gameInstance.cards.push(barbersGameCard);
 
     return true;
   }
