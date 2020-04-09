@@ -34,7 +34,6 @@ export class Fpe19GameWorker implements IGameWorker, IHasGameHookService {
       },
       user: data.user as number,
       priority: 1,
-      expiresAt: Date.now() + (90 * 1000), // expires in 90 seconds
       subactions: [
         {
           type: 'pass',

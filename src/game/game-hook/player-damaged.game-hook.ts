@@ -4,10 +4,11 @@ import { IGameInstance, IGameUser, IGameResult, IGameCard } from '../../@shared/
 import { WizzardsStorageService } from '../../storage/wizzards.storage.service';
 import { WizzardService } from '../../wizzard/wizzard.service';
 import { ILoot } from '../../@shared/rest-shared/entities';
-import { IWizzard } from '../../@shared/arena-shared/wizzard';
+import { IWizzard, IHistoryItem } from '../../@shared/arena-shared/wizzard';
 import { mergeLootsInItems } from '../../utils/game.utils';
 import { RestService } from '../../rest/rest.service';
 import { MessagingService } from '../../@shared/messaging-shared/messaging.service';
+import { LogService } from '../../@shared/log-shared/log.service';
 
 /**
  * This subscriber is executed once a 'card:lifeChanged:damaged:{player}' event is thrown and look for dead
@@ -23,6 +24,7 @@ export class PlayerDamagedGameHook implements IGameHook {
     private readonly wizzardsStorageService: WizzardsStorageService,
     private readonly restService: RestService,
     private readonly messagingService: MessagingService,
+    private readonly logsService: LogService,
   ) {}
 
   async execute(gameInstance: IGameInstance, params: {gameCard: IGameCard, source: IGameCard, lifeChanged: number}): Promise<boolean> {
@@ -98,12 +100,14 @@ export class PlayerDamagedGameHook implements IGameHook {
     const wizzard: IWizzard = this.wizzardService.getWizzard(gameUser.user);
 
     // Register data in wizard's history
-    wizzard.history.push({
+    const historyItem: IHistoryItem = {
       gameId: gameInstance.id,
       gameTypeId: gameInstance.gameTypeId,
       victory,
       timestamp: Date.now(),
-    });
+    };
+    wizzard.history.push(historyItem);
+    this.logsService.info(`Register history to user #${gameUser.user}`, historyItem);
 
     // Add loot
     mergeLootsInItems(wizzard.items, loot);
@@ -138,6 +142,7 @@ export class PlayerDamagedGameHook implements IGameHook {
     // Save wizard
     this.messagingService.sendMessage([wizzard.id], 'TheFirstSpine:account', wizzard);
     this.wizzardsStorageService.save(wizzard);
+    this.logsService.info(`Wizard #${gameUser.user} saved`, wizzard);
 
     result.push({
       user: gameUser.user,

@@ -34,7 +34,6 @@ export class Fpe9GameWorker implements IGameWorker, IHasGameHookService {
       },
       user: data.user as number,
       priority: 1,
-      expiresAt: Date.now() + (90 * 1000), // expires in 90 seconds
       subactions: [
         {
           type: 'pass',
@@ -64,7 +63,7 @@ export class Fpe9GameWorker implements IGameWorker, IHasGameHookService {
     await this.gameHookService.dispatch(gameInstance, `game:phaseChanged:confonts`);
 
     // Create the action confront
-    const action: IGameAction = await this.gameWorkerService.getWorker('fpe-10').create(gameInstance, {user: gameAction.user});
+    const action: IGameAction = await this.gameWorkerService.getWorker('fpe-11').create(gameInstance, {user: gameAction.user});
     gameInstance.actions.current.push(action);
 
     // Send message to rooms
