@@ -28,9 +28,13 @@ export class SpellHealGameWorker implements IGameWorker, IHasGameHookService {
     return {
       createdAt: Date.now(),
       type: this.type,
+      name: {
+        en: `Jouer un soin`,
+        fr: ``,
+      },
       description: {
         en: ``,
-        fr: `Jouer un soin`,
+        fr: `Jouer un soin sur une créature`,
       },
       user: data.user as number,
       priority: 1,

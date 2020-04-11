@@ -31,6 +31,10 @@ export class EndTurnGameWorker implements IGameWorker, IHasGameHookService, IHas
     return {
       createdAt: Date.now(),
       type: this.type,
+      name: {
+        en: ``,
+        fr: `Terminer le tour`,
+      },
       description: {
         en: ``,
         fr: `Terminer le tour`,

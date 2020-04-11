@@ -29,6 +29,10 @@ export class ThrowCardsGameWorker implements IGameWorker, IHasGameHookService {
     return {
       createdAt: Date.now(),
       type: this.type,
+      name: {
+        en: `Défausser`,
+        fr: ``,
+      },
       description: {
         en: ``,
         fr: `Vous pouvez défausser une ou plusieurs cartes.`,

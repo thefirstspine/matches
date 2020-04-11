@@ -30,6 +30,10 @@ export class ReplaceCardGameWorker implements IGameWorker, IHasGameHookService {
     return {
       createdAt: Date.now(),
       type: this.type,
+      name: {
+        en: ``,
+        fr: `Placer une carte`,
+      },
       description: {
         en: ``,
         fr: `Vous pouvez placer une carte sur le plateau de jeu.`,

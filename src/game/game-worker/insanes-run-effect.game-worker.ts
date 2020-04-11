@@ -30,6 +30,10 @@ export class InsanesRunEffectGameWorker implements IGameWorker, IHasGameHookServ
     return {
       createdAt: Date.now(),
       type: this.type,
+      name: {
+        en: ``,
+        fr: `Détruire une carte`,
+      },
       description: {
         en: ``,
         fr: `Détruire une carte`,

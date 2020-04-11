@@ -36,6 +36,10 @@ export class RunGameWorker implements IGameWorker, IHasGameHookService, IHasGame
     return {
       createdAt: Date.now(),
       type: this.type,
+      name: {
+        en: ``,
+        fr: `Jouer la course`,
+      },
       description: {
         en: ``,
         fr: `Déplacer une carte qui a la course sur le plateau de jeu.`,

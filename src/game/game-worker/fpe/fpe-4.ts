@@ -30,9 +30,13 @@ export class Fpe4GameWorker implements IGameWorker, IHasGameHookService, IHasGam
     return {
       createdAt: Date.now(),
       type: this.type,
-      description: {
+      name: {
         en: ``,
         fr: `Jouer une foudre`,
+      },
+      description: {
+        en: ``,
+        fr: `Jouer une foudre sur une carte`,
       },
       user: data.user as number,
       priority: 1,

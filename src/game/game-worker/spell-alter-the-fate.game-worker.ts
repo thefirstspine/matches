@@ -28,9 +28,13 @@ export class SpellAlterTheFateGameWorker implements IGameWorker, IHasGameHookSer
     return {
       createdAt: Date.now(),
       type: this.type,
+      name: {
+        en: ``,
+        fr: `Jouer un Altérer le Destin`,
+      },
       description: {
         en: ``,
-        fr: `Altérer le Destin`,
+        fr: `Jouer un Altérer le Destin sur une carte`,
       },
       user: data.user as number,
       priority: 1,

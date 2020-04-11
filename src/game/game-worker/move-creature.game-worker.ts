@@ -34,9 +34,13 @@ export class MoveCreatureGameWorker implements IGameWorker, IHasGameHookService 
     return {
       createdAt: Date.now(),
       type: this.type,
+      name: {
+        en: ``,
+        fr: `Déplacer une créture`,
+      },
       description: {
         en: ``,
-        fr: `Déplacer une créature sur le plateau de jeu.`,
+        fr: `Déplacer une créature d'une case sur le plateau de jeu.`,
       },
       user: data.user as number,
       priority: 1,

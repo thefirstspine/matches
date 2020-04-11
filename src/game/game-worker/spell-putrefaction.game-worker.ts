@@ -28,9 +28,13 @@ export class SpellPutrefactionGameWorker implements IGameWorker, IHasGameHookSer
     return {
       createdAt: Date.now(),
       type: this.type,
-      description: {
+      name: {
         en: ``,
         fr: `Jouer une putréfaction`,
+      },
+      description: {
+        en: ``,
+        fr: `Jouer une putréfaction sur une créature`,
       },
       user: data.user as number,
       priority: 1,

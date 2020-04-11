@@ -30,6 +30,10 @@ export class SkipRunGameWorker implements IGameWorker, IHasGameHookService, IHas
     return {
       createdAt: Date.now(),
       type: this.type,
+      name: {
+        en: ``,
+        fr: `Passer la course`,
+      },
       description: {
         en: ``,
         fr: `Vous pouvez passer la course.`,

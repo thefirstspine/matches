@@ -28,9 +28,13 @@ export class SpellEtherGameWorker implements IGameWorker, IHasGameHookService {
     return {
       createdAt: Date.now(),
       type: this.type,
-      description: {
+      name: {
         en: ``,
         fr: `Jouer un ether`,
+      },
+      description: {
+        en: ``,
+        fr: `Jouer un ether sur vous-même`,
       },
       user: data.user as number,
       priority: 1,

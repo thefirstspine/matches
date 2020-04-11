@@ -31,9 +31,13 @@ export class Fpe15GameWorker implements IGameWorker, IHasGameHookService, IHasGa
     return {
       type: this.type,
       createdAt: Date.now(),
+      name: {
+        en: `Défausser`,
+        fr: ``,
+      },
       description: {
-        en: '',
-        fr: '',
+        en: ``,
+        fr: `Vous pouvez défausser une ou plusieurs cartes.`,
       },
       priority: 10,
       subactions: [

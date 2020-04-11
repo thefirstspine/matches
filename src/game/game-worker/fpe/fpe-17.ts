@@ -30,9 +30,13 @@ export class Fpe17GameWorker implements IGameWorker, IHasGameHookService, IHasGa
     return {
       createdAt: Date.now(),
       type: this.type,
+      name: {
+        en: `Jouer une ruine`,
+        fr: ``,
+      },
       description: {
         en: ``,
-        fr: `Jouer une ruine`,
+        fr: `Jouer une ruine sur un artefact`,
       },
       user: data.user as number,
       priority: 1,
