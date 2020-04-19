@@ -184,7 +184,7 @@ export class ThrowCardsGameWorker implements IGameWorker, IHasGameHookService {
       .filter((card: IGameCard) => {
         return card.user === user && card.location === 'hand';
       })
-      .map((card: IGameCard, index: number) => card.id !== 'curse-of-mara' ? index : null)
+      .map((card: IGameCard, index: number) => card.card.id !== 'curse-of-mara' ? index : null)
       .filter((i) => i !== null);
   }
 }
