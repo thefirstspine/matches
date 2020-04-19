@@ -200,10 +200,9 @@ export class PlaceCardGameWorker implements IGameWorker, IHasGameHookService {
           if (card.card.type === 'creature' || card.card.type === 'artifact' || card.card.type === 'player') {
             return;
           }
-          if (card.card.id === 'ditch' || card.card.id === 'burden-earth') {
+          if (card.card.id === 'ditch') {
             return;
           }
-          return;
         }
         boardCoords.push(`${coords.x}-${coords.y}`);
       });
