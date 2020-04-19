@@ -53,9 +53,9 @@ export class ActionExecutedGameHook implements IGameHook {
         if (c?.currentStats?.[side]?.capacity === 'aura') {
           const position: ICardCoords = sides[sideIndex];
           // Find a card on the board, with the same user to the position
-          const cardTarget: IGameCard|undefined = cardsOnBoard.find((c: IGameCard) => {
+          const cardTarget: IGameCard|undefined = cardsOnBoard.find((cardTargetPotential: IGameCard) => {
             return ['artifact', 'creature'].includes(c.card.type) &&
-              c.user === c.user &&
+              c.user === cardTargetPotential.user &&
               c.coords.x === position.x &&
               c.coords.y === position.y;
           });
