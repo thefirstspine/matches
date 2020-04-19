@@ -95,6 +95,11 @@ export class EndTurnGameWorker implements IGameWorker, IHasGameHookService, IHas
       gameInstance.actions.current.push(skipRunAction);
     }
 
+    // Get the squares on the board
+    const squares: IGameCard[] = gameInstance.cards.filter((c: IGameCard) => {
+      return c.location === 'board' && c.card.type === 'square';
+    });
+
     const promises: Array<Promise<any>> = [];
     gameInstance.cards.forEach((c: IGameCard) => {
       // Remove the "burden-earth" cards of the next user
@@ -114,6 +119,17 @@ export class EndTurnGameWorker implements IGameWorker, IHasGameHookService, IHas
           c.currentStats.right.strength += 2;
           c.currentStats.top.strength += 2;
         }
+      }
+
+      // Damages the cards of the next player on lava squares
+      const square: IGameCard|undefined = squares.find((s: IGameCard) => c.coords && s.coords.x === c.coords.x && s.coords.y === s.coords.y);
+      if (square && square.card.id === 'lava' && c.user === nextUser && c.card.type !== 'square') {
+        c.currentStats.life --;
+        promises.push(
+          this.gameHookService
+          .dispatch(
+            gameInstance,
+            `card:lifeChanged:damaged:${c.card.id}`, {gameCard: c, source: square, lifeChanged: -1}));
       }
 
       // Replace the "Great Old" cards
