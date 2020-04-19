@@ -121,7 +121,7 @@ export class SpellTheVoidGameWorker implements IGameWorker, IHasGameHookService 
 
     // Dispatch event
     await this.gameHookService.dispatch(gameInstance, `card:spell:used:${cardUsed.card.id}`, {gameCard: cardUsed});
-    await this.gameHookService.dispatch(gameInstance, `card:destroyed:${cardTarget.card.id}`, {gameCard: cardTarget});
+    await this.gameHookService.dispatch(gameInstance, `card:destroyed:${cardTarget.card.id}`, {gameCard: cardTarget, source: cardUsed});
 
     // Test for possibility to put a ditch card
     if (!gameInstance.cards.find((c: IGameCard) => {

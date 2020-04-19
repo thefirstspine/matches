@@ -163,6 +163,13 @@ export class RunGameWorker implements IGameWorker, IHasGameHookService, IHasGame
           boardCoordsFrom: `${card.coords.x}-${card.coords.y}`,
           boardCoordsTo: [],
         };
+        // Skip on a water square
+        const square: IGameCard|undefined = gameInstance.cards.find((c: IGameCard) => {
+          return c.location === 'board' && c.coords.x === card.coords.x && c.coords.y === card.coords.y && c.card.type === 'square';
+        });
+        if (card.card.type === 'creature' && square && square.card.id === 'water') {
+          return;
+        }
         // Get the possible moves
         const x: number = card.coords.x;
         const y: number = card.coords.y;
