@@ -126,7 +126,7 @@ export class SpellReplacementGameWorker implements IGameWorker, IHasGameHookServ
       return c.location === 'board' &&
         c.coords.x === cardTarget.coords.x &&
         c.coords.y === cardTarget.coords.y &&
-        (['creature', 'artifact'].includes(c.card.type) || ['ditch'].includes(c.card.id));
+        (['creature', 'artifact'].includes(c.card.type) || ['ditch', 'burden-earth'].includes(c.card.id));
     })) {
       // Create the action for the other player, with the priority 3
       const action: IGameAction = await this.gameWorkerService.getWorker('replace-card')

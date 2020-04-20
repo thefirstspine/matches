@@ -205,7 +205,7 @@ export class MonstrousPortalEffectGameWorker implements IGameWorker, IHasGameHoo
           if (card.card.type === 'creature' || card.card.type === 'artifact' || card.card.type === 'player') {
             return;
           }
-          if (card.card.id === 'ditch') {
+          if (card.card.id === 'ditch' || card.card.id === 'burden-earth') {
             return;
           }
         }
