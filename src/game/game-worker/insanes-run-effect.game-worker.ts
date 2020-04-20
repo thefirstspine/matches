@@ -6,6 +6,7 @@ import { GameHookService } from '../game-hook/game-hook.service';
 import { IHasGameHookService, IHasGameWorkerService } from '../injections.interface';
 import { ArenaRoomsService } from '../../rooms/arena-rooms.service';
 import { GameWorkerService } from './game-worker.service';
+import { randBetween } from '../../utils/maths.utils';
 
 /**
  * Worker for "insanes-run-effect" spell.
@@ -40,6 +41,7 @@ export class InsanesRunEffectGameWorker implements IGameWorker, IHasGameHookServ
       },
       user: data.user as number,
       priority: 3,
+      expiresAt: Date.now() + (30 * 1000), // expires in 30 seconds
       subactions: [
         {
           type: 'choseCardOnBoard',
@@ -123,6 +125,10 @@ export class InsanesRunEffectGameWorker implements IGameWorker, IHasGameHookServ
    * @param gameAction
    */
   public async expires(gameInstance: IGameInstance, gameAction: IGameAction): Promise<boolean> {
+    const boardCoords: string[] = this.getBoardCoords(gameInstance, gameAction.user);
+    gameAction.responses = [{
+      boardCoords: boardCoords[randBetween(0, boardCoords.length - 1)],
+    }];
     return true;
   }
 
