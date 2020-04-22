@@ -28,9 +28,13 @@ export class SpellFireGameWorker implements IGameWorker, IHasGameHookService {
     return {
       createdAt: Date.now(),
       type: this.type,
-      description: {
+      name: {
         en: ``,
         fr: `Jouer un embrasement`,
+      },
+      description: {
+        en: ``,
+        fr: `Jouer un embrasement sur une carte`,
       },
       user: data.user as number,
       priority: 1,

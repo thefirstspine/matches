@@ -261,8 +261,8 @@ function getDefaultGameInstance(): IGameInstance {
       previous: [],
     },
     users: [
-      {destiny: 'hunter', user: Number.MAX_SAFE_INTEGER - 1, origin: null, style: ''},
-      {destiny: 'hunter', user: Number.MAX_SAFE_INTEGER - 2, origin: null, style: ''},
+      {destiny: 'hunter', user: Number.MAX_SAFE_INTEGER - 1, origin: null, style: '', name: ''},
+      {destiny: 'hunter', user: Number.MAX_SAFE_INTEGER - 2, origin: null, style: '', name: ''},
     ],
   };
 }

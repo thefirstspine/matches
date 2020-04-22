@@ -39,9 +39,13 @@ export class Fpe11GameWorker implements IGameWorker, IHasGameHookService, IHasGa
     return {
       createdAt: Date.now(),
       type: this.type,
-      description: {
+      name: {
         en: ``,
         fr: `Confronter`,
+      },
+      description: {
+        en: ``,
+        fr: `Confronter deux cartes`,
       },
       user: data.user as number,
       priority: 1,

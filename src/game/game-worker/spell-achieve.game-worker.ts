@@ -28,9 +28,13 @@ export class SpellAchieveGameWorker implements IGameWorker, IHasGameHookService 
     return {
       createdAt: Date.now(),
       type: this.type,
-      description: {
+      name: {
         en: ``,
         fr: `Jouer un achèvement`,
+      },
+      description: {
+        en: ``,
+        fr: `Jouer un achèvement sur une carte déjà blessée`,
       },
       user: data.user as number,
       priority: 1,

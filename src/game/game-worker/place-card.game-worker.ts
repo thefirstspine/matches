@@ -29,6 +29,10 @@ export class PlaceCardGameWorker implements IGameWorker, IHasGameHookService {
     return {
       createdAt: Date.now(),
       type: this.type,
+      name: {
+        en: ``,
+        fr: `Placer une carte`,
+      },
       description: {
         en: ``,
         fr: `Vous pouvez placer une carte sur le plateau de jeu.`,
@@ -199,7 +203,6 @@ export class PlaceCardGameWorker implements IGameWorker, IHasGameHookService {
           if (card.card.id === 'ditch' || card.card.id === 'burden-earth') {
             return;
           }
-          return;
         }
         boardCoords.push(`${coords.x}-${coords.y}`);
       });

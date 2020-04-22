@@ -31,12 +31,17 @@ export class VolkaEffectGameWorker implements IGameWorker, IHasGameHookService, 
     return {
       createdAt: Date.now(),
       type: this.type,
+      name: {
+        en: `Placer Volk'ha`,
+        fr: ``,
+      },
       description: {
         en: ``,
         fr: `Placer Volk'ha autour de vous.`,
       },
       user: data.user as number,
       priority: 3,
+      expiresAt: Date.now() + (30 * 1000), // expires in 30 seconds
       subactions: [
         {
           type: 'choseSquareOnBoard',

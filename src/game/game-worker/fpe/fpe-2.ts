@@ -31,9 +31,13 @@ export class Fpe2GameWorker implements IGameWorker, IHasGameHookService, IHasGam
     return {
       type: 'fpe-2',
       createdAt: Date.now(),
+      name: {
+        en: ``,
+        fr: `Défausser`,
+      },
       description: {
         en: '',
-        fr: '',
+        fr: `Vous pouvez défausser une ou plusieurs cartes.\nDéfaussez-vous du soin.`,
       },
       priority: 10,
       subactions: [

@@ -30,9 +30,13 @@ export class SpellReplacementGameWorker implements IGameWorker, IHasGameHookServ
     return {
       createdAt: Date.now(),
       type: this.type,
+      name: {
+        en: `Jouer un remplacement`,
+        fr: ``,
+      },
       description: {
         en: ``,
-        fr: `Jouer un replacement`,
+        fr: `Jouer un replacement sur une carte`,
       },
       user: data.user as number,
       priority: 1,
@@ -115,14 +119,14 @@ export class SpellReplacementGameWorker implements IGameWorker, IHasGameHookServ
 
     // Dispatch event
     await this.gameHookService.dispatch(gameInstance, `card:spell:used:${cardUsed.card.id}`, {gameCard: cardUsed});
-    await this.gameHookService.dispatch(gameInstance, `card:destroyed:${cardTarget.card.id}`, {gameCard: cardTarget});
+    await this.gameHookService.dispatch(gameInstance, `card:destroyed:${cardTarget.card.id}`, {gameCard: cardTarget, source: cardUsed});
 
     // Test for possibility to put another card
     if (!gameInstance.cards.find((c: IGameCard) => {
       return c.location === 'board' &&
         c.coords.x === cardTarget.coords.x &&
         c.coords.y === cardTarget.coords.y &&
-        (['creature', 'artifact'].includes(c.card.type) || ['burden-earth', 'ditch'].includes(c.card.id));
+        (['creature', 'artifact'].includes(c.card.type) || ['ditch', 'burden-earth'].includes(c.card.id));
     })) {
       // Create the action for the other player, with the priority 3
       const action: IGameAction = await this.gameWorkerService.getWorker('replace-card')

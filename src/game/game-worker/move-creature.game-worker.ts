@@ -34,9 +34,13 @@ export class MoveCreatureGameWorker implements IGameWorker, IHasGameHookService 
     return {
       createdAt: Date.now(),
       type: this.type,
+      name: {
+        en: ``,
+        fr: `Déplacer une créture`,
+      },
       description: {
         en: ``,
-        fr: `Déplacer une créature sur le plateau de jeu.`,
+        fr: `Déplacer une créature d'une case sur le plateau de jeu.`,
       },
       user: data.user as number,
       priority: 1,
@@ -145,6 +149,13 @@ export class MoveCreatureGameWorker implements IGameWorker, IHasGameHookService 
           boardCoordsFrom: `${card.coords.x}-${card.coords.y}`,
           boardCoordsTo: [],
         };
+        // Skip on a water square
+        const square: IGameCard|undefined = gameInstance.cards.find((c: IGameCard) => {
+          return c.location === 'board' && c.coords.x === card.coords.x && c.coords.y === card.coords.y && c.card.type === 'square';
+        });
+        if (square && square.card.id === 'water') {
+          return;
+        }
         // Get the possible moves
         const x: number = card.coords.x;
         const y: number = card.coords.y;
@@ -168,7 +179,6 @@ export class MoveCreatureGameWorker implements IGameWorker, IHasGameHookService 
             if (card.card.id === 'ditch' || card.card.id === 'burden-earth') {
               return;
             }
-            return;
           }
           possibility.boardCoordsTo.push(`${coords.x}-${coords.y}`);
         });

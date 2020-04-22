@@ -25,6 +25,8 @@ import { FpeCreatedGameHook } from './fpe/fpe-created.game-hook';
 import { GuardianDestroyedGameHook } from './guardian-destroyed.game-hook';
 import { CaduceusDestroyedGameHook } from './caduceus-destroyed.game-hook';
 import { CaduceusPlacesGameHook } from './caduceus-placed.game-hook';
+import { JellyfishDestroyedGameHook } from './jellyfish-destroyed.game-hook';
+import { PocketVolcanoDestroyedGameHook } from './pocket-volcano-destroyed.game-hook';
 
 /**
  * Main service that manages game hooks.
@@ -84,6 +86,8 @@ export class GameHookService extends BaseGameService<IGameHook> {
     this.subscribe('card:destroyed:guardian', this.createInjectable(GuardianDestroyedGameHook, injectedProps));
     this.subscribe('card:destroyed:caduceus', this.createInjectable(CaduceusDestroyedGameHook, injectedProps));
     this.subscribe('card:placed:caduceus', this.createInjectable(CaduceusPlacesGameHook, injectedProps));
+    this.subscribe('card:destroyed:jellyfish', this.createInjectable(JellyfishDestroyedGameHook, injectedProps));
+    this.subscribe('card:destroyed:pocket-volcano', this.createInjectable(PocketVolcanoDestroyedGameHook, injectedProps));
   }
 
   /**

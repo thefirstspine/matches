@@ -1,26 +1,28 @@
-import { IGameWorker } from '../game-worker.interface';
-import { IGameInstance, IGameAction, ISubActionPutCardOnBoard, IGameCard } from '../../../@shared/arena-shared/game';
-import { LogService } from '../../../@shared/log-shared/log.service';
+import { IGameWorker } from './game-worker.interface';
+import { IGameInstance, IGameAction, ISubActionPutCardOnBoard, IGameCard } from '../../@shared/arena-shared/game';
+import { LogService } from '../../@shared/log-shared/log.service';
 import { Injectable } from '@nestjs/common';
-import { GameHookService } from '../../game-hook/game-hook.service';
-import { IHasGameHookService, IHasGameWorkerService } from '../../injections.interface';
-import { ArenaRoomsService } from '../../../rooms/arena-rooms.service';
-import { GameWorkerService } from '../game-worker.service';
+import { GameHookService } from '../game-hook/game-hook.service';
+import { IHasGameHookService } from '../injections.interface';
+import { ArenaRoomsService } from '../../rooms/arena-rooms.service';
+import { ICard } from '../../@shared/rest-shared/card';
+import { RestService } from '../../rest/rest.service';
+import { randBetween } from '../../utils/maths.utils';
 
 /**
- * Worker for "thunder" spell.
+ * Worker for "the-void" spell.
  */
 @Injectable() // Injectable required here for dependency injection
-export class Fpe4GameWorker implements IGameWorker, IHasGameHookService, IHasGameWorkerService {
+export class SpellTheVoidGameWorker implements IGameWorker, IHasGameHookService {
 
   public gameHookService: GameHookService;
-  public gameWorkerService: GameWorkerService;
 
-  readonly type: string = 'fpe-4';
+  readonly type: string = 'spell-the-void';
 
   constructor(
     private readonly logService: LogService,
     private readonly arenaRoomsService: ArenaRoomsService,
+    private readonly restService: RestService,
   ) {}
 
   /**
@@ -31,12 +33,12 @@ export class Fpe4GameWorker implements IGameWorker, IHasGameHookService, IHasGam
       createdAt: Date.now(),
       type: this.type,
       name: {
-        en: ``,
-        fr: `Jouer une foudre`,
+        en: `Jouer Le Vide`,
+        fr: ``,
       },
       description: {
         en: ``,
-        fr: `Jouer une foudre sur une carte`,
+        fr: `Jouer Le Vide sur une carte`,
       },
       user: data.user as number,
       priority: 1,
@@ -109,31 +111,49 @@ export class Fpe4GameWorker implements IGameWorker, IHasGameHookService, IHasGam
     cardUsed.location = 'discard';
 
     // Damage the card
-    const cardDamaged: IGameCard|undefined = gameInstance.cards
+    const cardTarget: IGameCard|undefined = gameInstance.cards
       .find((c: IGameCard) => c.location === 'board' && c.coords && c.coords.x === x && c.coords.y === y);
-    if (!cardDamaged) {
+    if (!cardTarget) {
       this.logService.warning('Target not found', gameAction);
       return false;
     }
-    cardDamaged.currentStats.life -= 4;
+    cardTarget.location = 'discard';
 
     // Dispatch event
     await this.gameHookService.dispatch(gameInstance, `card:spell:used:${cardUsed.card.id}`, {gameCard: cardUsed});
-    await this.gameHookService
-      .dispatch(gameInstance, `card:lifeChanged:damaged:${cardDamaged.card.id}`, {gameCard: cardDamaged, source: cardUsed, lifeChanged: -4});
+    await this.gameHookService.dispatch(gameInstance, `card:destroyed:${cardTarget.card.id}`, {gameCard: cardTarget, source: cardUsed});
+
+    // Test for possibility to put a ditch card
+    if (!gameInstance.cards.find((c: IGameCard) => {
+      return c.location === 'board' &&
+        c.coords.x === cardTarget.coords.x &&
+        c.coords.y === cardTarget.coords.y &&
+        (['creature', 'artifact'].includes(c.card.type) || ['burden-earth', 'ditch'].includes(c.card.id));
+    })) {
+      const ditch: ICard = await this.restService.card('ditch');
+      const randomId: number = randBetween(0, Number.MAX_SAFE_INTEGER);
+      const ditchGameCard: IGameCard = {
+        card: ditch,
+        id: `${gameInstance}_${randomId}`,
+        location: 'board',
+        user: 0,
+        coords: {
+          x: cardTarget.coords.x,
+          y: cardTarget.coords.y,
+        },
+      };
+      gameInstance.cards.push(ditchGameCard);
+    }
 
     // Send message to rooms
     this.arenaRoomsService.sendMessageForGame(
       gameInstance,
       {
-        fr: `A joué une Foudre`,
+        fr: `A joué Le Vide`,
         en: ``,
       },
       gameAction.user);
 
-    // Add next the action
-    const action: IGameAction = await this.gameWorkerService.getWorker('fpe-6').create(gameInstance, {user: gameAction.user});
-    gameInstance.actions.current.push(action);
     return true;
   }
 
@@ -174,7 +194,7 @@ export class Fpe4GameWorker implements IGameWorker, IHasGameHookService, IHasGam
     return gameInstance.cards.filter((card: IGameCard) => {
       return card.user === user && card.location === 'hand';
     }).map((card: IGameCard, index: number) => {
-      if (card.card.id === 'thunder') {
+      if (card.card.id === 'the-void') {
         return index;
       }
       return null;
@@ -189,7 +209,7 @@ export class Fpe4GameWorker implements IGameWorker, IHasGameHookService, IHasGam
   protected getBoardCoords(gameInstance: IGameInstance, user: number): string[] {
     // Get the coordinates where the user can place a card
     return gameInstance.cards
-      .filter((card: IGameCard) => card.location === 'board' && card.card.id === 'the-fox' && card.coords)
+      .filter((card: IGameCard) => card.location === 'board' && ['creature', 'artifact'].includes(card.card.type) && card.coords)
       .map((card: IGameCard) => `${card.coords.x}-${card.coords.y}`);
   }
 }

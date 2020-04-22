@@ -28,6 +28,10 @@ export class Fpe19GameWorker implements IGameWorker, IHasGameHookService {
     return {
       createdAt: Date.now(),
       type: this.type,
+      name: {
+        en: ``,
+        fr: `Passer aux confrontations`,
+      },
       description: {
         en: ``,
         fr: `Passer aux confrontations`,
