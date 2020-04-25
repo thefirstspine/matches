@@ -4,7 +4,7 @@ import { randBetween } from '../utils/maths.utils';
 import { GamesStorageService } from '../storage/games.storage.service';
 import { WizzardService } from '../wizzard/wizzard.service';
 import { LogService } from '../@shared/log-shared/log.service';
-import { IGameInstance, IGameUser, IGameCard, IGameAction } from '../@shared/arena-shared/game';
+import { IGameInstance, IGameUser, IGameCard, IGameAction, anySubaction } from '../@shared/arena-shared/game';
 import { IWizzardItem } from '../@shared/arena-shared/wizzard';
 import { RestService } from '../rest/rest.service';
 import { ICard } from '../@shared/rest-shared/card';
@@ -135,7 +135,7 @@ export class GameService {
     };
 
     // Create the first action
-    const action: IGameAction = await this.gameWorkerService.getWorker('throw-cards')
+    const action: IGameAction<anySubaction> = await this.gameWorkerService.getWorker('throw-cards')
       .create(gameInstance, {user: users[firstUserToPlay].user});
     gameInstance.actions.current.push(action);
 
@@ -243,13 +243,13 @@ export class GameService {
     const jsonHash: string = JSON.stringify(gameInstance);
 
     // Get the max priority of the pending actions
-    const maxPriority = gameInstance.actions.current.reduce((acc: number, action: IGameAction) => {
+    const maxPriority = gameInstance.actions.current.reduce((acc: number, action: IGameAction<anySubaction>) => {
       return action.priority > acc ? action.priority : acc;
     }, 0);
 
     // Treat only max priority action with a response (only one reponse will be treated in an instance per tick)
-    const pendingGameAction: IGameAction|undefined
-      = gameInstance.actions.current.find((action: IGameAction) => action.priority === maxPriority && action.responses !== undefined);
+    const pendingGameAction: IGameAction<anySubaction>|undefined
+      = gameInstance.actions.current.find((action: IGameAction<anySubaction>) => action.priority === maxPriority && action.response !== undefined);
 
     // Executes the game actions when exists
     if (pendingGameAction) {
@@ -269,7 +269,7 @@ export class GameService {
           // Dispatch event after each action
           this.gameHookService.dispatch(gameInstance, `action:deleted:${pendingGameAction.type}`, {user: pendingGameAction.user});
           // Refresh the other ones
-          const refreshPromises: Array<Promise<void>> = gameInstance.actions.current.map(async (action: IGameAction) => {
+          const refreshPromises: Array<Promise<void>> = gameInstance.actions.current.map(async (action: IGameAction<anySubaction>) => {
               this.gameWorkerService.getWorker(action.type).refresh(gameInstance, action);
               // Dispatch event after each action
               this.gameHookService.dispatch(gameInstance, `action:refreshed:${action.type}`, {user: action.user, action});
@@ -278,7 +278,7 @@ export class GameService {
           await Promise.all(refreshPromises);
         } else {
           // Something's wrong, delete the response
-          pendingGameAction.responses = undefined;
+          pendingGameAction.response = undefined;
         }
       } catch (e) {
         // tslint:disable-next-line:no-console
@@ -287,7 +287,7 @@ export class GameService {
     }
 
     // Get the pending game actions with expiration
-    const promises: Array<Promise<any>> = gameInstance.actions.current.map(async (gameAction: IGameAction) => {
+    const promises: Array<Promise<any>> = gameInstance.actions.current.map(async (gameAction: IGameAction<anySubaction>) => {
       try {
         if (gameAction.expiresAt && gameAction.expiresAt < Date.now() && gameAction.priority === maxPriority) {
           await this.gameWorkerService.getWorker(gameAction.type).expires(gameInstance, gameAction);

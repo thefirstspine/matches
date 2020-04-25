@@ -3,7 +3,7 @@ import { ApiError } from './api.error';
 import { QueueService } from './../queue/queue.service';
 import { GameService } from '../game/game.service';
 import { WizzardService } from '../wizzard/wizzard.service';
-import { IGameUser, IGameInstance, IGameCard, IGameAction } from '../@shared/arena-shared/game';
+import { IGameUser, IGameInstance, IGameCard, IGameAction, anySubaction } from '../@shared/arena-shared/game';
 import { IRespondToActionParams,
          IRespondToActionResponse,
          IGetUsersResponse,
@@ -189,7 +189,7 @@ export class ApiService {
    * Get actions
    * @param request
    */
-  async getActions(request: IApiRequest<undefined>): Promise<IGameAction[]> {
+  async getActions(request: IApiRequest<undefined>): Promise<Array<IGameAction<anySubaction>>> {
     // Get the ID of the game
     const id: number|undefined = request.id;
     if (!id) {
@@ -208,13 +208,13 @@ export class ApiService {
     }
 
     // Get the max priority of the pending actions
-    const maxPriority = gameInstance.actions.current.reduce((acc: number, action: IGameAction) => {
+    const maxPriority = gameInstance.actions.current.reduce((acc: number, action: IGameAction<anySubaction>) => {
       return action.priority > acc ? action.priority : acc;
     }, 0);
 
     // Get the cards in the board OR in the discard OR in the user's deck OR in the user's hand
     return gameInstance.actions.current.filter(
-      (action: IGameAction) => {
+      (action: IGameAction<anySubaction>) => {
         return action.user === request.user && action.priority === maxPriority;
       },
     );
@@ -275,9 +275,13 @@ export class ApiService {
     }
 
     // Store the response in the instance
-    const action: IGameAction|undefined = gameInstance.actions.current.find(a => a.type === request.params.actionType);
+    const action: IGameAction<any>|undefined = gameInstance.actions.current.find(a => a.type === request.params.actionType);
     if (action) {
-      action.responses = request.params.response;
+      if (Array.isArray(request.params.response)) {
+        action.responses = request.params.response;
+      } else {
+        action.response = request.params.response;
+      }
       return {
         sent: action.responses.length ? true : false,
       };
