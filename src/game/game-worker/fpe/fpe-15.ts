@@ -32,8 +32,8 @@ export class Fpe15GameWorker implements IGameWorker, IHasGameHookService, IHasGa
       type: this.type,
       createdAt: Date.now(),
       name: {
-        en: `Défausser`,
-        fr: ``,
+        en: ``,
+        fr: `Défausser`,
       },
       description: {
         en: ``,
