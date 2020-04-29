@@ -33,8 +33,8 @@ export class SpellTheVoidGameWorker implements IGameWorker, IHasGameHookService 
       createdAt: Date.now(),
       type: this.type,
       name: {
-        en: `Jouer Le Vide`,
-        fr: ``,
+        en: ``,
+        fr: `Jouer Le Vide`,
       },
       description: {
         en: ``,

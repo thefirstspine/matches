@@ -29,8 +29,8 @@ export class StartConfrontsGameWorker implements IGameWorker, IHasGameHookServic
       createdAt: Date.now(),
       type: this.type,
       name: {
-        en: `Passer`,
-        fr: ``,
+        en: ``,
+        fr: `Passer aux confrontations`,
       },
       description: {
         en: ``,

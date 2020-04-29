@@ -37,7 +37,7 @@ export class Fpe8GameWorker implements IGameWorker, IHasGameHookService, IHasGam
       type: this.type,
       name: {
         en: ``,
-        fr: `Déplacer une créture`,
+        fr: `Déplacer une créature`,
       },
       description: {
         en: ``,

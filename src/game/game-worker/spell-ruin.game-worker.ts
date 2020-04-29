@@ -29,8 +29,8 @@ export class SpellRuinGameWorker implements IGameWorker, IHasGameHookService {
       createdAt: Date.now(),
       type: this.type,
       name: {
-        en: `Jouer une ruine`,
-        fr: ``,
+        en: ``,
+        fr: `Jouer une ruine`,
       },
       description: {
         en: ``,

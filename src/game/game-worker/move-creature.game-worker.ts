@@ -36,7 +36,7 @@ export class MoveCreatureGameWorker implements IGameWorker, IHasGameHookService 
       type: this.type,
       name: {
         en: ``,
-        fr: `Déplacer une créture`,
+        fr: `Déplacer une créature`,
       },
       description: {
         en: ``,

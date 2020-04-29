@@ -31,8 +31,8 @@ export class SpellReplacementGameWorker implements IGameWorker, IHasGameHookServ
       createdAt: Date.now(),
       type: this.type,
       name: {
-        en: `Jouer un remplacement`,
-        fr: ``,
+        en: ``,
+        fr: `Jouer un remplacement`,
       },
       description: {
         en: ``,
