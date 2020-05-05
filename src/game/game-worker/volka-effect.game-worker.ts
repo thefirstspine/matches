@@ -32,8 +32,8 @@ export class VolkaEffectGameWorker implements IGameWorker, IHasGameHookService, 
       createdAt: Date.now(),
       type: this.type,
       name: {
-        en: `Placer Volk'ha`,
-        fr: ``,
+        en: ``,
+        fr: `Placer Volk'ha`,
       },
       description: {
         en: ``,

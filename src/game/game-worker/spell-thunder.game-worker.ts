@@ -29,8 +29,8 @@ export class SpellThunderGameWorker implements IGameWorker, IHasGameHookService 
       createdAt: Date.now(),
       type: this.type,
       name: {
-        en: `Jouer une foudre`,
-        fr: ``,
+        en: ``,
+        fr: `Jouer une foudre`,
       },
       description: {
         en: ``,

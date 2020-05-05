@@ -29,7 +29,7 @@ export class ShopService {
 
     // Get the wizzard
     const wizzard: IWizzard = this.wizzardService.getWizzard(purchase.user);
-    if (wizzard.purchases.includes(purchase.id)) {
+    if (purchase.oneTimePurchase && wizzard.purchases.includes(purchase.id)) {
       throw new Error('Already purchased');
     }
 
