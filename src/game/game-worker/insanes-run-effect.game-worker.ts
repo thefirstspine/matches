@@ -27,7 +27,7 @@ export class InsanesRunEffectGameWorker implements IGameWorker, IHasGameHookServ
   /**
    * @inheritdoc
    */
-  public async create(gameInstance: IGameInstance, data: {user: number}): Promise<IGameAction> {
+  public async create(gameInstance: IGameInstance, data: {user: number}): Promise<IGameAction<ISubActionChoseCardOnBoard>> {
     return {
       createdAt: Date.now(),
       type: this.type,
@@ -42,45 +42,42 @@ export class InsanesRunEffectGameWorker implements IGameWorker, IHasGameHookServ
       user: data.user as number,
       priority: 3,
       expiresAt: Date.now() + (30 * 1000), // expires in 30 seconds
-      subactions: [
-        {
-          type: 'choseCardOnBoard',
-          description: {
-            en: ``,
-            fr: `Détruire une carte`,
-          },
-          params: {
-            boardCoords: this.getBoardCoords(gameInstance, data.user),
-          },
+      interaction: {
+        type: 'choseCardOnBoard',
+        description: {
+          en: ``,
+          fr: `Détruire une carte`,
         },
-      ],
+        params: {
+          boardCoords: this.getBoardCoords(gameInstance, data.user),
+        },
+      },
     };
   }
 
   /**
    * @inheritdoc
    */
-  public async refresh(gameInstance: IGameInstance, gameAction: IGameAction): Promise<void> {
-    (gameAction.subactions[0] as ISubActionChoseCardOnBoard).params.boardCoords =
+  public async refresh(gameInstance: IGameInstance, gameAction: IGameAction<ISubActionChoseCardOnBoard>): Promise<void> {
+    gameAction.interaction.params.boardCoords =
       this.getBoardCoords(gameInstance, gameAction.user);
   }
 
   /**
    * @inheritdoc
    */
-  public async execute(gameInstance: IGameInstance, gameAction: IGameAction): Promise<boolean> {
+  public async execute(gameInstance: IGameInstance, gameAction: IGameAction<ISubActionChoseCardOnBoard>): Promise<boolean> {
     // Validate response form
     if (
-      !gameAction.responses[0] ||
-      gameAction.responses[0].boardCoords === undefined
+      gameAction.response.boardCoords === undefined
     ) {
       this.logService.warning('Response in a wrong format', gameAction);
       return false;
     }
 
     // Validate response inputs
-    const allowedCoordsOnBoard: string[] = (gameAction.subactions[0] as ISubActionChoseCardOnBoard).params.boardCoords;
-    const responseBoardCoords: string = gameAction.responses[0].boardCoords;
+    const allowedCoordsOnBoard: string[] = gameAction.interaction.params.boardCoords;
+    const responseBoardCoords: string = gameAction.response.boardCoords;
     if (!allowedCoordsOnBoard.includes(responseBoardCoords)) {
       this.logService.warning('Not allowed board coords', gameAction);
       return false;
@@ -124,11 +121,11 @@ export class InsanesRunEffectGameWorker implements IGameWorker, IHasGameHookServ
    * @param gameInstance
    * @param gameAction
    */
-  public async expires(gameInstance: IGameInstance, gameAction: IGameAction): Promise<boolean> {
+  public async expires(gameInstance: IGameInstance, gameAction: IGameAction<ISubActionChoseCardOnBoard>): Promise<boolean> {
     const boardCoords: string[] = this.getBoardCoords(gameInstance, gameAction.user);
-    gameAction.responses = [{
+    gameAction.response = {
       boardCoords: boardCoords[randBetween(0, boardCoords.length - 1)],
-    }];
+    };
     return true;
   }
 
@@ -137,8 +134,8 @@ export class InsanesRunEffectGameWorker implements IGameWorker, IHasGameHookServ
    * @param gameInstance
    * @param gameAction
    */
-  public async delete(gameInstance: IGameInstance, gameAction: IGameAction): Promise<void> {
-    gameInstance.actions.current = gameInstance.actions.current.filter((gameActionRef: IGameAction) => {
+  public async delete(gameInstance: IGameInstance, gameAction: IGameAction<ISubActionChoseCardOnBoard>): Promise<void> {
+    gameInstance.actions.current = gameInstance.actions.current.filter((gameActionRef: IGameAction<ISubActionChoseCardOnBoard>) => {
       if (gameActionRef === gameAction) {
         gameInstance.actions.previous.push({
           ...gameAction,

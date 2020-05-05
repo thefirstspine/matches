@@ -1,5 +1,5 @@
 import { IGameWorker } from './game-worker.interface';
-import { IGameInstance, IGameAction, IGameCard, ISubActionMoveCardOnBoard } from '../../@shared/arena-shared/game';
+import { IGameInstance, IGameAction, IGameCard, ISubActionMoveCardOnBoard, ISubActionPass } from '../../@shared/arena-shared/game';
 import { Injectable } from '@nestjs/common';
 import { GameHookService } from '../game-hook/game-hook.service';
 import { IHasGameHookService, IHasGameWorkerService } from '../injections.interface';
@@ -27,7 +27,7 @@ export class EndTurnGameWorker implements IGameWorker, IHasGameHookService, IHas
   /**
    * @inheritdoc
    */
-  public async create(gameInstance: IGameInstance, data: {user: number}): Promise<IGameAction> {
+  public async create(gameInstance: IGameInstance, data: {user: number}): Promise<IGameAction<ISubActionPass>> {
     return {
       createdAt: Date.now(),
       type: this.type,
@@ -42,23 +42,21 @@ export class EndTurnGameWorker implements IGameWorker, IHasGameHookService, IHas
       user: data.user as number,
       priority: 1,
       expiresAt: Date.now() + (10 * 1000), // expires in 10 seconds
-      subactions: [
-        {
-          type: 'pass',
-          description: {
-            en: ``,
-            fr: `Terminer le tour`,
-          },
-          params: {},
+      interaction: {
+        type: 'pass',
+        description: {
+          en: ``,
+          fr: `Terminer le tour`,
         },
-      ],
+        params: {},
+      },
     };
   }
 
   /**
    * @inheritdoc
    */
-  public async execute(gameInstance: IGameInstance, gameAction: IGameAction): Promise<boolean> {
+  public async execute(gameInstance: IGameInstance, gameAction: IGameAction<ISubActionPass>): Promise<boolean> {
     await this.gameHookService.dispatch(gameInstance, `game:turnEnded`, {user: gameAction.user});
     // Send message to rooms
     this.arenaRoomsService.sendMessageForGame(
@@ -84,13 +82,13 @@ export class EndTurnGameWorker implements IGameWorker, IHasGameHookService, IHas
       nextUser);
 
     // Generate "run" & "skip-run" action
-    const runAction: IGameAction = await this.gameWorkerService.getWorker('run')
+    const runAction: IGameAction<any> = await this.gameWorkerService.getWorker('run')
       .create(gameInstance, {user: nextUser});
-    if ((runAction.subactions[0] as ISubActionMoveCardOnBoard).params.possibilities.length) {
+    if (runAction.interaction.params.possibilities.length) {
       // There some cards to move, register this action on the worker
       gameInstance.actions.current.push(runAction);
       // Register a skip too
-      const skipRunAction: IGameAction = await this.gameWorkerService.getWorker('skip-run')
+      const skipRunAction: IGameAction<any> = await this.gameWorkerService.getWorker('skip-run')
         .create(gameInstance, {user: nextUser});
       gameInstance.actions.current.push(skipRunAction);
     }
@@ -154,7 +152,7 @@ export class EndTurnGameWorker implements IGameWorker, IHasGameHookService, IHas
     await Promise.all(promises);
 
     // Generate the actions of the user
-    const action: IGameAction = await this.gameWorkerService.getWorker('throw-cards')
+    const action: IGameAction<any> = await this.gameWorkerService.getWorker('throw-cards')
       .create(gameInstance, {user: nextUser});
     gameInstance.actions.current.push(action);
 
@@ -166,7 +164,7 @@ export class EndTurnGameWorker implements IGameWorker, IHasGameHookService, IHas
    * @param gameInstance
    * @param gameAction
    */
-  public async refresh(gameInstance: IGameInstance, gameAction: IGameAction): Promise<void> {
+  public async refresh(gameInstance: IGameInstance, gameAction: IGameAction<ISubActionPass>): Promise<void> {
     return;
   }
 
@@ -175,8 +173,8 @@ export class EndTurnGameWorker implements IGameWorker, IHasGameHookService, IHas
    * @param gameInstance
    * @param gameAction
    */
-  public async expires(gameInstance: IGameInstance, gameAction: IGameAction): Promise<boolean> {
-    gameAction.responses = [[]];
+  public async expires(gameInstance: IGameInstance, gameAction: IGameAction<ISubActionPass>): Promise<boolean> {
+    gameAction.response = [];
     return true;
   }
 
@@ -185,8 +183,8 @@ export class EndTurnGameWorker implements IGameWorker, IHasGameHookService, IHas
    * @param gameInstance
    * @param gameAction
    */
-  public async delete(gameInstance: IGameInstance, gameAction: IGameAction): Promise<void> {
-    gameInstance.actions.current = gameInstance.actions.current.filter((gameActionRef: IGameAction) => {
+  public async delete(gameInstance: IGameInstance, gameAction: IGameAction<ISubActionPass>): Promise<void> {
+    gameInstance.actions.current = gameInstance.actions.current.filter((gameActionRef: IGameAction<any>) => {
       if (gameActionRef === gameAction) {
         gameInstance.actions.previous.push({
           ...gameAction,
