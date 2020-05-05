@@ -122,6 +122,7 @@ export class GameWorkerService extends BaseGameService<IGameWorker> {
 
   /**
    * Get a built game worker.
+   * TODO: Add a generic here
    * @param type
    */
   getWorker(type: string): IGameWorker {
