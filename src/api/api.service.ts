@@ -277,8 +277,11 @@ export class ApiService {
     // Store the response in the instance
     const action: IGameAction<any>|undefined = gameInstance.actions.current.find(a => a.type === request.params.actionType);
     if (action) {
-      if (Array.isArray(request.params.response)) {
-        action.responses = request.params.response;
+      // Ensure that old clients can send responses to the old subactions pattern.
+      // TODO: In a near future, delete this retrocompatibility, since the clients will not be
+      // compatible with the next cycle.
+      if (Array.isArray(request.params.response) && request.params.response.length === 1) {
+        action.responses = request.params.response[0];
       } else {
         action.response = request.params.response;
       }
