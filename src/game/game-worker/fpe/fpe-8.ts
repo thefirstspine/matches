@@ -63,8 +63,7 @@ export class Fpe8GameWorker implements IGameWorker, IHasGameHookService, IHasGam
    * @inheritdoc
    */
   public async refresh(gameInstance: IGameInstance, gameAction: IGameAction<ISubActionMoveCardOnBoard>): Promise<void> {
-    (gameAction.subactions[0] as ISubActionMoveCardOnBoard).params.possibilities =
-      this.getPossibilities(gameInstance, gameAction.user);
+    gameAction.interaction.params.possibilities = this.getPossibilities(gameInstance, gameAction.user);
   }
 
   /**
@@ -84,7 +83,7 @@ export class Fpe8GameWorker implements IGameWorker, IHasGameHookService, IHasGam
     const boardCoordsFrom: string = gameAction.response.boardCoordsFrom;
     const boardCoordsTo: string = gameAction.response.boardCoordsTo;
     let allowed: boolean = false;
-    (gameAction.subactions[0] as ISubActionMoveCardOnBoard).params.possibilities
+    gameAction.interaction.params.possibilities
       .forEach((possibility: ISubActionMoveCardOnBoardPossibility) => {
       if (possibility.boardCoordsFrom === boardCoordsFrom && possibility.boardCoordsTo.includes(boardCoordsTo)) {
         allowed = true;

@@ -180,7 +180,8 @@ export class FpeCreatedGameHook implements IGameHook, IHasGameWorkerService {
     ];
 
     // Add the first action
-    const action: IGameAction = await this.gameWorkerService.getWorker('fpe-2').create(gameInstance, {user: gameInstance.users[0].user});
+    const action: IGameAction<any> =
+      await this.gameWorkerService.getWorker('fpe-2').create(gameInstance, {user: gameInstance.users[0].user});
     gameInstance.actions.current = [action];
 
     return true;

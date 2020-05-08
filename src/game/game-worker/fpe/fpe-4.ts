@@ -76,8 +76,8 @@ export class Fpe4GameWorker implements IGameWorker, IHasGameHookService, IHasGam
     }
 
     // Validate response inputs
-    const allowedHandIndexes: number[] = (gameAction.subactions[0] as ISubActionPutCardOnBoard).params.handIndexes;
-    const allowedCoordsOnBoard: string[] = (gameAction.subactions[0] as ISubActionPutCardOnBoard).params.boardCoords;
+    const allowedHandIndexes: number[] = gameAction.interaction.params.handIndexes;
+    const allowedCoordsOnBoard: string[] = gameAction.interaction.params.boardCoords;
     const responseHandIndex: number = gameAction.response.handIndex;
     const responseBoardCoords: string = gameAction.response.boardCoords;
     if (!allowedHandIndexes.includes(responseHandIndex)) {

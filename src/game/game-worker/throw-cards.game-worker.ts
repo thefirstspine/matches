@@ -60,14 +60,14 @@ export class ThrowCardsGameWorker implements IGameWorker, IHasGameHookService {
    */
   public async execute(gameInstance: IGameInstance, gameAction: IGameAction<ISubActionMoveCardToDiscard>): Promise<boolean> {
     // Validate response form
-    if (!isArray(gameAction.response)) {
+    if (!isArray(gameAction.response.handIndexes)) {
       this.logService.warning('Response in a wrong format', gameAction);
       return false;
     }
 
     // Validate response inputs
     const allowedHandIndexes: number[] = gameAction.interaction.params.handIndexes;
-    const responseHandIndexes: number[] = gameAction.response;
+    const responseHandIndexes: number[] = gameAction.response.handIndexes;
     const falseIndex: number[] = responseHandIndexes.filter((i: number) => !allowedHandIndexes.includes(i));
     if (falseIndex.length) {
       this.logService.warning('Not allowed hand index', gameAction);
