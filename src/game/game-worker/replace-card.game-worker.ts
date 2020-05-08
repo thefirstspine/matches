@@ -26,7 +26,7 @@ export class ReplaceCardGameWorker implements IGameWorker, IHasGameHookService {
   /**
    * @inheritdoc
    */
-  public async create(gameInstance: IGameInstance, data: {user: number, coords: ICardCoords}): Promise<IGameAction> {
+  public async create(gameInstance: IGameInstance, data: {user: number, coords: ICardCoords}): Promise<IGameAction<ISubActionPutCardOnBoard>> {
     return {
       createdAt: Date.now(),
       type: this.type,
@@ -41,49 +41,45 @@ export class ReplaceCardGameWorker implements IGameWorker, IHasGameHookService {
       expiresAt: Date.now() + (30 * 1000), // expires in 30 seconds
       user: data.user as number,
       priority: 3,
-      subactions: [
-        {
-          type: 'putCardOnBoard',
-          description: {
-            en: ``,
-            fr: `Placer une carte à la place`,
-          },
-          params: {
-            handIndexes: this.getHandIndexes(gameInstance, data.user),
-            boardCoords: [`${data.coords.x}-${data.coords.y}`],
-          },
+      interaction: {
+        type: 'putCardOnBoard',
+        description: {
+          en: ``,
+          fr: `Placer une carte à la place`,
         },
-      ],
+        params: {
+          handIndexes: this.getHandIndexes(gameInstance, data.user),
+          boardCoords: [`${data.coords.x}-${data.coords.y}`],
+        },
+      },
     };
   }
 
   /**
    * @inheritdoc
    */
-  public async refresh(gameInstance: IGameInstance, gameAction: IGameAction): Promise<void> {
-    (gameAction.subactions[0] as ISubActionPutCardOnBoard).params.handIndexes =
-      this.getHandIndexes(gameInstance, gameAction.user);
+  public async refresh(gameInstance: IGameInstance, gameAction: IGameAction<ISubActionPutCardOnBoard>): Promise<void> {
+    gameAction.interaction.params.handIndexes = this.getHandIndexes(gameInstance, gameAction.user);
   }
 
   /**
    * @inheritdoc
    */
-  public async execute(gameInstance: IGameInstance, gameAction: IGameAction): Promise<boolean> {
+  public async execute(gameInstance: IGameInstance, gameAction: IGameAction<ISubActionPutCardOnBoard>): Promise<boolean> {
     // Validate response form
     if (
-      !gameAction.responses[0] ||
-      gameAction.responses[0].handIndex === undefined ||
-      gameAction.responses[0].boardCoords === undefined
+      gameAction.response.handIndex === undefined ||
+      gameAction.response.boardCoords === undefined
     ) {
       this.logService.warning('Response in a wrong format', gameAction);
       return false;
     }
 
     // Validate response inputs
-    const allowedHandIndexes: number[] = (gameAction.subactions[0] as ISubActionPutCardOnBoard).params.handIndexes;
-    const allowedCoordsOnBoard: string[] = (gameAction.subactions[0] as ISubActionPutCardOnBoard).params.boardCoords;
-    const responseHandIndex: number = gameAction.responses[0].handIndex;
-    const responseBoardCoords: string = gameAction.responses[0].boardCoords;
+    const allowedHandIndexes: number[] = gameAction.interaction.params.handIndexes;
+    const allowedCoordsOnBoard: string[] = gameAction.interaction.params.boardCoords;
+    const responseHandIndex: number = gameAction.response.handIndex;
+    const responseBoardCoords: string = gameAction.response.boardCoords;
     if (!allowedHandIndexes.includes(responseHandIndex)) {
       this.logService.warning('Not allowed hand index', gameAction);
       return false;
@@ -128,11 +124,11 @@ export class ReplaceCardGameWorker implements IGameWorker, IHasGameHookService {
    * @param gameInstance
    * @param gameAction
    */
-  public async expires(gameInstance: IGameInstance, gameAction: IGameAction): Promise<boolean> {
+  public async expires(gameInstance: IGameInstance, gameAction: IGameAction<ISubActionPutCardOnBoard>): Promise<boolean> {
     const handIndexes = this.getHandIndexes(gameInstance, gameAction.user);
     const handIndex = handIndexes[randBetween(0, handIndexes.length)];
-    const boardCoords = (gameAction.subactions[0] as ISubActionPutCardOnBoard).params.boardCoords[0];
-    gameAction.responses = [{handIndex, boardCoords}];
+    const boardCoords = gameAction.interaction.params.boardCoords[0];
+    gameAction.response = {handIndex, boardCoords};
     return true;
   }
 
@@ -141,8 +137,8 @@ export class ReplaceCardGameWorker implements IGameWorker, IHasGameHookService {
    * @param gameInstance
    * @param gameAction
    */
-  public async delete(gameInstance: IGameInstance, gameAction: IGameAction): Promise<void> {
-    gameInstance.actions.current = gameInstance.actions.current.filter((gameActionRef: IGameAction) => {
+  public async delete(gameInstance: IGameInstance, gameAction: IGameAction<ISubActionPutCardOnBoard>): Promise<void> {
+    gameInstance.actions.current = gameInstance.actions.current.filter((gameActionRef: IGameAction<any>) => {
       if (gameActionRef === gameAction) {
         gameInstance.actions.previous.push({
           ...gameAction,

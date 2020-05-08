@@ -1,5 +1,5 @@
 import { IGameWorker } from './game-worker.interface';
-import { IGameInstance, IGameAction, IGameCard } from '../../@shared/arena-shared/game';
+import { IGameInstance, IGameAction, IGameCard, ISubActionPass } from '../../@shared/arena-shared/game';
 import { LogService } from '../../@shared/log-shared/log.service';
 import { Injectable } from '@nestjs/common';
 import { GameHookService } from '../game-hook/game-hook.service';
@@ -26,7 +26,7 @@ export class SkipRunGameWorker implements IGameWorker, IHasGameHookService, IHas
   /**
    * @inheritdoc
    */
-  public async create(gameInstance: IGameInstance, data: {user: number}): Promise<IGameAction> {
+  public async create(gameInstance: IGameInstance, data: {user: number}): Promise<IGameAction<ISubActionPass>> {
     return {
       createdAt: Date.now(),
       type: this.type,
@@ -41,25 +41,23 @@ export class SkipRunGameWorker implements IGameWorker, IHasGameHookService, IHas
       user: data.user as number,
       priority: 2,
       expiresAt: Date.now() + (30 * 1000), // expires in 30 seconds
-      subactions: [
-        {
-          type: 'pass',
-          description: {
-            en: ``,
-            fr: `Passer la course`,
-          },
-          params: {},
+      interaction: {
+        type: 'pass',
+        description: {
+          en: ``,
+          fr: `Passer la course`,
         },
-      ],
+        params: {},
+      },
     };
   }
 
   /**
    * @inheritdoc
    */
-  public async execute(gameInstance: IGameInstance, gameAction: IGameAction): Promise<boolean> {
+  public async execute(gameInstance: IGameInstance, gameAction: IGameAction<ISubActionPass>): Promise<boolean> {
     // Deletes the action "run"
-    gameInstance.actions.current.forEach((currentGameAction: IGameAction) => {
+    gameInstance.actions.current.forEach((currentGameAction: IGameAction<any>) => {
       if (currentGameAction.type === 'run') {
         this.gameWorkerService.getWorker(currentGameAction.type).delete(gameInstance, currentGameAction);
       }
@@ -73,7 +71,7 @@ export class SkipRunGameWorker implements IGameWorker, IHasGameHookService, IHas
    * @param gameInstance
    * @param gameAction
    */
-  public async refresh(gameInstance: IGameInstance, gameAction: IGameAction): Promise<void> {
+  public async refresh(gameInstance: IGameInstance, gameAction: IGameAction<ISubActionPass>): Promise<void> {
     return;
   }
 
@@ -82,8 +80,8 @@ export class SkipRunGameWorker implements IGameWorker, IHasGameHookService, IHas
    * @param gameInstance
    * @param gameAction
    */
-  public async expires(gameInstance: IGameInstance, gameAction: IGameAction): Promise<boolean> {
-    gameAction.responses = [[]];
+  public async expires(gameInstance: IGameInstance, gameAction: IGameAction<ISubActionPass>): Promise<boolean> {
+    gameAction.response = [];
     return true;
   }
 
@@ -92,14 +90,14 @@ export class SkipRunGameWorker implements IGameWorker, IHasGameHookService, IHas
    * @param gameInstance
    * @param gameAction
    */
-  public async delete(gameInstance: IGameInstance, gameAction: IGameAction): Promise<void> {
+  public async delete(gameInstance: IGameInstance, gameAction: IGameAction<ISubActionPass>): Promise<void> {
     // The next "throw-cards" game action should have more time
-    const action: IGameAction|undefined = gameInstance.actions.current.find((a: IGameAction) => a.type === 'throw-cards');
+    const action: IGameAction<any>|undefined = gameInstance.actions.current.find((a: IGameAction<any>) => a.type === 'throw-cards');
     if (action) {
       action.expiresAt = Date.now() + (30 * 1000); // expires in 30 seconds
     }
 
-    gameInstance.actions.current = gameInstance.actions.current.filter((gameActionRef: IGameAction) => {
+    gameInstance.actions.current = gameInstance.actions.current.filter((gameActionRef: IGameAction<ISubActionPass>) => {
       if (gameActionRef === gameAction) {
         gameInstance.actions.previous.push({
           ...gameAction,

@@ -32,7 +32,7 @@ export class RunGameWorker implements IGameWorker, IHasGameHookService, IHasGame
   /**
    * @inheritdoc
    */
-  public async create(gameInstance: IGameInstance, data: {user: number}): Promise<IGameAction> {
+  public async create(gameInstance: IGameInstance, data: {user: number}): Promise<IGameAction<ISubActionMoveCardOnBoard>> {
     return {
       createdAt: Date.now(),
       type: this.type,
@@ -46,48 +46,44 @@ export class RunGameWorker implements IGameWorker, IHasGameHookService, IHasGame
       },
       user: data.user as number,
       priority: 2,
-      subactions: [
-        {
-          type: 'moveCardOnBoard',
-          description: {
-            en: ``,
-            fr: `Déplacer une carte qui a la course d'une case.`,
-          },
-          params: {
-            possibilities: this.getPossibilities(gameInstance, data.user),
-          },
+      interaction: {
+        type: 'moveCardOnBoard',
+        description: {
+          en: ``,
+          fr: `Déplacer une carte qui a la course d'une case.`,
         },
-      ],
+        params: {
+          possibilities: this.getPossibilities(gameInstance, data.user),
+        },
+      },
     };
   }
 
   /**
    * @inheritdoc
    */
-  public async refresh(gameInstance: IGameInstance, gameAction: IGameAction): Promise<void> {
-    (gameAction.subactions[0] as ISubActionMoveCardOnBoard).params.possibilities =
-      this.getPossibilities(gameInstance, gameAction.user);
+  public async refresh(gameInstance: IGameInstance, gameAction: IGameAction<ISubActionMoveCardOnBoard>): Promise<void> {
+    gameAction.interaction.params.possibilities = this.getPossibilities(gameInstance, gameAction.user);
   }
 
   /**
    * @inheritdoc
    */
-  public async execute(gameInstance: IGameInstance, gameAction: IGameAction): Promise<boolean> {
+  public async execute(gameInstance: IGameInstance, gameAction: IGameAction<ISubActionMoveCardOnBoard>): Promise<boolean> {
     // Validate the response form
     if (
-      !gameAction.responses[0] ||
-      gameAction.responses[0].boardCoordsFrom === undefined ||
-      gameAction.responses[0].boardCoordsTo === undefined
+      gameAction.response.boardCoordsFrom === undefined ||
+      gameAction.response.boardCoordsTo === undefined
     ) {
       this.logService.warning('Response in a wrong format', gameAction);
       return false;
     }
 
     // Validate response input
-    const boardCoordsFrom: string = gameAction.responses[0].boardCoordsFrom;
-    const boardCoordsTo: string = gameAction.responses[0].boardCoordsTo;
+    const boardCoordsFrom: string = gameAction.response.boardCoordsFrom;
+    const boardCoordsTo: string = gameAction.response.boardCoordsTo;
     let allowed: boolean = false;
-    (gameAction.subactions[0] as ISubActionMoveCardOnBoard).params.possibilities
+    gameAction.interaction.params.possibilities
       .forEach((possibility: ISubActionMoveCardOnBoardPossibility) => {
       if (possibility.boardCoordsFrom === boardCoordsFrom && possibility.boardCoordsTo.includes(boardCoordsTo)) {
         allowed = true;
@@ -126,7 +122,7 @@ export class RunGameWorker implements IGameWorker, IHasGameHookService, IHasGame
     await this.gameHookService.dispatch(gameInstance, `card:creature:moved:${card.card.id}`);
 
     // Deletes the action "skip-run"
-    gameInstance.actions.current.forEach((currentGameAction: IGameAction) => {
+    gameInstance.actions.current.forEach((currentGameAction: IGameAction<ISubActionMoveCardOnBoard>) => {
       if (currentGameAction.type === 'skip-run') {
         this.gameWorkerService.getWorker(currentGameAction.type).delete(gameInstance, currentGameAction);
       }
@@ -208,7 +204,7 @@ export class RunGameWorker implements IGameWorker, IHasGameHookService, IHasGame
    * @param gameInstance
    * @param gameAction
    */
-  public async expires(gameInstance: IGameInstance, gameAction: IGameAction): Promise<boolean> {
+  public async expires(gameInstance: IGameInstance, gameAction: IGameAction<ISubActionMoveCardOnBoard>): Promise<boolean> {
     return true;
   }
 
@@ -217,8 +213,8 @@ export class RunGameWorker implements IGameWorker, IHasGameHookService, IHasGame
    * @param gameInstance
    * @param gameAction
    */
-  public async delete(gameInstance: IGameInstance, gameAction: IGameAction): Promise<void> {
-    gameInstance.actions.current = gameInstance.actions.current.filter((gameActionRef: IGameAction) => {
+  public async delete(gameInstance: IGameInstance, gameAction: IGameAction<ISubActionMoveCardOnBoard>): Promise<void> {
+    gameInstance.actions.current = gameInstance.actions.current.filter((gameActionRef: IGameAction<any>) => {
       if (gameActionRef === gameAction) {
         gameInstance.actions.previous.push({
           ...gameAction,
