@@ -26,7 +26,7 @@ export class PhaseActionsGameHook implements IGameHook, IHasGameWorkerService, I
     );
 
     // Get the spells in the hand & create the associated actions
-    const promises: Array<Promise<IGameAction>> = [];
+    const promises: Array<Promise<IGameAction<any>>> = [];
     gameInstance.cards.filter((card: IGameCard) => card.location === 'hand' && card.user === params.user && card.card.type === 'spell')
       .forEach((card: IGameCard) => {
         const worker: IGameWorker|undefined = this.gameHookService.gameWorkerService.getWorker(`spell-${card.card.id}`);
@@ -35,7 +35,7 @@ export class PhaseActionsGameHook implements IGameHook, IHasGameWorkerService, I
         }
       });
 
-    const actions: IGameAction[] = await Promise.all(promises);
+    const actions: Array<IGameAction<any>> = await Promise.all(promises);
     gameInstance.actions.current.push(...actions);
     return true;
   }
