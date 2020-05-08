@@ -25,7 +25,7 @@ export class ThrowCardsGameWorker implements IGameWorker, IHasGameHookService {
   /**
    * @inheritdoc
    */
-  public async create(gameInstance: IGameInstance, data: {user: number}): Promise<IGameAction> {
+  public async create(gameInstance: IGameInstance, data: {user: number}): Promise<IGameAction<ISubActionMoveCardToDiscard>> {
     return {
       createdAt: Date.now(),
       type: this.type,
@@ -40,36 +40,34 @@ export class ThrowCardsGameWorker implements IGameWorker, IHasGameHookService {
       user: data.user as number,
       priority: 1,
       expiresAt: Date.now() + (30 * 1000), // expires in 30 seconds
-      subactions: [
-        {
-          type: 'moveCardsToDiscard',
-          description: {
-            en: ``,
-            fr: `Défausser une ou plusieurs cartes`,
-          },
-          params: {
-            handIndexes: this.getHandIndexes(gameInstance, data.user),
-            max: 6,
-            min: 0,
-          },
+      interaction: {
+        type: 'moveCardsToDiscard',
+        description: {
+          en: ``,
+          fr: `Défausser une ou plusieurs cartes`,
         },
-      ],
+        params: {
+          handIndexes: this.getHandIndexes(gameInstance, data.user),
+          max: 6,
+          min: 0,
+        },
+      },
     };
   }
 
   /**
    * @inheritdoc
    */
-  public async execute(gameInstance: IGameInstance, gameAction: IGameAction): Promise<boolean> {
+  public async execute(gameInstance: IGameInstance, gameAction: IGameAction<ISubActionMoveCardToDiscard>): Promise<boolean> {
     // Validate response form
-    if (!isArray(gameAction.responses[0])) {
+    if (!isArray(gameAction.response)) {
       this.logService.warning('Response in a wrong format', gameAction);
       return false;
     }
 
     // Validate response inputs
-    const allowedHandIndexes: number[] = (gameAction.subactions[0] as ISubActionMoveCardToDiscard).params.handIndexes;
-    const responseHandIndexes: number[] = gameAction.responses[0];
+    const allowedHandIndexes: number[] = gameAction.interaction.params.handIndexes;
+    const responseHandIndexes: number[] = gameAction.response;
     const falseIndex: number[] = responseHandIndexes.filter((i: number) => !allowedHandIndexes.includes(i));
     if (falseIndex.length) {
       this.logService.warning('Not allowed hand index', gameAction);
@@ -142,7 +140,7 @@ export class ThrowCardsGameWorker implements IGameWorker, IHasGameHookService {
    * @param gameInstance
    * @param gameAction
    */
-  public async refresh(gameInstance: IGameInstance, gameAction: IGameAction): Promise<void> {
+  public async refresh(gameInstance: IGameInstance, gameAction: IGameAction<ISubActionMoveCardToDiscard>): Promise<void> {
     return;
   }
 
@@ -151,8 +149,8 @@ export class ThrowCardsGameWorker implements IGameWorker, IHasGameHookService {
    * @param gameInstance
    * @param gameAction
    */
-  public async expires(gameInstance: IGameInstance, gameAction: IGameAction): Promise<boolean> {
-    gameAction.responses = [[]];
+  public async expires(gameInstance: IGameInstance, gameAction: IGameAction<ISubActionMoveCardToDiscard>): Promise<boolean> {
+    gameAction.response = [];
     return true;
   }
 
@@ -161,8 +159,8 @@ export class ThrowCardsGameWorker implements IGameWorker, IHasGameHookService {
    * @param gameInstance
    * @param gameAction
    */
-  public async delete(gameInstance: IGameInstance, gameAction: IGameAction): Promise<void> {
-    gameInstance.actions.current = gameInstance.actions.current.filter((gameActionRef: IGameAction) => {
+  public async delete(gameInstance: IGameInstance, gameAction: IGameAction<ISubActionMoveCardToDiscard>): Promise<void> {
+    gameInstance.actions.current = gameInstance.actions.current.filter((gameActionRef: IGameAction<ISubActionMoveCardToDiscard>) => {
       if (gameActionRef === gameAction) {
         gameInstance.actions.previous.push({
           ...gameAction,

@@ -24,7 +24,7 @@ export class SpellReconstructGameWorker implements IGameWorker, IHasGameHookServ
   /**
    * @inheritdoc
    */
-  public async create(gameInstance: IGameInstance, data: {user: number}): Promise<IGameAction> {
+  public async create(gameInstance: IGameInstance, data: {user: number}): Promise<IGameAction<ISubActionPutCardOnBoard>> {
     return {
       createdAt: Date.now(),
       type: this.type,
@@ -38,51 +38,46 @@ export class SpellReconstructGameWorker implements IGameWorker, IHasGameHookServ
       },
       user: data.user as number,
       priority: 1,
-      subactions: [
-        {
-          type: 'putCardOnBoard',
-          description: {
-            en: ``,
-            fr: `Jouer un sort sur une carte`,
-          },
-          params: {
-            handIndexes: this.getHandIndexes(gameInstance, data.user),
-            boardCoords: this.getBoardCoords(gameInstance, data.user),
-          },
+      interaction: {
+        type: 'putCardOnBoard',
+        description: {
+          en: ``,
+          fr: `Jouer un sort sur une carte`,
         },
-      ],
+        params: {
+          handIndexes: this.getHandIndexes(gameInstance, data.user),
+          boardCoords: this.getBoardCoords(gameInstance, data.user),
+        },
+      },
     };
   }
 
   /**
    * @inheritdoc
    */
-  public async refresh(gameInstance: IGameInstance, gameAction: IGameAction): Promise<void> {
-    (gameAction.subactions[0] as ISubActionPutCardOnBoard).params.handIndexes =
-      this.getHandIndexes(gameInstance, gameAction.user);
-    (gameAction.subactions[0] as ISubActionPutCardOnBoard).params.boardCoords =
-      this.getBoardCoords(gameInstance, gameAction.user);
+  public async refresh(gameInstance: IGameInstance, gameAction: IGameAction<ISubActionPutCardOnBoard>): Promise<void> {
+    gameAction.interaction.params.handIndexes = this.getHandIndexes(gameInstance, gameAction.user);
+    gameAction.interaction.params.boardCoords = this.getBoardCoords(gameInstance, gameAction.user);
   }
 
   /**
    * @inheritdoc
    */
-  public async execute(gameInstance: IGameInstance, gameAction: IGameAction): Promise<boolean> {
+  public async execute(gameInstance: IGameInstance, gameAction: IGameAction<ISubActionPutCardOnBoard>): Promise<boolean> {
     // Validate response form
     if (
-      !gameAction.responses[0] ||
-      gameAction.responses[0].handIndex === undefined ||
-      gameAction.responses[0].boardCoords === undefined
+      gameAction.response.handIndex === undefined ||
+      gameAction.response.boardCoords === undefined
     ) {
       this.logService.warning('Response in a wrong format', gameAction);
       return false;
     }
 
     // Validate response inputs
-    const allowedHandIndexes: number[] = (gameAction.subactions[0] as ISubActionPutCardOnBoard).params.handIndexes;
-    const allowedCoordsOnBoard: string[] = (gameAction.subactions[0] as ISubActionPutCardOnBoard).params.boardCoords;
-    const responseHandIndex: number = gameAction.responses[0].handIndex;
-    const responseBoardCoords: string = gameAction.responses[0].boardCoords;
+    const allowedHandIndexes: number[] = gameAction.interaction.params.handIndexes;
+    const allowedCoordsOnBoard: string[] = gameAction.interaction.params.boardCoords;
+    const responseHandIndex: number = gameAction.response.handIndex;
+    const responseBoardCoords: string = gameAction.response.boardCoords;
     if (!allowedHandIndexes.includes(responseHandIndex)) {
       this.logService.warning('Not allowed hand index', gameAction);
       return false;
@@ -136,7 +131,7 @@ export class SpellReconstructGameWorker implements IGameWorker, IHasGameHookServ
    * @param gameInstance
    * @param gameAction
    */
-  public async expires(gameInstance: IGameInstance, gameAction: IGameAction): Promise<boolean> {
+  public async expires(gameInstance: IGameInstance, gameAction: IGameAction<ISubActionPutCardOnBoard>): Promise<boolean> {
     return true;
   }
 
@@ -145,8 +140,8 @@ export class SpellReconstructGameWorker implements IGameWorker, IHasGameHookServ
    * @param gameInstance
    * @param gameAction
    */
-  public async delete(gameInstance: IGameInstance, gameAction: IGameAction): Promise<void> {
-    gameInstance.actions.current = gameInstance.actions.current.filter((gameActionRef: IGameAction) => {
+  public async delete(gameInstance: IGameInstance, gameAction: IGameAction<ISubActionPutCardOnBoard>): Promise<void> {
+    gameInstance.actions.current = gameInstance.actions.current.filter((gameActionRef: IGameAction<any>) => {
       if (gameActionRef === gameAction) {
         gameInstance.actions.previous.push({
           ...gameAction,
