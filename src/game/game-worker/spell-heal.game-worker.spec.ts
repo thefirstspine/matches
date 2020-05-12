@@ -16,7 +16,7 @@ import { ArenaRoomsService } from '../../rooms/arena-rooms.service';
 import { GameHookService } from '../game-hook/game-hook.service';
 import { BotsService } from '../../bots/bots.service';
 import { LogService } from '../../@shared/log-shared/log.service';
-import { IGameInstance, IGameAction, ISubActionPutCardOnBoard } from '../../@shared/arena-shared/game';
+import { IGameInstance, IGameAction, ISubActionPutCardOnBoard, anySubaction } from '../../@shared/arena-shared/game';
 
 describe('Spell heal', () => {
   let gameWorkerService: GameWorkerService;
@@ -143,17 +143,17 @@ describe('Spell heal', () => {
     });
 
     // Create game action & add it to the instance
-    const gameAction: IGameAction = await gameWorkerService.getWorker('spell-heal').create(gameInstance, {user: gameInstance.users[0].user});
-    gameAction.responses = [{handIndex: 0, boardCoords: '3-3'}];
+    const gameAction: IGameAction<any> =
+      await gameWorkerService.getWorker('spell-heal').create(gameInstance, {user: gameInstance.users[0].user});
+    gameAction.response = {handIndex: 0, boardCoords: '3-3'};
     gameInstance.actions.current.push(gameAction);
-    expect(gameAction.subactions.length).toBe(1);
-    expect(gameAction.subactions[0].type).toBe('putCardOnBoard');
-    expect((gameAction.subactions[0] as ISubActionPutCardOnBoard).params.boardCoords).toBeDefined();
-    expect((gameAction.subactions[0] as ISubActionPutCardOnBoard).params.boardCoords.length).toBe(1);
-    expect((gameAction.subactions[0] as ISubActionPutCardOnBoard).params.boardCoords[0]).toBe('3-3');
-    expect((gameAction.subactions[0] as ISubActionPutCardOnBoard).params.handIndexes).toBeDefined();
-    expect((gameAction.subactions[0] as ISubActionPutCardOnBoard).params.handIndexes.length).toBe(1);
-    expect((gameAction.subactions[0] as ISubActionPutCardOnBoard).params.handIndexes[0]).toBe(0);
+    expect(gameAction.interaction.type).toBe('putCardOnBoard');
+    expect(gameAction.interaction.params.boardCoords).toBeDefined();
+    expect(gameAction.interaction.params.boardCoords.length).toBe(1);
+    expect(gameAction.interaction.params.boardCoords[0]).toBe('3-3');
+    expect(gameAction.interaction.params.handIndexes).toBeDefined();
+    expect(gameAction.interaction.params.handIndexes.length).toBe(1);
+    expect(gameAction.interaction.params.handIndexes[0]).toBe(0);
 
     // Execute
     const result: boolean = await gameWorkerService.getWorker('spell-heal').execute(
@@ -222,17 +222,16 @@ describe('Spell heal', () => {
     });
 
     // Create game action & add it to the instance
-    const gameAction: IGameAction = await gameWorkerService.getWorker('spell-heal').create(gameInstance, {user: gameInstance.users[0].user});
+    const gameAction: IGameAction<any> = await gameWorkerService.getWorker('spell-heal').create(gameInstance, {user: gameInstance.users[0].user});
     gameAction.responses = [{handIndex: 0, boardCoords: '3-3'}];
     gameInstance.actions.current.push(gameAction);
-    expect(gameAction.subactions.length).toBe(1);
-    expect(gameAction.subactions[0].type).toBe('putCardOnBoard');
-    expect((gameAction.subactions[0] as ISubActionPutCardOnBoard).params.boardCoords).toBeDefined();
-    expect((gameAction.subactions[0] as ISubActionPutCardOnBoard).params.boardCoords.length).toBe(1);
-    expect((gameAction.subactions[0] as ISubActionPutCardOnBoard).params.boardCoords[0]).toBe('3-3');
-    expect((gameAction.subactions[0] as ISubActionPutCardOnBoard).params.handIndexes).toBeDefined();
-    expect((gameAction.subactions[0] as ISubActionPutCardOnBoard).params.handIndexes.length).toBe(1);
-    expect((gameAction.subactions[0] as ISubActionPutCardOnBoard).params.handIndexes[0]).toBe(0);
+    expect(gameAction.interaction.type).toBe('putCardOnBoard');
+    expect(gameAction.interaction.params.boardCoords).toBeDefined();
+    expect(gameAction.interaction.params.boardCoords.length).toBe(1);
+    expect(gameAction.interaction.params.boardCoords[0]).toBe('3-3');
+    expect(gameAction.interaction.params.handIndexes).toBeDefined();
+    expect(gameAction.interaction.params.handIndexes.length).toBe(1);
+    expect(gameAction.interaction.params.handIndexes[0]).toBe(0);
 
     // Execute
     const result: boolean = await gameWorkerService.getWorker('spell-heal').execute(
@@ -302,17 +301,16 @@ describe('Spell heal', () => {
     });
 
     // Create game action & add it to the instance
-    const gameAction: IGameAction = await gameWorkerService.getWorker('spell-heal').create(gameInstance, {user: gameInstance.users[0].user});
-    gameAction.responses = [{handIndex: 0, boardCoords: '3-3'}];
+    const gameAction: IGameAction<any> = await gameWorkerService.getWorker('spell-heal').create(gameInstance, {user: gameInstance.users[0].user});
+    gameAction.response = {handIndex: 0, boardCoords: '3-3'};
     gameInstance.actions.current.push(gameAction);
-    expect(gameAction.subactions.length).toBe(1);
-    expect(gameAction.subactions[0].type).toBe('putCardOnBoard');
-    expect((gameAction.subactions[0] as ISubActionPutCardOnBoard).params.boardCoords).toBeDefined();
-    expect((gameAction.subactions[0] as ISubActionPutCardOnBoard).params.boardCoords.length).toBe(1);
-    expect((gameAction.subactions[0] as ISubActionPutCardOnBoard).params.boardCoords[0]).toBe('3-3');
-    expect((gameAction.subactions[0] as ISubActionPutCardOnBoard).params.handIndexes).toBeDefined();
-    expect((gameAction.subactions[0] as ISubActionPutCardOnBoard).params.handIndexes.length).toBe(1);
-    expect((gameAction.subactions[0] as ISubActionPutCardOnBoard).params.handIndexes[0]).toBe(0);
+    expect(gameAction.interaction.type).toBe('putCardOnBoard');
+    expect(gameAction.interaction.params.boardCoords).toBeDefined();
+    expect(gameAction.interaction.params.boardCoords.length).toBe(1);
+    expect(gameAction.interaction.params.boardCoords[0]).toBe('3-3');
+    expect(gameAction.interaction.params.handIndexes).toBeDefined();
+    expect(gameAction.interaction.params.handIndexes.length).toBe(1);
+    expect(gameAction.interaction.params.handIndexes[0]).toBe(0);
 
     // Execute
     const result: boolean = await gameWorkerService.getWorker('spell-heal').execute(
