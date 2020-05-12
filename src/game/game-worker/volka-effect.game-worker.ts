@@ -7,6 +7,7 @@ import { IHasGameHookService, IHasGameWorkerService } from '../injections.interf
 import { ArenaRoomsService } from '../../rooms/arena-rooms.service';
 import { GameWorkerService } from './game-worker.service';
 import { ICardCoords } from '../../@shared/rest-shared/card';
+import { randBetween } from '../../utils/maths.utils';
 
 /**
  * When Volk'ha dies, the player can chose to replace him elsewhere around him.
@@ -102,6 +103,10 @@ export class VolkaEffectGameWorker implements IGameWorker, IHasGameHookService, 
    * @param gameAction
    */
   public async expires(gameInstance: IGameInstance, gameAction: IGameAction<ISubActionChoseSquareOnBoard>): Promise<boolean> {
+    const boardCoords: string[] = this.getBoardCoords(gameInstance, gameAction.user);
+    gameAction.response = {
+      boardCoords: boardCoords[randBetween(0, boardCoords.length - 1)],
+    };
     return true;
   }
 
