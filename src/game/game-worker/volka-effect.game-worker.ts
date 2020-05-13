@@ -102,11 +102,11 @@ export class VolkaEffectGameWorker implements IGameWorker, IHasGameHookService, 
    * @param gameInstance
    * @param gameAction
    */
-  public async expires(gameInstance: IGameInstance, gameAction: IGameAction<ISubActionChoseSquareOnBoard>): Promise<boolean> {
+  public async expires(gameInstance: IGameInstance, gameAction: IGameAction): Promise<boolean> {
     const boardCoords: string[] = this.getBoardCoords(gameInstance, gameAction.user);
-    gameAction.response = {
+    gameAction.responses = [{
       boardCoords: boardCoords[randBetween(0, boardCoords.length - 1)],
-    };
+    }];
     return true;
   }
 

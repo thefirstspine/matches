@@ -227,8 +227,9 @@ export class ConfrontsGameWorker implements IGameWorker, IHasGameHookService, IH
       }
 
       if (attacksOn.length > 0) {
+        const coordsFrom: ICardCoords = JSON.parse(JSON.stringify(cardRotated.coords));
+        const boardCoordsTo = [];
         attacksOn.forEach((side: cardSide) => {
-          const coordsFrom: ICardCoords = JSON.parse(JSON.stringify(cardRotated.coords));
           const coordsTo: ICardCoords = JSON.parse(JSON.stringify(cardRotated.coords));
           switch (side) {
             case 'bottom':
@@ -254,12 +255,15 @@ export class ConfrontsGameWorker implements IGameWorker, IHasGameHookService, IH
                 ['creature', 'artifact', 'player'].includes(card.card.type);
             })
           ) {
-            ret.push({
-              boardCoordsFrom: `${coordsFrom.x}-${coordsFrom.y}`,
-              boardCoordsTo: [`${coordsTo.x}-${coordsTo.y}`],
-            });
+            boardCoordsTo.push(`${coordsTo.x}-${coordsTo.y}`);
           }
         });
+        if (boardCoordsTo.length > 0) {
+          ret.push({
+            boardCoordsFrom: `${coordsFrom.x}-${coordsFrom.y}`,
+            boardCoordsTo,
+          });
+        }
       }
     });
     return ret;
