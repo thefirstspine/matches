@@ -101,6 +101,40 @@ export class ShopService {
     }
   }
 
+  async purchaseThirdPartyGooglePlay(purchase: IPurchase, googlePlayProductId: string, googlePlayToken: string) {
+    // Call the shop endpoint
+    const body = {
+      googlePlayProductId,
+      googlePlayToken,
+    };
+    this.logService.info('Send message to shop service', body);
+    const result: Response = await fetch(
+      env.config.SHOP_URL + '/api/purchase/google-play',
+      {
+        method: 'post',
+        body: JSON.stringify(body),
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Client-Cert': Buffer.from(env.config.SHOP_PUBLIC_KEY.replace(/\\n/gm, '\n')).toString('base64'),
+        },
+      },
+    );
+
+    // Ready result
+    const json = await result.json();
+    this.logService.info('Response from shop service', json);
+
+    if (json.status) {
+      // Save the purchase to the history for further checking
+      this.shopPurchases.push({
+        ...purchase,
+        timestamp: Date.now(),
+        paymentId: json.paymentId,
+      });
+      return json.checkoutCode;
+    }
+  }
+
   async lookForCompletePurchases() {
     const promises: Array<Promise<any>> = this.shopPurchases.map(async (purchase: IShopPurchase) => {
       const response: Response = await fetch(
