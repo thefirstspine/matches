@@ -1,8 +1,9 @@
-import { Controller, Post, Body, UseGuards, Req, Get } from '@nestjs/common';
-import { ShopService } from './shop.service';
+import { Controller, Post, Body, UseGuards, Req, Get, Param } from '@nestjs/common';
+import { ShopService, IShopPurchase, IPurchase } from './shop.service';
 import { AuthGuard } from '../@shared/auth-shared/auth.guard';
 import { IShopItem } from '../@shared/rest-shared/entities';
 import { RestService } from '../rest/rest.service';
+import env from '../@shared/env-shared/env';
 import * as fs from 'fs';
 
 /**
@@ -72,13 +73,15 @@ export class ShopController {
 
     try {
       // Call service
-      const html = await this.shopService.purchase({
+      const purchase: IShopPurchase = await this.shopService.purchase({
         user: request.user,
         ...item,
       });
+      const url = `${env.config.ARENA_URL}/shop/v/go/${purchase.timestamp}`;
       return {
         status: true,
-        html,
+        html: purchase.data?.checkoutCode,
+        url,
       };
     } catch (e) {
       return {
@@ -131,6 +134,16 @@ export class ShopController {
     }
   }
 
+  @Get('v/go/:t')
+  vGo(@Param('t') t: string) {
+    const purchase: IShopPurchase = this.shopService.getPaymentByTimestamp(parseInt(t, 10));
+    if (purchase?.data?.checkoutCode) {
+      return purchase?.data?.checkoutCode;
+    }
+
+    return 'Not a goable purchase.';
+  }
+
   @Get('v/success')
   vSuccess() {
     return fs.readFileSync(`${__dirname}/../../assets/arena-shop-success.html`).toString();
@@ -151,5 +164,9 @@ export interface IExchangeResult {
 export interface IPurchaseResult {
   status: boolean;
   message?: string;
+  /**
+   * @deprecated
+   */
   html?: string;
+  url?: string;
 }
