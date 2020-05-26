@@ -57,7 +57,7 @@ export class ShopService {
     this.messagingService.sendMessage([wizzard.id], 'TheFirstSpine:shop', purchase);
   }
 
-  async purchase(purchase: IPurchase) {
+  async purchase(purchase: IPurchase): Promise<IShopPurchase|null> {
     // Check for currency
     if (purchase.price.currency !== 'eur') {
       throw new Error('Can only purchase with `eur` currency');
@@ -92,16 +92,24 @@ export class ShopService {
 
     if (json.status) {
       // Save the purchase to the history for further checking
-      this.shopPurchases.push({
+      const shopPurchase: IShopPurchase = {
         ...purchase,
         timestamp: Date.now(),
         paymentId: json.paymentId,
-      });
-      return json.checkoutCode;
+        data: json,
+      };
+      this.shopPurchases.push(shopPurchase);
+      return shopPurchase;
     }
+
+    return null;
   }
 
-  async purchaseThirdPartyGooglePlay(purchase: IPurchase, googlePlayProductId: string, googlePlayToken: string) {
+  getPaymentByTimestamp(timestamp: number): IShopPurchase|undefined {
+    return this.shopPurchases.find((p: IShopPurchase) => p.timestamp === timestamp);
+  }
+
+  async purchaseThirdPartyGooglePlay(purchase: IPurchase, googlePlayProductId: string, googlePlayToken: string): Promise<IShopPurchase|null> {
     // Call the shop endpoint
     const body = {
       googlePlayProductId,
@@ -125,14 +133,16 @@ export class ShopService {
     this.logService.info('Response from shop service', json);
 
     if (json.status) {
-      // Save the purchase to the history for further checking
-      this.shopPurchases.push({
+      const shopPurchase: IShopPurchase = {
         ...purchase,
         timestamp: Date.now(),
         paymentId: json.paymentId,
-      });
-      return json.checkoutCode;
+      };
+      this.shopPurchases.push(shopPurchase);
+      return shopPurchase;
     }
+
+    return null;
   }
 
   async lookForCompletePurchases() {
@@ -193,4 +203,5 @@ export interface IPurchase extends IShopItem {
 export interface IShopPurchase extends IPurchase {
   timestamp: number;
   paymentId: string;
+  data?: any;
 }
