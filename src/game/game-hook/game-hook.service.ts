@@ -27,6 +27,7 @@ import { CaduceusDestroyedGameHook } from './caduceus-destroyed.game-hook';
 import { CaduceusPlacesGameHook } from './caduceus-placed.game-hook';
 import { JellyfishDestroyedGameHook } from './jellyfish-destroyed.game-hook';
 import { PocketVolcanoDestroyedGameHook } from './pocket-volcano-destroyed.game-hook';
+import { ClassicCreatedGameHook } from './classic-created.game-hook';
 
 /**
  * Main service that manages game hooks.
@@ -82,6 +83,7 @@ export class GameHookService extends BaseGameService<IGameHook> {
     this.subscribe('card:placed:soul-of-a-sacrified-hunter', this.createInjectable(SoulOfASacrifiedHunterPlacesGameHook, injectedProps));
     this.subscribe('game:created:tournament', this.createInjectable(TournamentCreatedGameHook, injectedProps));
     this.subscribe('game:created:fpe', this.createInjectable(FpeCreatedGameHook, injectedProps));
+    this.subscribe('game:created:classic', this.createInjectable(ClassicCreatedGameHook, injectedProps));
     this.subscribe('game:phaseChanged:actions', this.createInjectable(PhaseActionsGameHook, injectedProps));
     this.subscribe('card:destroyed:guardian', this.createInjectable(GuardianDestroyedGameHook, injectedProps));
     this.subscribe('card:destroyed:caduceus', this.createInjectable(CaduceusDestroyedGameHook, injectedProps));
