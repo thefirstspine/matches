@@ -57,7 +57,8 @@ export class PlayerDamagedGameHook implements IGameHook {
         if (cycle.id === 'treasure-2020') {
           loots.push({
             name: 'golden-galleon',
-            num: gameInstance.cards.filter((c: IGameCard) => c.user === gameUser.user && c.card.id === 'golden-galleon').length,
+            num: gameInstance.cards
+              .filter((c: IGameCard) => c.user === gameUser.user && c.location === 'hand' && c.card.id === 'golden-galleon').length,
           });
         }
         this.registerResult(
@@ -74,7 +75,8 @@ export class PlayerDamagedGameHook implements IGameHook {
         if (cycle.id === 'treasure-2020') {
           loots.push({
             name: 'golden-galleon',
-            num: gameInstance.cards.filter((c: IGameCard) => c.user === gameUser.user && c.card.id === 'golden-galleon').length,
+            num: gameInstance.cards
+              .filter((c: IGameCard) => c.user === gameUser.user && c.location === 'hand' && c.card.id === 'golden-galleon').length,
           });
         }
         this.registerResult(
