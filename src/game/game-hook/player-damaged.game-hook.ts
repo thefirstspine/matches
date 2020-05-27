@@ -3,7 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { IGameInstance, IGameUser, IGameResult, IGameCard } from '../../@shared/arena-shared/game';
 import { WizzardsStorageService } from '../../storage/wizzards.storage.service';
 import { WizzardService } from '../../wizzard/wizzard.service';
-import { ILoot } from '../../@shared/rest-shared/entities';
+import { ILoot, ICycle } from '../../@shared/rest-shared/entities';
 import { IWizzard, IHistoryItem } from '../../@shared/arena-shared/wizzard';
 import { mergeLootsInItems } from '../../utils/game.utils';
 import { RestService } from '../../rest/rest.service';
@@ -38,6 +38,9 @@ export class PlayerDamagedGameHook implements IGameHook {
       // Get the game type
       const gameType = await this.restService.gameType(gameInstance.gameTypeId);
 
+      // Get the cycle
+      const cycle: ICycle = await this.restService.currentCycle();
+
       // Get aditionnal triumphs based on opponents
       const additionalTriumphs: string[] = [];
       if (losers.find((user: IGameUser) => user.user === 933)) {
@@ -50,21 +53,35 @@ export class PlayerDamagedGameHook implements IGameHook {
       // Generate results & register history
       const result: IGameResult[] = [];
       losers.forEach((gameUser: IGameUser) => {
+        const loots: ILoot[] = [...gameType.loots.defeat];
+        if (cycle.id === 'treasure-2020') {
+          loots.push({
+            name: 'golden-galleon',
+            num: gameInstance.cards.filter((c: IGameCard) => c.user === gameUser.user && c.card.id === 'golden-galleon').length,
+          });
+        }
         this.registerResult(
           false,
           gameUser,
           gameInstance,
-          gameType.loots.defeat,
+          loots,
           result,
           []);
       });
 
       winners.forEach((gameUser: IGameUser) => {
+        const loots: ILoot[] = [...gameType.loots.victory];
+        if (cycle.id === 'treasure-2020') {
+          loots.push({
+            name: 'golden-galleon',
+            num: gameInstance.cards.filter((c: IGameCard) => c.user === gameUser.user && c.card.id === 'golden-galleon').length,
+          });
+        }
         this.registerResult(
           true,
           gameUser,
           gameInstance,
-          gameType.loots.victory,
+          loots,
           result,
           additionalTriumphs);
       });
