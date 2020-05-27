@@ -23,8 +23,8 @@ export class ShopService {
 
   exchange(purchase: IPurchase) {
     // Check for currency
-    if (purchase.price.currency !== 'shards') {
-      throw new Error('Can only exchange with `shards` currency');
+    if (purchase.price.currency === 'eur') {
+      throw new Error('Cannot only exchange with `eur` currency');
     }
 
     // Get the wizzard
@@ -34,18 +34,14 @@ export class ShopService {
     }
 
     // Gather & check required items
-    const itemFrom: IWizzardItem[] = wizzard.items.filter(item => item.name === 'shard');
-    if (itemFrom.length <= 0 || itemFrom[0].num < purchase.price.num) {
+    const lookedItem = purchase.price.currency === 'shards' ? 'shard' : purchase.price.currency;
+    const itemFrom: IWizzardItem = wizzard.items.find(item => item.name === lookedItem);
+    if (!itemFrom || itemFrom.num < purchase.price.num) {
       throw new Error('No sufficient item count');
     }
-    itemFrom[0].num -= purchase.price.num;
-    wizzard.items = wizzard.items.map((i: IWizzardItem) => {
-      return i.name === itemFrom[0].name ?
-        itemFrom[0] :
-        i;
-    });
 
     // Gather or create item
+    mergeLootsInItems(wizzard.items, [{name: lookedItem, num: -purchase.price.num}]);
     mergeLootsInItems(wizzard.items, purchase.loots);
 
     // Add purchase to history
