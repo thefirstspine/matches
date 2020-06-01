@@ -13,7 +13,6 @@ import { ArenaRoomsService } from '../rooms/arena-rooms.service';
 import { MessagingService } from '../@shared/messaging-shared/messaging.service';
 import { GameWorkerService } from './game-worker/game-worker.service';
 import { GameHookService } from './game-hook/game-hook.service';
-import { destiny, origin } from '../@shared/rest-shared/base';
 
 /**
  * Service to manage game instances
@@ -65,7 +64,7 @@ export class GameService {
     const gameType: IGameType = await this.restService.gameType(gameTypeId);
     const cards: IGameCard[] = [];
     users.forEach((gameUser: IGameUser, index: number) => {
-      const decksToMix: Array<destiny|origin> = [gameUser.destiny];
+      const decksToMix: string[] = [gameUser.destiny];
       if (gameUser.origin) {
         decksToMix.push(gameUser.origin);
       }

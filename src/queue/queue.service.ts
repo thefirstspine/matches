@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { GameService } from '../game/game.service';
 import { WizzardService } from '../wizzard/wizzard.service';
-import { destiny, origin } from '../@shared/rest-shared/base';
 import { IGameUser, IGameInstance } from '../@shared/arena-shared/game';
 import { IWizzardItem, IWizzard, IHistoryItem } from '../@shared/arena-shared/wizzard';
 import { IGameType } from '../@shared/rest-shared/entities';
@@ -47,8 +46,8 @@ export class QueueService {
   async join(
     gameTypeId: string,
     user: number,
-    destiny: destiny,
-    origin?: origin,
+    destiny: string,
+    origin?: string,
     style?: string,
     cover?: string,
   ): Promise<IGameUser[]> {
