@@ -29,6 +29,7 @@ import { JellyfishDestroyedGameHook } from './jellyfish-destroyed.game-hook';
 import { PocketVolcanoDestroyedGameHook } from './pocket-volcano-destroyed.game-hook';
 import { ClassicCreatedGameHook } from './classic-created.game-hook';
 import { TorturerPlacesGameHook } from './torturer-placed.game-hook';
+import { ChimeraPlacesGameHook } from './chimera-placed.game-hook';
 
 /**
  * Main service that manages game hooks.
@@ -92,6 +93,7 @@ export class GameHookService extends BaseGameService<IGameHook> {
     this.subscribe('card:destroyed:jellyfish', this.createInjectable(JellyfishDestroyedGameHook, injectedProps));
     this.subscribe('card:destroyed:pocket-volcano', this.createInjectable(PocketVolcanoDestroyedGameHook, injectedProps));
     this.subscribe('card:placed:torturer', this.createInjectable(TorturerPlacesGameHook, injectedProps));
+    this.subscribe('card:placed:chimera', this.createInjectable(ChimeraPlacesGameHook, injectedProps));
   }
 
   /**
