@@ -43,6 +43,7 @@ import { Fpe19GameWorker } from './fpe/fpe-19';
 import { Fpe20GameWorker } from './fpe/fpe-20';
 import { SpellCureGameWorker } from './spell-cure.game-worker';
 import { SpellTheVoidGameWorker } from './spell-the-void.game-worker';
+import { SpellPainGameWorker } from './spell-pain.game-worker';
 
 /**
  * Main service that manages game workers. Each game worker is responsible of a game action type. This service
@@ -118,6 +119,7 @@ export class GameWorkerService extends BaseGameService<IGameWorker> {
     this.createInjectable(Fpe20GameWorker, injectedProps);
     this.createInjectable(SpellCureGameWorker, injectedProps);
     this.createInjectable(SpellTheVoidGameWorker, injectedProps);
+    this.createInjectable(SpellPainGameWorker, injectedProps);
   }
 
   /**
