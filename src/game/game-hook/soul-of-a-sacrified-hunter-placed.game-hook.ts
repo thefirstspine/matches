@@ -1,10 +1,6 @@
 import { IGameHook } from './game-hook.interface';
 import { Injectable } from '@nestjs/common';
-import { IGameInstance, IGameUser, IGameCard } from '../../@shared/arena-shared/game';
-import { MessagingService } from '../../@shared/messaging-shared/messaging.service';
-import { GameHookService } from './game-hook.service';
-import { ICard } from '../../@shared/rest-shared/card';
-import { RestService } from '../../rest/rest.service';
+import { IGameInstance, IGameCard } from '../../@shared/arena-shared/game';
 
 /**
  * This subscriber is executed once a 'card:lifeChanged:damaged' event is thrown. It will look for dead
@@ -14,11 +10,6 @@ import { RestService } from '../../rest/rest.service';
  */
 @Injectable()
 export class SoulOfASacrifiedHunterPlacesGameHook implements IGameHook {
-
-  constructor(
-    private readonly messagingService: MessagingService,
-    private readonly gameHookService: GameHookService,
-  ) {}
 
   async execute(gameInstance: IGameInstance, params: {gameCard: IGameCard}): Promise<boolean> {
     let life: number = 0;
