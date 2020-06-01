@@ -118,7 +118,7 @@ export class SpellCureGameWorker implements IGameWorker, IHasGameHookService {
     this.arenaRoomsService.sendMessageForGame(
       gameInstance,
       {
-        fr: `A joué un Remène`,
+        fr: `A joué un Remède`,
         en: ``,
       },
       gameAction.user);
