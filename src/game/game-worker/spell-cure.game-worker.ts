@@ -34,7 +34,7 @@ export class SpellCureGameWorker implements IGameWorker, IHasGameHookService {
       },
       description: {
         en: ``,
-        fr: `Jouer un remène sur un sorcier`,
+        fr: `Jouer un remède sur un sorcier`,
       },
       user: data.user as number,
       priority: 1,
