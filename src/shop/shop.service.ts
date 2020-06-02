@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { WizzardService } from '../wizzard/wizzard.service';
 import { WizzardsStorageService } from '../storage/wizzards.storage.service';
 import fetch, { Response } from 'node-fetch';
-import env from '../@shared/env-shared/env';
 import { IWizzard, IWizzardItem } from '../@shared/arena-shared/wizzard';
 import { MessagingService } from '../@shared/messaging-shared/messaging.service';
 import { IShopItem, ILoot } from '../@shared/rest-shared/entities';
@@ -66,18 +65,18 @@ export class ShopService {
         description: 'Achat depuis Arena',
         price: purchase.price.num * 100,
       },
-      successUrl: `${env.config.ARENA_URL}/shop/v/success`,
-      cancelUrl: `${env.config.ARENA_URL}/shop/v/cancel`,
+      successUrl: `${process.env.ARENA_URL}/shop/v/success`,
+      cancelUrl: `${process.env.ARENA_URL}/shop/v/cancel`,
     };
     this.logService.info('Send message to shop service', body);
     const result: Response = await fetch(
-      env.config.SHOP_URL + '/api/purchase',
+      process.env.SHOP_URL + '/api/purchase',
       {
         method: 'post',
         body: JSON.stringify(body),
         headers: {
           'Content-Type': 'application/json',
-          'X-Client-Cert': Buffer.from(env.config.SHOP_PUBLIC_KEY.replace(/\\n/gm, '\n')).toString('base64'),
+          'X-Client-Cert': Buffer.from(process.env.SHOP_PUBLIC_KEY.replace(/\\n/gm, '\n')).toString('base64'),
         },
       },
     );
@@ -113,13 +112,13 @@ export class ShopService {
     };
     this.logService.info('Send message to shop service', body);
     const result: Response = await fetch(
-      env.config.SHOP_URL + '/api/purchase/google-play',
+      process.env.SHOP_URL + '/api/purchase/google-play',
       {
         method: 'post',
         body: JSON.stringify(body),
         headers: {
           'Content-Type': 'application/json',
-          'X-Client-Cert': Buffer.from(env.config.SHOP_PUBLIC_KEY.replace(/\\n/gm, '\n')).toString('base64'),
+          'X-Client-Cert': Buffer.from(process.env.SHOP_PUBLIC_KEY.replace(/\\n/gm, '\n')).toString('base64'),
         },
       },
     );
@@ -144,11 +143,11 @@ export class ShopService {
   async lookForCompletePurchases() {
     const promises: Array<Promise<any>> = this.shopPurchases.map(async (purchase: IShopPurchase) => {
       const response: Response = await fetch(
-        env.config.SHOP_URL + `/api/payments/${purchase.paymentId}`,
+        process.env.SHOP_URL + `/api/payments/${purchase.paymentId}`,
         {
           headers: {
             'Content-Type': 'application/json',
-            'X-Client-Cert': Buffer.from(env.config.SHOP_PUBLIC_KEY.replace(/\\n/gm, '\n')).toString('base64'),
+            'X-Client-Cert': Buffer.from(process.env.SHOP_PUBLIC_KEY.replace(/\\n/gm, '\n')).toString('base64'),
           },
         },
       );

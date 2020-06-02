@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import env from '../@shared/env-shared/env';
 import fetch, { Response } from 'node-fetch';
 import { LogService } from '../@shared/log-shared/log.service';
 
@@ -39,13 +38,13 @@ export class RoomsService {
    */
   protected async sendRequest<T>(endpoint: string, data: any, method: 'get'|'post' = 'get'): Promise<T|null> {
     this.logService.info('Send message to room service', {endpoint, data});
-    const url: string = `${env.config.ROOMS_URL}/api/${endpoint}`;
+    const url: string = `${process.env.ROOMS_URL}/api/${endpoint}`;
     const response: Response = await fetch(url, {
       body: JSON.stringify(data),
       method,
       headers: {
         'Content-Type': 'application/json',
-        'X-Client-Cert': Buffer.from(env.config.ROOMS_PUBLIC_KEY.replace(/\\n/gm, '\n')).toString('base64'),
+        'X-Client-Cert': Buffer.from(process.env.ROOMS_PUBLIC_KEY.replace(/\\n/gm, '\n')).toString('base64'),
       },
     });
     const jsonResponse: any = await response.json();

@@ -1,6 +1,5 @@
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { Observable } from 'rxjs';
-import env from './@shared/env-shared/env';
 import * as crypto from 'crypto';
 import { LogService } from './@shared/log-shared/log.service';
 
@@ -41,7 +40,7 @@ export class CertificateGuard implements CanActivate {
 
     // Get the key pairs
     const publicKeyStr: string = Buffer.from(context.switchToHttp().getRequest().headers['x-client-cert'], 'base64').toString();
-    const privateKeyStr: string = env.config.PRIVATE_KEY.replace(/\\n/gm, '\n');
+    const privateKeyStr: string = process.env.PRIVATE_KEY.replace(/\\n/gm, '\n');
 
     try {
       // Create the challenge

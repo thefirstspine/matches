@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { ICard } from '../@shared/rest-shared/card';
 import { IGameType, IDeck, IShopItem, IAvatar, ICycle } from '../@shared/rest-shared/entities';
 import fetch, { Response } from 'node-fetch';
-import env from '../@shared/env-shared/env';
 
 @Injectable()
 export class RestService {
@@ -44,13 +43,13 @@ export class RestService {
   }
 
   public async list<T>(resource: string): Promise<T[]> {
-    const response: Response = await fetch(`${env.config.REST_URL}/rest/${resource}`);
+    const response: Response = await fetch(`${process.env.REST_URL}/rest/${resource}`);
     const json = await response.json();
     return json as T[];
   }
 
   public async single<T>(resource: string, id: string): Promise<T> {
-    const response: Response = await fetch(`${env.config.REST_URL}/rest/${resource}/${id}`);
+    const response: Response = await fetch(`${process.env.REST_URL}/rest/${resource}/${id}`);
     const json = await response.json();
     return json as T;
   }
