@@ -1,10 +1,10 @@
 import { Controller, Post, Body, UseGuards, Req, Get, Param } from '@nestjs/common';
 import { ShopService, IShopPurchase, IPurchase } from './shop.service';
-import { AuthGuard } from '../@shared/auth-shared/auth.guard';
 import { IShopItem } from '../@shared/rest-shared/entities';
 import { RestService } from '../rest/rest.service';
 import env from '../@shared/env-shared/env';
 import * as fs from 'fs';
+import { AuthGuard } from '@thefirstspine/auth-nest';
 
 /**
  * Main Shop API

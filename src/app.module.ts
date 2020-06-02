@@ -11,7 +11,6 @@ import { WizzardsStorageService } from './storage/wizzards.storage.service';
 import { WizzardController } from './wizzard/wizzard.controller';
 import { ShopController } from './shop/shop.controller';
 import { ShopService } from './shop/shop.service';
-import { AuthService } from './@shared/auth-shared/auth.service';
 import { LogService } from './@shared/log-shared/log.service';
 import { RestService } from './rest/rest.service';
 import { RoomsService } from './rooms/rooms.service';
@@ -23,6 +22,7 @@ import { BotsService } from './bots/bots.service';
 import { IndexController } from './index/index.controller';
 import { FileSocketModule } from 'nest-filesocket';
 import { FileSocketMethodsService } from './file-socket-methods/file-socket-methods.service';
+import { AuthService } from '@thefirstspine/auth-nest';
 
 @Module({
   imports: [

@@ -9,7 +9,6 @@ import { TickerService } from '../../ticker/ticker.service';
 import { WizzardService } from '../../wizzard/wizzard.service';
 import { WizzardsStorageService } from '../../storage/wizzards.storage.service';
 import { ShopService } from '../../shop/shop.service';
-import { AuthService } from '../../@shared/auth-shared/auth.service';
 import { RestService } from '../../rest/rest.service';
 import { RoomsService } from '../../rooms/rooms.service';
 import { ArenaRoomsService } from '../../rooms/arena-rooms.service';
@@ -17,6 +16,7 @@ import { GameHookService } from '../game-hook/game-hook.service';
 import { BotsService } from '../../bots/bots.service';
 import { LogService } from '../../@shared/log-shared/log.service';
 import { IGameInstance, IGameAction, ISubActionMoveCardToDiscard } from '../../@shared/arena-shared/game';
+import { AuthService } from '@thefirstspine/auth-nest';
 
 describe('Throw cards', () => {
   let gameWorkerService: GameWorkerService;
