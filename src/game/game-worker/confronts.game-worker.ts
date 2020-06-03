@@ -4,7 +4,6 @@ import { IGameInstance,
   ISubActionMoveCardOnBoardPossibility,
   ISubActionSelectCoupleOnBoard,
   IGameCard } from '../../@shared/arena-shared/game';
-import { LogService } from '../../@shared/log-shared/log.service';
 import { Injectable } from '@nestjs/common';
 import { cardSide } from '../../@shared/rest-shared/base';
 import { GameWorkerService } from './game-worker.service';
@@ -12,6 +11,7 @@ import { ICardCoords } from '../../@shared/rest-shared/card';
 import { GameHookService } from '../game-hook/game-hook.service';
 import { IHasGameHookService, IHasGameWorkerService } from '../injections.interface';
 import { ArenaRoomsService } from '../../rooms/arena-rooms.service';
+import { LogsService } from '@thefirstspine/logs-nest';
 
 /**
  * The main confrontation game worker. Normally a confrontation is closing the turn of the player. This worker
@@ -26,7 +26,7 @@ export class ConfrontsGameWorker implements IGameWorker, IHasGameHookService, IH
   readonly type: string = 'confronts';
 
   constructor(
-    private readonly logService: LogService,
+    private readonly logsService: LogsService,
     private readonly arenaRoomsService: ArenaRoomsService,
   ) {}
 
@@ -70,7 +70,7 @@ export class ConfrontsGameWorker implements IGameWorker, IHasGameHookService, IH
       gameAction.response.boardCoordsFrom === undefined ||
       gameAction.response.boardCoordsTo === undefined
     ) {
-      this.logService.warning('Response in a wrong format', gameAction);
+      this.logsService.warning('Response in a wrong format', gameAction);
       return false;
     }
 
@@ -82,7 +82,7 @@ export class ConfrontsGameWorker implements IGameWorker, IHasGameHookService, IH
       return p.boardCoordsFrom === boardCoordsFrom && p.boardCoordsTo.includes(boardCoordsTo);
     });
     if (!possibility) {
-      this.logService.warning('Possibility not found', gameAction);
+      this.logsService.warning('Possibility not found', gameAction);
       return false;
     }
 

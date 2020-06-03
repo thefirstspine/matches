@@ -1,7 +1,7 @@
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { Observable } from 'rxjs';
 import * as crypto from 'crypto';
-import { LogService } from './@shared/log-shared/log.service';
+import { LogsService } from '@thefirstspine/logs-nest';
 
 /**
  * Guard to use with certificate cheking. The guard will check the cerificate under the "X-Client-Cert"
@@ -20,7 +20,7 @@ import { LogService } from './@shared/log-shared/log.service';
 export class CertificateGuard implements CanActivate {
 
   constructor(
-    private readonly logService: LogService,
+    private readonly logsService: LogsService,
   ) {}
 
   /**
@@ -53,7 +53,7 @@ export class CertificateGuard implements CanActivate {
       // Return challenge result
       return decryptedBuffer.toString() === challenge;
     } catch (exception) {
-      this.logService.error(
+      this.logsService.error(
         `Cannot challenge the public certificate with private key`, {
           message: exception.message,
           name: exception.name,

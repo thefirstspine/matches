@@ -1,11 +1,11 @@
 import { IGameWorker } from './game-worker.interface';
 import { IGameInstance, IGameAction, IGameCard, ISubActionPass } from '../../@shared/arena-shared/game';
-import { LogService } from '../../@shared/log-shared/log.service';
 import { Injectable } from '@nestjs/common';
 import { GameHookService } from '../game-hook/game-hook.service';
 import { IHasGameHookService, IHasGameWorkerService } from '../injections.interface';
 import { ArenaRoomsService } from '../../rooms/arena-rooms.service';
 import { GameWorkerService } from './game-worker.service';
+import { LogsService } from '@thefirstspine/logs-nest';
 
 /**
  * At the beggining of his turn, the player can throw to the discard one or more cards.
@@ -19,7 +19,7 @@ export class SkipRunGameWorker implements IGameWorker, IHasGameHookService, IHas
   public readonly type: string = 'skip-run';
 
   constructor(
-    private readonly logService: LogService,
+    private readonly logsService: LogsService,
     private readonly arenaRoomsService: ArenaRoomsService,
   ) {}
 

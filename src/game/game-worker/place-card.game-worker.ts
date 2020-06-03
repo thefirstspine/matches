@@ -1,11 +1,11 @@
 import { IGameWorker } from './game-worker.interface';
 import { IGameInstance, IGameAction, IGameCard, ISubActionPutCardOnBoard } from '../../@shared/arena-shared/game';
-import { LogService } from '../../@shared/log-shared/log.service';
 import { Injectable } from '@nestjs/common';
 import { ICardCoords } from '../../@shared/rest-shared/card';
 import { GameHookService } from '../game-hook/game-hook.service';
 import { IHasGameHookService } from '../injections.interface';
 import { ArenaRoomsService } from '../../rooms/arena-rooms.service';
+import { LogsService } from '@thefirstspine/logs-nest';
 
 /**
  * The "place a card" action game worker. During his turn, the player can put one card on the board.
@@ -18,7 +18,7 @@ export class PlaceCardGameWorker implements IGameWorker, IHasGameHookService {
   public readonly type: string = 'place-card';
 
   constructor(
-    private readonly logService: LogService,
+    private readonly logsService: LogsService,
     private readonly arenaRoomsService: ArenaRoomsService,
   ) {}
 
@@ -70,7 +70,7 @@ export class PlaceCardGameWorker implements IGameWorker, IHasGameHookService {
       gameAction.response.handIndex === undefined ||
       gameAction.response.boardCoords === undefined
     ) {
-      this.logService.warning('Response in a wrong format', gameAction);
+      this.logsService.warning('Response in a wrong format', gameAction);
       return false;
     }
 
@@ -80,11 +80,11 @@ export class PlaceCardGameWorker implements IGameWorker, IHasGameHookService {
     const responseHandIndex: number = gameAction.response.handIndex;
     const responseBoardCoords: string = gameAction.response.boardCoords;
     if (!allowedHandIndexes.includes(responseHandIndex)) {
-      this.logService.warning('Not allowed hand index', gameAction);
+      this.logsService.warning('Not allowed hand index', gameAction);
       return false;
     }
     if (!allowedCoordsOnBoard.includes(responseBoardCoords)) {
-      this.logService.warning('Not allowed board coords', gameAction);
+      this.logsService.warning('Not allowed board coords', gameAction);
       return false;
     }
 
@@ -97,7 +97,7 @@ export class PlaceCardGameWorker implements IGameWorker, IHasGameHookService {
       .filter((c: IGameCard) => c.location === 'hand' && c.user === gameAction.user)
       .find((c: IGameCard, index: number) => index === responseHandIndex);
     if (!card) {
-      this.logService.warning('Card not found', gameAction);
+      this.logsService.warning('Card not found', gameAction);
       return false;
     }
     card.location = 'board';

@@ -5,8 +5,8 @@ import fetch, { Response } from 'node-fetch';
 import { IWizzard, IWizzardItem } from '../@shared/arena-shared/wizzard';
 import { MessagingService } from '../@shared/messaging-shared/messaging.service';
 import { IShopItem, ILoot } from '../@shared/rest-shared/entities';
-import { LogService } from '../@shared/log-shared/log.service';
 import { mergeLootsInItems } from '../utils/game.utils';
+import { LogsService } from '@thefirstspine/logs-nest';
 
 @Injectable()
 export class ShopService {
@@ -17,7 +17,7 @@ export class ShopService {
     private readonly wizzardService: WizzardService,
     private readonly wizzardStorageService: WizzardsStorageService,
     private readonly messagingService: MessagingService,
-    private readonly logService: LogService,
+    private readonly logsService: LogsService,
   ) {}
 
   exchange(purchase: IPurchase) {
@@ -68,7 +68,7 @@ export class ShopService {
       successUrl: `${process.env.ARENA_URL}/shop/v/success`,
       cancelUrl: `${process.env.ARENA_URL}/shop/v/cancel`,
     };
-    this.logService.info('Send message to shop service', body);
+    this.logsService.info('Send message to shop service', body);
     const result: Response = await fetch(
       process.env.SHOP_URL + '/api/purchase',
       {
@@ -83,7 +83,7 @@ export class ShopService {
 
     // Ready result
     const json = await result.json();
-    this.logService.info('Response from shop service', json);
+    this.logsService.info('Response from shop service', json);
 
     if (json.status) {
       // Save the purchase to the history for further checking
@@ -110,7 +110,7 @@ export class ShopService {
       googlePlayProductId,
       googlePlayToken,
     };
-    this.logService.info('Send message to shop service', body);
+    this.logsService.info('Send message to shop service', body);
     const result: Response = await fetch(
       process.env.SHOP_URL + '/api/purchase/google-play',
       {
@@ -125,7 +125,7 @@ export class ShopService {
 
     // Ready result
     const json = await result.json();
-    this.logService.info('Response from shop service', json);
+    this.logsService.info('Response from shop service', json);
 
     if (json.status) {
       const shopPurchase: IShopPurchase = {
@@ -156,7 +156,7 @@ export class ShopService {
       // The status is unknown
       if (responseJson.status === 'unknown') {
         // Remove the purchase
-        this.logService.warning(`Unknown status for purchase #${purchase.paymentId}`, purchase);
+        this.logsService.warning(`Unknown status for purchase #${purchase.paymentId}`, purchase);
         this.shopPurchases = this.shopPurchases.filter((p: IShopPurchase) => purchase !== p);
         return;
       }
@@ -164,7 +164,7 @@ export class ShopService {
       // The payment failed
       if (responseJson.status === 'failed') {
         // Remove the purchase
-        this.logService.info(`Unknown status for purchase #${purchase.paymentId}`, purchase);
+        this.logsService.info(`Unknown status for purchase #${purchase.paymentId}`, purchase);
         this.shopPurchases = this.shopPurchases.filter((p: IShopPurchase) => purchase !== p);
         return;
       }
@@ -181,7 +181,7 @@ export class ShopService {
         // Remove the purchase
         this.shopPurchases = this.shopPurchases.filter((p: IShopPurchase) => purchase !== p);
 
-        this.logService.info(`Purchase #${purchase.paymentId} succeeded`, purchase);
+        this.logsService.info(`Purchase #${purchase.paymentId} succeeded`, purchase);
         return;
       }
     });

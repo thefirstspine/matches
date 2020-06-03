@@ -8,7 +8,7 @@ import { IWizzard, IHistoryItem } from '../../@shared/arena-shared/wizzard';
 import { mergeLootsInItems } from '../../utils/game.utils';
 import { RestService } from '../../rest/rest.service';
 import { MessagingService } from '../../@shared/messaging-shared/messaging.service';
-import { LogService } from '../../@shared/log-shared/log.service';
+import { LogsService } from '@thefirstspine/logs-nest';
 
 /**
  * This subscriber is executed once a 'card:lifeChanged:damaged:{player}' event is thrown and look for dead
@@ -24,7 +24,7 @@ export class PlayerDamagedGameHook implements IGameHook {
     private readonly wizzardsStorageService: WizzardsStorageService,
     private readonly restService: RestService,
     private readonly messagingService: MessagingService,
-    private readonly logsService: LogService,
+    private readonly logsService: LogsService,
   ) {}
 
   async execute(gameInstance: IGameInstance, params: {gameCard: IGameCard, source: IGameCard, lifeChanged: number}): Promise<boolean> {

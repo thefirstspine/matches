@@ -1,11 +1,11 @@
 import { IGameWorker } from '../game-worker.interface';
 import { IGameInstance, IGameAction, IGameCard, ISubActionMoveCardToDiscard, anySubaction } from '../../../@shared/arena-shared/game';
-import { LogService } from '../../../@shared/log-shared/log.service';
 import { Injectable } from '@nestjs/common';
 import { GameHookService } from '../../game-hook/game-hook.service';
 import { IHasGameHookService, IHasGameWorkerService } from '../../injections.interface';
 import { ArenaRoomsService } from '../../../rooms/arena-rooms.service';
 import { GameWorkerService } from '../game-worker.service';
+import { LogsService } from '@thefirstspine/logs-nest';
 
 /**
  * At the beggining of his turn, the player can throw to the discard one or more cards.
@@ -19,7 +19,7 @@ export class Fpe15GameWorker implements IGameWorker, IHasGameHookService, IHasGa
   public readonly type: string = 'fpe-15';
 
   constructor(
-    private readonly logService: LogService,
+    private readonly logsService: LogsService,
     private readonly arenaRoomsService: ArenaRoomsService,
   ) {}
 
@@ -64,7 +64,7 @@ export class Fpe15GameWorker implements IGameWorker, IHasGameHookService, IHasGa
     const responseHandIndexes: number[] = gameAction.response.handIndexes;
     const falseIndex: number[] = responseHandIndexes.filter((i: number) => !allowedHandIndexes.includes(i));
     if (falseIndex.length) {
-      this.logService.warning('Not allowed hand index', gameAction);
+      this.logsService.warning('Not allowed hand index', gameAction);
       return false;
     }
 

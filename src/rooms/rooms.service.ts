@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import fetch, { Response } from 'node-fetch';
-import { LogService } from '../@shared/log-shared/log.service';
+import { LogsService } from '@thefirstspine/logs-nest';
 
 /**
  * Service to interact with the TFS' service Rooms. They are public chat
@@ -9,7 +9,7 @@ import { LogService } from '../@shared/log-shared/log.service';
 @Injectable()
 export class RoomsService {
 
-  constructor(private readonly logService: LogService) {}
+  constructor(private readonly logsService: LogsService) {}
 
   /**
    * Create a room for a subject.
@@ -37,7 +37,7 @@ export class RoomsService {
    * @param method
    */
   protected async sendRequest<T>(endpoint: string, data: any, method: 'get'|'post' = 'get'): Promise<T|null> {
-    this.logService.info('Send message to room service', {endpoint, data});
+    this.logsService.info('Send message to room service', {endpoint, data});
     const url: string = `${process.env.ROOMS_URL}/api/${endpoint}`;
     const response: Response = await fetch(url, {
       body: JSON.stringify(data),
@@ -49,10 +49,10 @@ export class RoomsService {
     });
     const jsonResponse: any = await response.json();
     if (response.status >= 400) {
-      this.logService.error('Error from rooms service', jsonResponse);
+      this.logsService.error('Error from rooms service', jsonResponse);
       return null;
     }
-    this.logService.info('Response from rooms service', jsonResponse);
+    this.logsService.info('Response from rooms service', jsonResponse);
     return jsonResponse as T;
   }
 

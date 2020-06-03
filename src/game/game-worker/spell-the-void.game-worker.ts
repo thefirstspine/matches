@@ -1,6 +1,5 @@
 import { IGameWorker } from './game-worker.interface';
 import { IGameInstance, IGameAction, ISubActionPutCardOnBoard, IGameCard } from '../../@shared/arena-shared/game';
-import { LogService } from '../../@shared/log-shared/log.service';
 import { Injectable } from '@nestjs/common';
 import { GameHookService } from '../game-hook/game-hook.service';
 import { IHasGameHookService } from '../injections.interface';
@@ -8,6 +7,7 @@ import { ArenaRoomsService } from '../../rooms/arena-rooms.service';
 import { ICard } from '../../@shared/rest-shared/card';
 import { RestService } from '../../rest/rest.service';
 import { randBetween } from '../../utils/maths.utils';
+import { LogsService } from '@thefirstspine/logs-nest';
 
 /**
  * Worker for "the-void" spell.
@@ -20,7 +20,7 @@ export class SpellTheVoidGameWorker implements IGameWorker, IHasGameHookService 
   readonly type: string = 'spell-the-void';
 
   constructor(
-    private readonly logService: LogService,
+    private readonly logsService: LogsService,
     private readonly arenaRoomsService: ArenaRoomsService,
     private readonly restService: RestService,
   ) {}
@@ -73,7 +73,7 @@ export class SpellTheVoidGameWorker implements IGameWorker, IHasGameHookService 
       gameAction.response.handIndex === undefined ||
       gameAction.response.boardCoords === undefined
     ) {
-      this.logService.warning('Response in a wrong format', gameAction);
+      this.logsService.warning('Response in a wrong format', gameAction);
       return false;
     }
 
@@ -83,11 +83,11 @@ export class SpellTheVoidGameWorker implements IGameWorker, IHasGameHookService 
     const responseHandIndex: number = gameAction.response.handIndex;
     const responseBoardCoords: string = gameAction.response.boardCoords;
     if (!allowedHandIndexes.includes(responseHandIndex)) {
-      this.logService.warning('Not allowed hand index', gameAction);
+      this.logsService.warning('Not allowed hand index', gameAction);
       return false;
     }
     if (!allowedCoordsOnBoard.includes(responseBoardCoords)) {
-      this.logService.warning('Not allowed board coords', gameAction);
+      this.logsService.warning('Not allowed board coords', gameAction);
       return false;
     }
 
@@ -100,7 +100,7 @@ export class SpellTheVoidGameWorker implements IGameWorker, IHasGameHookService 
       .filter((c: IGameCard) => c.location === 'hand' && c.user === gameAction.user)
       .find((c: IGameCard, index: number) => index === responseHandIndex);
     if (!cardUsed) {
-      this.logService.warning('Card not found', gameAction);
+      this.logsService.warning('Card not found', gameAction);
       return false;
     }
     cardUsed.location = 'discard';
@@ -109,7 +109,7 @@ export class SpellTheVoidGameWorker implements IGameWorker, IHasGameHookService 
     const cardTarget: IGameCard|undefined = gameInstance.cards
       .find((c: IGameCard) => c.location === 'board' && c.coords && c.coords.x === x && c.coords.y === y);
     if (!cardTarget) {
-      this.logService.warning('Target not found', gameAction);
+      this.logsService.warning('Target not found', gameAction);
       return false;
     }
     cardTarget.location = 'discard';

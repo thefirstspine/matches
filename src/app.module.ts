@@ -23,6 +23,7 @@ import { IndexController } from './index/index.controller';
 import { FileSocketModule } from 'nest-filesocket';
 import { FileSocketMethodsService } from './file-socket-methods/file-socket-methods.service';
 import { AuthService } from '@thefirstspine/auth-nest';
+import { LogsService } from '@thefirstspine/logs-nest';
 
 @Module({
   imports: [
@@ -43,6 +44,7 @@ import { AuthService } from '@thefirstspine/auth-nest';
     ShopService,
     AuthService,
     {provide: LogService, useValue: new LogService('arena')},
+    LogsService,
     RestService,
     RoomsService,
     ArenaRoomsService,

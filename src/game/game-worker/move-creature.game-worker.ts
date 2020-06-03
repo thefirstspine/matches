@@ -5,12 +5,12 @@ import {
   IGameCard,
   ISubActionMoveCardOnBoard,
   ISubActionMoveCardOnBoardPossibility } from '../../@shared/arena-shared/game';
-import { LogService } from '../../@shared/log-shared/log.service';
 import { Injectable } from '@nestjs/common';
 import { ICardCoords } from '../../@shared/rest-shared/card';
 import { GameHookService } from '../game-hook/game-hook.service';
 import { IHasGameHookService } from '../injections.interface';
 import { ArenaRoomsService } from '../../rooms/arena-rooms.service';
+import { LogsService } from '@thefirstspine/logs-nest';
 
 /**
  * At the beggining of his turn, the player can throw to the discard one or more cards.
@@ -23,7 +23,7 @@ export class MoveCreatureGameWorker implements IGameWorker, IHasGameHookService 
   public readonly type: string = 'move-creature';
 
   constructor(
-    private readonly logService: LogService,
+    private readonly logsService: LogsService,
     private readonly arenaRoomsService: ArenaRoomsService,
   ) {}
 
@@ -74,7 +74,7 @@ export class MoveCreatureGameWorker implements IGameWorker, IHasGameHookService 
       gameAction.response.boardCoordsFrom === undefined ||
       gameAction.response.boardCoordsTo === undefined
     ) {
-      this.logService.warning('Response in a wrong format', gameAction);
+      this.logsService.warning('Response in a wrong format', gameAction);
       return false;
     }
 
@@ -88,7 +88,7 @@ export class MoveCreatureGameWorker implements IGameWorker, IHasGameHookService 
       }
     });
     if (!allowed) {
-      this.logService.warning('Not in the allowed possibilities', gameAction);
+      this.logsService.warning('Not in the allowed possibilities', gameAction);
       return false;
     }
 
@@ -108,7 +108,7 @@ export class MoveCreatureGameWorker implements IGameWorker, IHasGameHookService 
           c.coords.y === boardCoordsFromY;
       });
     if (!card) {
-      this.logService.warning('Card not found', gameAction);
+      this.logsService.warning('Card not found', gameAction);
       return false;
     }
     card.coords = {

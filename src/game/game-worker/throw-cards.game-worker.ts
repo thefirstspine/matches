@@ -1,11 +1,11 @@
 import { IGameWorker } from './game-worker.interface';
 import { IGameInstance, IGameAction, IGameCard, ISubActionMoveCardToDiscard } from '../../@shared/arena-shared/game';
 import { isArray } from 'util';
-import { LogService } from '../../@shared/log-shared/log.service';
 import { Injectable } from '@nestjs/common';
 import { GameHookService } from '../game-hook/game-hook.service';
 import { IHasGameHookService } from '../injections.interface';
 import { ArenaRoomsService } from '../../rooms/arena-rooms.service';
+import { LogsService } from '@thefirstspine/logs-nest';
 
 /**
  * At the beggining of his turn, the player can throw to the discard one or more cards.
@@ -18,7 +18,7 @@ export class ThrowCardsGameWorker implements IGameWorker, IHasGameHookService {
   public readonly type: string = 'throw-cards';
 
   constructor(
-    private readonly logService: LogService,
+    private readonly logsService: LogsService,
     private readonly arenaRoomsService: ArenaRoomsService,
   ) {}
 
@@ -61,7 +61,7 @@ export class ThrowCardsGameWorker implements IGameWorker, IHasGameHookService {
   public async execute(gameInstance: IGameInstance, gameAction: IGameAction<ISubActionMoveCardToDiscard>): Promise<boolean> {
     // Validate response form
     if (!isArray(gameAction.response.handIndexes)) {
-      this.logService.warning('Response in a wrong format', gameAction);
+      this.logsService.warning('Response in a wrong format', gameAction);
       return false;
     }
 
@@ -70,7 +70,7 @@ export class ThrowCardsGameWorker implements IGameWorker, IHasGameHookService {
     const responseHandIndexes: number[] = gameAction.response.handIndexes;
     const falseIndex: number[] = responseHandIndexes.filter((i: number) => !allowedHandIndexes.includes(i));
     if (falseIndex.length) {
-      this.logService.warning('Not allowed hand index', gameAction);
+      this.logsService.warning('Not allowed hand index', gameAction);
       return false;
     }
 

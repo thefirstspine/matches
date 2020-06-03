@@ -1,6 +1,5 @@
 import { Injectable, Inject, forwardRef } from '@nestjs/common';
 import { MessagingService } from '../../@shared/messaging-shared/messaging.service';
-import { LogService } from '../../@shared/log-shared/log.service';
 import { ArenaRoomsService } from '../../rooms/arena-rooms.service';
 import { RestService } from '../../rest/rest.service';
 import { WizzardService } from '../../wizzard/wizzard.service';
@@ -30,6 +29,8 @@ import { PocketVolcanoDestroyedGameHook } from './pocket-volcano-destroyed.game-
 import { ClassicCreatedGameHook } from './classic-created.game-hook';
 import { TorturerPlacesGameHook } from './torturer-placed.game-hook';
 import { ChimeraPlacesGameHook } from './chimera-placed.game-hook';
+import { LogsService } from '@thefirstspine/logs-nest';
+import { LogService } from '../../@shared/log-shared/log.service';
 
 /**
  * Main service that manages game hooks.
@@ -43,6 +44,7 @@ export class GameHookService extends BaseGameService<IGameHook> {
 
   constructor(
     private readonly messagingService: MessagingService,
+    private readonly logsService: LogsService,
     private readonly logService: LogService,
     private readonly wizzardService: WizzardService,
     private readonly restService: RestService,
@@ -61,6 +63,7 @@ export class GameHookService extends BaseGameService<IGameHook> {
 
     // Defer injections for game workers constructions
     this.deferInjection(this.messagingService);
+    this.deferInjection(this.logsService);
     this.deferInjection(this.logService);
     this.deferInjection(this.wizzardService);
     this.deferInjection(this.restService);

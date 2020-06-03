@@ -3,7 +3,6 @@ import { shuffle } from '../utils/array.utils';
 import { randBetween } from '../utils/maths.utils';
 import { GamesStorageService } from '../storage/games.storage.service';
 import { WizzardService } from '../wizzard/wizzard.service';
-import { LogService } from '../@shared/log-shared/log.service';
 import { IGameInstance, IGameUser, IGameCard, IGameAction, anySubaction } from '../@shared/arena-shared/game';
 import { IWizzardItem } from '../@shared/arena-shared/wizzard';
 import { RestService } from '../rest/rest.service';
@@ -13,6 +12,7 @@ import { ArenaRoomsService } from '../rooms/arena-rooms.service';
 import { MessagingService } from '../@shared/messaging-shared/messaging.service';
 import { GameWorkerService } from './game-worker/game-worker.service';
 import { GameHookService } from './game-hook/game-hook.service';
+import { LogsService } from '@thefirstspine/logs-nest';
 
 /**
  * Service to manage game instances
@@ -36,7 +36,7 @@ export class GameService {
   constructor(
     private readonly gamesStorageService: GamesStorageService,
     private readonly messagingService: MessagingService,
-    private readonly logService: LogService,
+    private readonly logsService: LogsService,
     private readonly wizzardService: WizzardService,
     private readonly restService: RestService,
     private readonly arenaRoomsService: ArenaRoomsService,
@@ -152,7 +152,7 @@ export class GameService {
     this.nextId ++;
 
     // Log
-    this.logService.info(`Game ${gameInstance.id} created`, gameInstance);
+    this.logsService.info(`Game ${gameInstance.id} created`, gameInstance);
 
     // Return created instance
     return gameInstance;
@@ -232,7 +232,7 @@ export class GameService {
     // A game instance SHOULD have at least one current action
     // Close a game without any action and throw an error, because this is not a normal behavior
     if (gameInstance.actions.current.length === 0) {
-      this.logService.error('Game opened without action', gameInstance);
+      this.logsService.error('Game opened without action', gameInstance);
       gameInstance.status = 'closed';
       this.purgeFromMemory(gameInstance);
       return;
@@ -281,7 +281,7 @@ export class GameService {
         }
       } catch (e) {
         // tslint:disable-next-line:no-console
-        this.logService.error(`Error in process action`, {name: e.name, message: e.message, stack: e.stack});
+        this.logsService.error(`Error in process action`, {name: e.name, message: e.message, stack: e.stack});
       }
     }
 
@@ -295,7 +295,7 @@ export class GameService {
         }
       } catch (e) {
         // tslint:disable-next-line:no-console
-        this.logService.error(`Error in expire action`, e);
+        this.logsService.error(`Error in expire action`, e);
       }
     });
     await Promise.all(promises);

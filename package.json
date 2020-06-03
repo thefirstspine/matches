@@ -24,6 +24,7 @@
     "@nestjs/core": "^6.11.11",
     "@nestjs/platform-express": "^6.11.11",
     "@thefirstspine/auth-nest": "0.0.3",
+    "@thefirstspine/logs-nest": "0.0.1",
     "@types/dotenv": "^6.1.1",
     "@types/node-fetch": "^2.5.5",
     "@types/winston": "^2.4.4",

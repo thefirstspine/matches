@@ -1,6 +1,5 @@
 import { IGameWorker } from './game-worker.interface';
-import { IGameInstance, IGameAction, IGameCard, ISubActionChoseCardOnBoard, ISubActionChoseSquareOnBoard } from '../../@shared/arena-shared/game';
-import { LogService } from '../../@shared/log-shared/log.service';
+import { IGameInstance, IGameAction, IGameCard, ISubActionChoseSquareOnBoard } from '../../@shared/arena-shared/game';
 import { Injectable } from '@nestjs/common';
 import { GameHookService } from '../game-hook/game-hook.service';
 import { IHasGameHookService, IHasGameWorkerService } from '../injections.interface';
@@ -8,6 +7,7 @@ import { ArenaRoomsService } from '../../rooms/arena-rooms.service';
 import { GameWorkerService } from './game-worker.service';
 import { ICardCoords } from '../../@shared/rest-shared/card';
 import { randBetween } from '../../utils/maths.utils';
+import { LogsService } from '@thefirstspine/logs-nest';
 
 /**
  * When Volk'ha dies, the player can chose to replace him elsewhere around him.
@@ -21,7 +21,7 @@ export class VolkaEffectGameWorker implements IGameWorker, IHasGameHookService, 
   readonly type: string = 'volka-effect';
 
   constructor(
-    private readonly logService: LogService,
+    private readonly logsService: LogsService,
     private readonly arenaRoomsService: ArenaRoomsService,
   ) {}
 
@@ -72,7 +72,7 @@ export class VolkaEffectGameWorker implements IGameWorker, IHasGameHookService, 
       !gameAction.response ||
       gameAction.response.boardCoords === undefined
     ) {
-      this.logService.warning('Response in a wrong format', gameAction);
+      this.logsService.warning('Response in a wrong format', gameAction);
       return false;
     }
 
@@ -80,7 +80,7 @@ export class VolkaEffectGameWorker implements IGameWorker, IHasGameHookService, 
     const allowedCoordsOnBoard: string[] = gameAction.interaction.params.boardCoords;
     const responseBoardCoords: string = gameAction.response.boardCoords;
     if (!allowedCoordsOnBoard.includes(responseBoardCoords)) {
-      this.logService.warning('Not allowed board coords', gameAction);
+      this.logsService.warning('Not allowed board coords', gameAction);
       return false;
     }
 

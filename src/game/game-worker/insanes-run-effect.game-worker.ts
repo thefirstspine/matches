@@ -1,12 +1,12 @@
 import { IGameWorker } from './game-worker.interface';
 import { IGameInstance, IGameAction, IGameCard, ISubActionChoseCardOnBoard } from '../../@shared/arena-shared/game';
-import { LogService } from '../../@shared/log-shared/log.service';
 import { Injectable } from '@nestjs/common';
 import { GameHookService } from '../game-hook/game-hook.service';
 import { IHasGameHookService, IHasGameWorkerService } from '../injections.interface';
 import { ArenaRoomsService } from '../../rooms/arena-rooms.service';
 import { GameWorkerService } from './game-worker.service';
 import { randBetween } from '../../utils/maths.utils';
+import { LogsService } from '@thefirstspine/logs-nest';
 
 /**
  * Worker for "insanes-run-effect" spell.
@@ -20,7 +20,7 @@ export class InsanesRunEffectGameWorker implements IGameWorker, IHasGameHookServ
   readonly type: string = 'insanes-run-effect';
 
   constructor(
-    private readonly logService: LogService,
+    private readonly logsService: LogsService,
     private readonly arenaRoomsService: ArenaRoomsService,
   ) {}
 
@@ -71,7 +71,7 @@ export class InsanesRunEffectGameWorker implements IGameWorker, IHasGameHookServ
     if (
       gameAction.response.boardCoords === undefined
     ) {
-      this.logService.warning('Response in a wrong format', gameAction);
+      this.logsService.warning('Response in a wrong format', gameAction);
       return false;
     }
 
@@ -79,7 +79,7 @@ export class InsanesRunEffectGameWorker implements IGameWorker, IHasGameHookServ
     const allowedCoordsOnBoard: string[] = gameAction.interaction.params.boardCoords;
     const responseBoardCoords: string = gameAction.response.boardCoords;
     if (!allowedCoordsOnBoard.includes(responseBoardCoords)) {
-      this.logService.warning('Not allowed board coords', gameAction);
+      this.logsService.warning('Not allowed board coords', gameAction);
       return false;
     }
 
@@ -91,7 +91,7 @@ export class InsanesRunEffectGameWorker implements IGameWorker, IHasGameHookServ
     const cardTarget: IGameCard|undefined = gameInstance.cards
       .find((c: IGameCard) => c.location === 'board' && c.coords && c.coords.x === x && c.coords.y === y);
     if (!cardTarget) {
-      this.logService.warning('Target not found', gameAction);
+      this.logsService.warning('Target not found', gameAction);
       return false;
     }
     cardTarget.location = 'discard';
