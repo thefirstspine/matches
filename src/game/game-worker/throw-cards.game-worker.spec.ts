@@ -14,9 +14,10 @@ import { RoomsService } from '../../rooms/rooms.service';
 import { ArenaRoomsService } from '../../rooms/arena-rooms.service';
 import { GameHookService } from '../game-hook/game-hook.service';
 import { BotsService } from '../../bots/bots.service';
-import { LogService } from '../../@shared/log-shared/log.service';
 import { IGameInstance, IGameAction, ISubActionMoveCardToDiscard } from '../../@shared/arena-shared/game';
 import { AuthService } from '@thefirstspine/auth-nest';
+import { LogsService } from '@thefirstspine/logs-nest';
+import { LogService } from '../../@shared/log-shared/log.service';
 
 describe('Throw cards', () => {
   let gameWorkerService: GameWorkerService;
@@ -30,6 +31,7 @@ describe('Throw cards', () => {
    */
 
   beforeEach(async () => {
+    require('dotenv').config();
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         ApiService,
@@ -41,6 +43,7 @@ describe('Throw cards', () => {
         WizzardsStorageService,
         ShopService,
         AuthService,
+        LogsService,
         {provide: LogService, useValue: new LogService('arena')},
         RestService,
         RoomsService,
@@ -175,14 +178,14 @@ describe('Throw cards', () => {
     });
 
     // Create game action & add it to the instance
-    const gameAction: IGameAction = await gameWorkerService.getWorker('throw-cards').create(gameInstance, {user: gameInstance.users[0].user});
-    gameAction.responses = [[0]];
+    const gameAction: IGameAction<any> =
+      await gameWorkerService.getWorker('throw-cards').create(gameInstance, {user: gameInstance.users[0].user});
+    gameAction.response = {handIndexes: [0]};
     gameInstance.actions.current.push(gameAction);
-    expect(gameAction.subactions.length).toBe(1);
-    expect(gameAction.subactions[0].type).toBe('moveCardsToDiscard');
-    expect((gameAction.subactions[0] as ISubActionMoveCardToDiscard).params.handIndexes).toBeDefined();
-    expect((gameAction.subactions[0] as ISubActionMoveCardToDiscard).params.handIndexes.length).toBe(4);
-    expect((gameAction.subactions[0] as ISubActionMoveCardToDiscard).params.handIndexes[0]).toBe(0);
+    expect(gameAction.interaction.type).toBe('moveCardsToDiscard');
+    expect((gameAction.interaction as ISubActionMoveCardToDiscard).params.handIndexes).toBeDefined();
+    expect((gameAction.interaction as ISubActionMoveCardToDiscard).params.handIndexes.length).toBe(4);
+    expect((gameAction.interaction as ISubActionMoveCardToDiscard).params.handIndexes[0]).toBe(0);
 
     // Execute
     const result: boolean = await gameWorkerService.getWorker('throw-cards').execute(
@@ -300,13 +303,13 @@ describe('Throw cards', () => {
     });
 
     // Create game action & add it to the instance
-    const gameAction: IGameAction = await gameWorkerService.getWorker('throw-cards').create(gameInstance, {user: gameInstance.users[0].user});
-    gameAction.responses = [[0, 1]];
+    const gameAction: IGameAction<any> =
+      await gameWorkerService.getWorker('throw-cards').create(gameInstance, {user: gameInstance.users[0].user});
+    gameAction.response = {handIndexes: [0, 1]};
     gameInstance.actions.current.push(gameAction);
-    expect(gameAction.subactions.length).toBe(1);
-    expect(gameAction.subactions[0].type).toBe('moveCardsToDiscard');
-    expect((gameAction.subactions[0] as ISubActionMoveCardToDiscard).params.handIndexes).toBeDefined();
-    expect((gameAction.subactions[0] as ISubActionMoveCardToDiscard).params.handIndexes.length).toBe(4);
+    expect(gameAction.interaction.type).toBe('moveCardsToDiscard');
+    expect((gameAction.interaction as ISubActionMoveCardToDiscard).params.handIndexes).toBeDefined();
+    expect((gameAction.interaction as ISubActionMoveCardToDiscard).params.handIndexes.length).toBe(4);
 
     // Execute
     const result: boolean = await gameWorkerService.getWorker('throw-cards').execute(
@@ -404,14 +407,14 @@ describe('Throw cards', () => {
     });
 
     // Create game action & add it to the instance
-    const gameAction: IGameAction = await gameWorkerService.getWorker('throw-cards').create(gameInstance, {user: gameInstance.users[0].user});
-    gameAction.responses = [[0]];
+    const gameAction: IGameAction<any> =
+      await gameWorkerService.getWorker('throw-cards').create(gameInstance, {user: gameInstance.users[0].user});
+    gameAction.response = {handIndexes: [0]};
     gameInstance.actions.current.push(gameAction);
-    expect(gameAction.subactions.length).toBe(1);
-    expect(gameAction.subactions[0].type).toBe('moveCardsToDiscard');
-    expect((gameAction.subactions[0] as ISubActionMoveCardToDiscard).params.handIndexes).toBeDefined();
-    expect((gameAction.subactions[0] as ISubActionMoveCardToDiscard).params.handIndexes.length).toBe(4);
-    expect((gameAction.subactions[0] as ISubActionMoveCardToDiscard).params.handIndexes[0]).toBe(0);
+    expect(gameAction.interaction.type).toBe('moveCardsToDiscard');
+    expect((gameAction.interaction as ISubActionMoveCardToDiscard).params.handIndexes).toBeDefined();
+    expect((gameAction.interaction as ISubActionMoveCardToDiscard).params.handIndexes.length).toBe(4);
+    expect((gameAction.interaction as ISubActionMoveCardToDiscard).params.handIndexes[0]).toBe(0);
 
     // Execute
     const result: boolean = await gameWorkerService.getWorker('throw-cards').execute(
@@ -513,13 +516,13 @@ describe('Throw cards', () => {
     });
 
     // Create game action & add it to the instance
-    const gameAction: IGameAction = await gameWorkerService.getWorker('throw-cards').create(gameInstance, {user: gameInstance.users[0].user});
-    gameAction.responses = [[0, 1]];
+    const gameAction: IGameAction<any> =
+      await gameWorkerService.getWorker('throw-cards').create(gameInstance, {user: gameInstance.users[0].user});
+    gameAction.response = {handIndexes: [0, 1]};
     gameInstance.actions.current.push(gameAction);
-    expect(gameAction.subactions.length).toBe(1);
-    expect(gameAction.subactions[0].type).toBe('moveCardsToDiscard');
-    expect((gameAction.subactions[0] as ISubActionMoveCardToDiscard).params.handIndexes).toBeDefined();
-    expect((gameAction.subactions[0] as ISubActionMoveCardToDiscard).params.handIndexes.length).toBe(4);
+    expect(gameAction.interaction.type).toBe('moveCardsToDiscard');
+    expect((gameAction.interaction as ISubActionMoveCardToDiscard).params.handIndexes).toBeDefined();
+    expect((gameAction.interaction as ISubActionMoveCardToDiscard).params.handIndexes.length).toBe(4);
 
     // Execute
     const result: boolean = await gameWorkerService.getWorker('throw-cards').execute(

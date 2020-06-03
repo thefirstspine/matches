@@ -14,9 +14,10 @@ import { RoomsService } from '../../rooms/rooms.service';
 import { ArenaRoomsService } from '../../rooms/arena-rooms.service';
 import { GameHookService } from '../game-hook/game-hook.service';
 import { BotsService } from '../../bots/bots.service';
-import { LogService } from '../../@shared/log-shared/log.service';
-import { IGameInstance, IGameAction, ISubActionPutCardOnBoard, anySubaction } from '../../@shared/arena-shared/game';
+import { IGameInstance, IGameAction } from '../../@shared/arena-shared/game';
 import { AuthService } from '@thefirstspine/auth-nest';
+import { LogsService } from '@thefirstspine/logs-nest';
+import { LogService } from '../../@shared/log-shared/log.service';
 
 describe('Spell heal', () => {
   let gameWorkerService: GameWorkerService;
@@ -30,6 +31,7 @@ describe('Spell heal', () => {
    */
 
   beforeEach(async () => {
+    require('dotenv').config();
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         ApiService,
@@ -41,6 +43,7 @@ describe('Spell heal', () => {
         WizzardsStorageService,
         ShopService,
         AuthService,
+        LogsService,
         {provide: LogService, useValue: new LogService('arena')},
         RestService,
         RoomsService,
@@ -223,7 +226,7 @@ describe('Spell heal', () => {
 
     // Create game action & add it to the instance
     const gameAction: IGameAction<any> = await gameWorkerService.getWorker('spell-heal').create(gameInstance, {user: gameInstance.users[0].user});
-    gameAction.responses = [{handIndex: 0, boardCoords: '3-3'}];
+    gameAction.response = {handIndex: 0, boardCoords: '3-3'};
     gameInstance.actions.current.push(gameAction);
     expect(gameAction.interaction.type).toBe('putCardOnBoard');
     expect(gameAction.interaction.params.boardCoords).toBeDefined();
