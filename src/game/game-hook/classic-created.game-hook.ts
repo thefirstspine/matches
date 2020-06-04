@@ -1,6 +1,6 @@
 import { IGameHook } from './game-hook.interface';
 import { Injectable } from '@nestjs/common';
-import { IGameInstance, IGameUser } from '../../@shared/arena-shared/game';
+import { IGameInstance, IGameUser } from '@thefirstspine/types-arena';
 import { RestService } from '../../rest/rest.service';
 import { ICycle, ICard } from '@thefirstspine/types-rest';
 import { randBetween } from '../../utils/maths.utils';

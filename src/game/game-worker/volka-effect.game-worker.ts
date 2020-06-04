@@ -1,5 +1,5 @@
 import { IGameWorker } from './game-worker.interface';
-import { IGameInstance, IGameAction, IGameCard, ISubActionChoseSquareOnBoard } from '../../@shared/arena-shared/game';
+import { IGameInstance, IGameAction, IGameCard, IInteractionChoseSquareOnBoard } from '@thefirstspine/types-arena';
 import { Injectable } from '@nestjs/common';
 import { GameHookService } from '../game-hook/game-hook.service';
 import { IHasGameHookService, IHasGameWorkerService } from '../injections.interface';
@@ -28,7 +28,7 @@ export class VolkaEffectGameWorker implements IGameWorker, IHasGameHookService, 
   /**
    * @inheritdoc
    */
-  public async create(gameInstance: IGameInstance, data: {user: number}): Promise<IGameAction<ISubActionChoseSquareOnBoard>> {
+  public async create(gameInstance: IGameInstance, data: {user: number}): Promise<IGameAction<IInteractionChoseSquareOnBoard>> {
     return {
       createdAt: Date.now(),
       type: this.type,
@@ -59,14 +59,14 @@ export class VolkaEffectGameWorker implements IGameWorker, IHasGameHookService, 
   /**
    * @inheritdoc
    */
-  public async refresh(gameInstance: IGameInstance, gameAction: IGameAction<ISubActionChoseSquareOnBoard>): Promise<void> {
+  public async refresh(gameInstance: IGameInstance, gameAction: IGameAction<IInteractionChoseSquareOnBoard>): Promise<void> {
     gameAction.interaction.params.boardCoords = this.getBoardCoords(gameInstance, gameAction.user);
   }
 
   /**
    * @inheritdoc
    */
-  public async execute(gameInstance: IGameInstance, gameAction: IGameAction<ISubActionChoseSquareOnBoard>): Promise<boolean> {
+  public async execute(gameInstance: IGameInstance, gameAction: IGameAction<IInteractionChoseSquareOnBoard>): Promise<boolean> {
     // Validate response form
     if (
       !gameAction.response ||
@@ -102,7 +102,7 @@ export class VolkaEffectGameWorker implements IGameWorker, IHasGameHookService, 
    * @param gameInstance
    * @param gameAction
    */
-  public async expires(gameInstance: IGameInstance, gameAction: IGameAction<ISubActionChoseSquareOnBoard>): Promise<boolean> {
+  public async expires(gameInstance: IGameInstance, gameAction: IGameAction<IInteractionChoseSquareOnBoard>): Promise<boolean> {
     const boardCoords: string[] = this.getBoardCoords(gameInstance, gameAction.user);
     gameAction.response = {
       boardCoords: boardCoords[randBetween(0, boardCoords.length - 1)],
@@ -115,7 +115,7 @@ export class VolkaEffectGameWorker implements IGameWorker, IHasGameHookService, 
    * @param gameInstance
    * @param gameAction
    */
-  public async delete(gameInstance: IGameInstance, gameAction: IGameAction<ISubActionChoseSquareOnBoard>): Promise<void> {
+  public async delete(gameInstance: IGameInstance, gameAction: IGameAction<IInteractionChoseSquareOnBoard>): Promise<void> {
     gameInstance.actions.current = gameInstance.actions.current.filter((gameActionRef: IGameAction<any>) => {
       if (gameActionRef === gameAction) {
         gameInstance.actions.previous.push({

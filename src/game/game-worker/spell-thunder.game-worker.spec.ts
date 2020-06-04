@@ -13,7 +13,7 @@ import { RoomsService } from '../../rooms/rooms.service';
 import { ArenaRoomsService } from '../../rooms/arena-rooms.service';
 import { GameHookService } from '../game-hook/game-hook.service';
 import { BotsService } from '../../bots/bots.service';
-import { IGameInstance, IGameAction, ISubActionPutCardOnBoard } from '../../@shared/arena-shared/game';
+import { IGameInstance, IGameAction, IInteractionPutCardOnBoard } from '@thefirstspine/types-arena';
 import { AuthService } from '@thefirstspine/auth-nest';
 import { LogsService } from '@thefirstspine/logs-nest';
 import { MessagingService } from '@thefirstspine/messaging-nest';
@@ -149,13 +149,13 @@ describe('Spell thunder', () => {
     gameAction.response = {handIndex: 0, boardCoords: '3-3'};
     gameInstance.actions.current.push(gameAction);
     expect(gameAction.interaction.type).toBe('putCardOnBoard');
-    expect((gameAction.interaction as ISubActionPutCardOnBoard).params.boardCoords).toBeDefined();
-    expect((gameAction.interaction as ISubActionPutCardOnBoard).params.boardCoords.length).toBe(2);
-    expect((gameAction.interaction as ISubActionPutCardOnBoard).params.boardCoords[0]).toBe('3-3');
-    expect((gameAction.interaction as ISubActionPutCardOnBoard).params.boardCoords[1]).toBe('3-2');
-    expect((gameAction.interaction as ISubActionPutCardOnBoard).params.handIndexes).toBeDefined();
-    expect((gameAction.interaction as ISubActionPutCardOnBoard).params.handIndexes.length).toBe(1);
-    expect((gameAction.interaction as ISubActionPutCardOnBoard).params.handIndexes[0]).toBe(0);
+    expect((gameAction.interaction as IInteractionPutCardOnBoard).params.boardCoords).toBeDefined();
+    expect((gameAction.interaction as IInteractionPutCardOnBoard).params.boardCoords.length).toBe(2);
+    expect((gameAction.interaction as IInteractionPutCardOnBoard).params.boardCoords[0]).toBe('3-3');
+    expect((gameAction.interaction as IInteractionPutCardOnBoard).params.boardCoords[1]).toBe('3-2');
+    expect((gameAction.interaction as IInteractionPutCardOnBoard).params.handIndexes).toBeDefined();
+    expect((gameAction.interaction as IInteractionPutCardOnBoard).params.handIndexes.length).toBe(1);
+    expect((gameAction.interaction as IInteractionPutCardOnBoard).params.handIndexes[0]).toBe(0);
 
     // Execute
     const result: boolean = await gameWorkerService.getWorker('spell-thunder').execute(
@@ -226,13 +226,13 @@ describe('Spell thunder', () => {
     gameAction.response = {handIndex: 0, boardCoords: '3-3'};
     gameInstance.actions.current.push(gameAction);
     expect(gameAction.interaction.type).toBe('putCardOnBoard');
-    expect((gameAction.interaction as ISubActionPutCardOnBoard).params.boardCoords).toBeDefined();
-    expect((gameAction.interaction as ISubActionPutCardOnBoard).params.boardCoords.length).toBe(2);
-    expect((gameAction.interaction as ISubActionPutCardOnBoard).params.boardCoords[0]).toBe('3-3');
-    expect((gameAction.interaction as ISubActionPutCardOnBoard).params.boardCoords[1]).toBe('3-2');
-    expect((gameAction.interaction as ISubActionPutCardOnBoard).params.handIndexes).toBeDefined();
-    expect((gameAction.interaction as ISubActionPutCardOnBoard).params.handIndexes.length).toBe(1);
-    expect((gameAction.interaction as ISubActionPutCardOnBoard).params.handIndexes[0]).toBe(0);
+    expect((gameAction.interaction as IInteractionPutCardOnBoard).params.boardCoords).toBeDefined();
+    expect((gameAction.interaction as IInteractionPutCardOnBoard).params.boardCoords.length).toBe(2);
+    expect((gameAction.interaction as IInteractionPutCardOnBoard).params.boardCoords[0]).toBe('3-3');
+    expect((gameAction.interaction as IInteractionPutCardOnBoard).params.boardCoords[1]).toBe('3-2');
+    expect((gameAction.interaction as IInteractionPutCardOnBoard).params.handIndexes).toBeDefined();
+    expect((gameAction.interaction as IInteractionPutCardOnBoard).params.handIndexes.length).toBe(1);
+    expect((gameAction.interaction as IInteractionPutCardOnBoard).params.handIndexes[0]).toBe(0);
 
     // Execute
     const result: boolean = await gameWorkerService.getWorker('spell-thunder').execute(

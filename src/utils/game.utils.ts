@@ -1,12 +1,12 @@
-import { IHistoryItem, IWizzardItem } from '../@shared/arena-shared/wizzard';
+import { IWizardHistoryItem, IWizardItem } from '@thefirstspine/types-arena';
 import { ILoot } from '@thefirstspine/types-rest';
 
 /**
  * Get the score of the user based on his history
  * @param history
  */
-export function getScore(history: IHistoryItem[]): number {
-  return history.reduce((value: number, historyItem: IHistoryItem) => {
+export function getScore(history: IWizardHistoryItem[]): number {
+  return history.reduce((value: number, historyItem: IWizardHistoryItem) => {
       return value + (historyItem.victory ? 3 : -1);
   }, 0);
 }
@@ -16,9 +16,9 @@ export function getScore(history: IHistoryItem[]): number {
  * @param items
  * @param loot
  */
-export function mergeLootsInItems(items: IWizzardItem[], loot: ILoot[]) {
+export function mergeLootsInItems(items: IWizardItem[], loot: ILoot[]) {
   loot.forEach((loot: ILoot) => {
-    const item: IWizzardItem|undefined = items.find((i: IWizzardItem) => i.name === loot.name);
+    const item: IWizardItem|undefined = items.find((i: IWizardItem) => i.name === loot.name);
     if (item !== undefined) {
       item.num += loot.num;
     } else {

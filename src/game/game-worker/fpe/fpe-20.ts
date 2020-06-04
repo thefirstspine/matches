@@ -1,10 +1,9 @@
 import { IGameWorker } from '../game-worker.interface';
 import { IGameInstance,
   IGameAction,
-  ISubActionMoveCardOnBoardPossibility,
-  ISubActionSelectCoupleOnBoard,
-  IGameCard,
-  anySubaction} from '../../../@shared/arena-shared/game';
+  IInteractionMoveCardOnBoardPossibility,
+  IInteractionSelectCoupleOnBoard,
+  IGameCard } from '@thefirstspine/types-arena';
 import { Injectable } from '@nestjs/common';
 import { cardSide } from '@thefirstspine/types-rest';
 import { GameWorkerService } from '../game-worker.service';
@@ -33,7 +32,7 @@ export class Fpe20GameWorker implements IGameWorker, IHasGameHookService, IHasGa
   /**
    * @inheritdoc
    */
-  public async create(gameInstance: IGameInstance, data: {user: number}): Promise<IGameAction<ISubActionSelectCoupleOnBoard>> {
+  public async create(gameInstance: IGameInstance, data: {user: number}): Promise<IGameAction<IInteractionSelectCoupleOnBoard>> {
     return {
       createdAt: Date.now(),
       type: this.type,
@@ -63,7 +62,7 @@ export class Fpe20GameWorker implements IGameWorker, IHasGameHookService, IHasGa
   /**
    * @inheritdoc
    */
-  public async execute(gameInstance: IGameInstance, gameAction: IGameAction<ISubActionSelectCoupleOnBoard>): Promise<boolean> {
+  public async execute(gameInstance: IGameInstance, gameAction: IGameAction<IInteractionSelectCoupleOnBoard>): Promise<boolean> {
     // Validate response form
     if (
       gameAction.response.boardCoordsFrom === undefined ||
@@ -76,8 +75,8 @@ export class Fpe20GameWorker implements IGameWorker, IHasGameHookService, IHasGa
     // Validate response input
     const boardCoordsFrom: string = gameAction.response.boardCoordsFrom;
     const boardCoordsTo: string = gameAction.response.boardCoordsTo;
-    const possibilities: ISubActionMoveCardOnBoardPossibility[] = gameAction.interaction.params.possibilities;
-    const possibility: ISubActionMoveCardOnBoardPossibility|undefined = possibilities.find((p: ISubActionMoveCardOnBoardPossibility) => {
+    const possibilities: IInteractionMoveCardOnBoardPossibility[] = gameAction.interaction.params.possibilities;
+    const possibility: IInteractionMoveCardOnBoardPossibility|undefined = possibilities.find((p: IInteractionMoveCardOnBoardPossibility) => {
       return p.boardCoordsFrom === boardCoordsFrom && p.boardCoordsTo.includes(boardCoordsTo);
     });
     if (!possibility) {
@@ -189,7 +188,7 @@ export class Fpe20GameWorker implements IGameWorker, IHasGameHookService, IHasGa
    * @param gameInstance
    * @param user
    */
-  protected getPossibilities(gameInstance: IGameInstance, user: number): ISubActionMoveCardOnBoardPossibility[] {
+  protected getPossibilities(gameInstance: IGameInstance, user: number): IInteractionMoveCardOnBoardPossibility[] {
     return [{
       boardCoordsFrom: '3-5',
       boardCoordsTo: ['3-6'],
@@ -231,7 +230,7 @@ export class Fpe20GameWorker implements IGameWorker, IHasGameHookService, IHasGa
    * @param gameInstance
    * @param gameAction
    */
-  public async refresh(gameInstance: IGameInstance, gameAction: IGameAction<ISubActionSelectCoupleOnBoard>): Promise<void> {
+  public async refresh(gameInstance: IGameInstance, gameAction: IGameAction<IInteractionSelectCoupleOnBoard>): Promise<void> {
     return;
   }
 
@@ -240,9 +239,9 @@ export class Fpe20GameWorker implements IGameWorker, IHasGameHookService, IHasGa
    * @param gameInstance
    * @param gameAction
    */
-  public async expires(gameInstance: IGameInstance, gameAction: IGameAction<ISubActionSelectCoupleOnBoard>): Promise<boolean> {
-    const possibilities: ISubActionMoveCardOnBoardPossibility[] = gameAction.interaction.params.possibilities;
-    const possibility: ISubActionMoveCardOnBoardPossibility = possibilities[Math.floor(Math.random() * possibilities.length)];
+  public async expires(gameInstance: IGameInstance, gameAction: IGameAction<IInteractionSelectCoupleOnBoard>): Promise<boolean> {
+    const possibilities: IInteractionMoveCardOnBoardPossibility[] = gameAction.interaction.params.possibilities;
+    const possibility: IInteractionMoveCardOnBoardPossibility = possibilities[Math.floor(Math.random() * possibilities.length)];
     const boardCoordsTo: string = possibility.boardCoordsTo[Math.floor(Math.random() * possibility.boardCoordsTo.length)];
     gameAction.response = {
       boardCoordsFrom: possibility.boardCoordsFrom,
@@ -256,8 +255,8 @@ export class Fpe20GameWorker implements IGameWorker, IHasGameHookService, IHasGa
    * @param gameInstance
    * @param gameAction
    */
-  public async delete(gameInstance: IGameInstance, gameAction: IGameAction<ISubActionSelectCoupleOnBoard>): Promise<void> {
-    gameInstance.actions.current = gameInstance.actions.current.filter((gameActionRef: IGameAction<anySubaction>) => {
+  public async delete(gameInstance: IGameInstance, gameAction: IGameAction<IInteractionSelectCoupleOnBoard>): Promise<void> {
+    gameInstance.actions.current = gameInstance.actions.current.filter((gameActionRef: IGameAction<any>) => {
       if (gameActionRef === gameAction) {
         gameInstance.actions.previous.push({
           ...gameAction,

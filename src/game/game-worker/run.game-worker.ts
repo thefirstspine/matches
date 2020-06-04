@@ -3,8 +3,8 @@ import {
   IGameInstance,
   IGameAction,
   IGameCard,
-  ISubActionMoveCardOnBoard,
-  ISubActionMoveCardOnBoardPossibility } from '../../@shared/arena-shared/game';
+  IInteractionMoveCardOnBoard,
+  IInteractionMoveCardOnBoardPossibility } from '@thefirstspine/types-arena';
 import { Injectable } from '@nestjs/common';
 import { ICardCoords } from '@thefirstspine/types-rest';
 import { GameHookService } from '../game-hook/game-hook.service';
@@ -32,7 +32,7 @@ export class RunGameWorker implements IGameWorker, IHasGameHookService, IHasGame
   /**
    * @inheritdoc
    */
-  public async create(gameInstance: IGameInstance, data: {user: number}): Promise<IGameAction<ISubActionMoveCardOnBoard>> {
+  public async create(gameInstance: IGameInstance, data: {user: number}): Promise<IGameAction<IInteractionMoveCardOnBoard>> {
     return {
       createdAt: Date.now(),
       type: this.type,
@@ -62,14 +62,14 @@ export class RunGameWorker implements IGameWorker, IHasGameHookService, IHasGame
   /**
    * @inheritdoc
    */
-  public async refresh(gameInstance: IGameInstance, gameAction: IGameAction<ISubActionMoveCardOnBoard>): Promise<void> {
+  public async refresh(gameInstance: IGameInstance, gameAction: IGameAction<IInteractionMoveCardOnBoard>): Promise<void> {
     gameAction.interaction.params.possibilities = this.getPossibilities(gameInstance, gameAction.user);
   }
 
   /**
    * @inheritdoc
    */
-  public async execute(gameInstance: IGameInstance, gameAction: IGameAction<ISubActionMoveCardOnBoard>): Promise<boolean> {
+  public async execute(gameInstance: IGameInstance, gameAction: IGameAction<IInteractionMoveCardOnBoard>): Promise<boolean> {
     // Validate the response form
     if (
       gameAction.response.boardCoordsFrom === undefined ||
@@ -84,7 +84,7 @@ export class RunGameWorker implements IGameWorker, IHasGameHookService, IHasGame
     const boardCoordsTo: string = gameAction.response.boardCoordsTo;
     let allowed: boolean = false;
     gameAction.interaction.params.possibilities
-      .forEach((possibility: ISubActionMoveCardOnBoardPossibility) => {
+      .forEach((possibility: IInteractionMoveCardOnBoardPossibility) => {
       if (possibility.boardCoordsFrom === boardCoordsFrom && possibility.boardCoordsTo.includes(boardCoordsTo)) {
         allowed = true;
       }
@@ -122,7 +122,7 @@ export class RunGameWorker implements IGameWorker, IHasGameHookService, IHasGame
     await this.gameHookService.dispatch(gameInstance, `card:creature:moved:${card.card.id}`);
 
     // Deletes the action "skip-run"
-    gameInstance.actions.current.forEach((currentGameAction: IGameAction<ISubActionMoveCardOnBoard>) => {
+    gameInstance.actions.current.forEach((currentGameAction: IGameAction<IInteractionMoveCardOnBoard>) => {
       if (currentGameAction.type === 'skip-run') {
         this.gameWorkerService.getWorker(currentGameAction.type).delete(gameInstance, currentGameAction);
       }
@@ -145,8 +145,8 @@ export class RunGameWorker implements IGameWorker, IHasGameHookService, IHasGame
    * @param gameInstance
    * @param user
    */
-  protected getPossibilities(gameInstance: IGameInstance, user: number): ISubActionMoveCardOnBoardPossibility[] {
-    const ret: ISubActionMoveCardOnBoardPossibility[] = [];
+  protected getPossibilities(gameInstance: IGameInstance, user: number): IInteractionMoveCardOnBoardPossibility[] {
+    const ret: IInteractionMoveCardOnBoardPossibility[] = [];
     gameInstance.cards.forEach((card: IGameCard) => {
       if (card.location === 'board' &&
         card.user === user &&
@@ -155,7 +155,7 @@ export class RunGameWorker implements IGameWorker, IHasGameHookService, IHasGame
         card.currentStats.capacities.includes('run')
       ) {
         // We found a user's creature on the board
-        const possibility: ISubActionMoveCardOnBoardPossibility = {
+        const possibility: IInteractionMoveCardOnBoardPossibility = {
           boardCoordsFrom: `${card.coords.x}-${card.coords.y}`,
           boardCoordsTo: [],
         };
@@ -204,7 +204,7 @@ export class RunGameWorker implements IGameWorker, IHasGameHookService, IHasGame
    * @param gameInstance
    * @param gameAction
    */
-  public async expires(gameInstance: IGameInstance, gameAction: IGameAction<ISubActionMoveCardOnBoard>): Promise<boolean> {
+  public async expires(gameInstance: IGameInstance, gameAction: IGameAction<IInteractionMoveCardOnBoard>): Promise<boolean> {
     return true;
   }
 
@@ -213,7 +213,7 @@ export class RunGameWorker implements IGameWorker, IHasGameHookService, IHasGame
    * @param gameInstance
    * @param gameAction
    */
-  public async delete(gameInstance: IGameInstance, gameAction: IGameAction<ISubActionMoveCardOnBoard>): Promise<void> {
+  public async delete(gameInstance: IGameInstance, gameAction: IGameAction<IInteractionMoveCardOnBoard>): Promise<void> {
     gameInstance.actions.current = gameInstance.actions.current.filter((gameActionRef: IGameAction<any>) => {
       if (gameActionRef === gameAction) {
         gameInstance.actions.previous.push({

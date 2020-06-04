@@ -1,8 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { GameService } from '../game/game.service';
 import { WizzardService } from '../wizzard/wizzard.service';
-import { IGameUser, IGameInstance } from '../@shared/arena-shared/game';
-import { IWizzardItem, IWizzard, IHistoryItem } from '../@shared/arena-shared/wizzard';
+import { IGameUser, IGameInstance, IWizardItem, IWizard, IWizardHistoryItem } from '@thefirstspine/types-arena';
 import { IGameType } from '@thefirstspine/types-rest';
 import { RestService } from '../rest/rest.service';
 import { getScore } from '../utils/game.utils';
@@ -62,17 +61,17 @@ export class QueueService {
     }
 
     // Get the wizard to validate data
-    const wizard: IWizzard = this.wizzardService.getWizzard(user);
+    const wizard: IWizard = this.wizzardService.getWizzard(user);
 
     // Exit method if user has not the style
     style = style ? style : '';
-    if (style !== '' && !wizard.items.find((i: IWizzardItem) => i.name === `style-${style}`)) {
+    if (style !== '' && !wizard.items.find((i: IWizardItem) => i.name === `style-${style}`)) {
       throw new Error('User does not own the style.');
     }
 
     // Exit method if user has not the cover
     cover = cover ? cover : '';
-    if (cover !== '' && !wizard.items.find((i: IWizzardItem) => i.name === `cover-${cover}`)) {
+    if (cover !== '' && !wizard.items.find((i: IWizardItem) => i.name === `cover-${cover}`)) {
       throw new Error('User does not own the cover.');
     }
 
@@ -231,7 +230,7 @@ export class QueueService {
 
     // Get users in queue
     const queueUsers: IQueueUser[] = this.getUsersInQueue(gameType.id);
-    const queueWizzards: IWizzard[] = queueUsers.map((u: IGameUser) => {
+    const queueWizzards: IWizard[] = queueUsers.map((u: IGameUser) => {
       return this.wizzardService.getWizzard(u.user);
     });
 
@@ -240,9 +239,9 @@ export class QueueService {
       if (gameType.matchmakingMode === 'ranked') {
         queueUsers.sort((a: IGameUser, b: IGameUser) => {
           const aIndex: number = queueUsers.findIndex((u) => u === a);
-          const aScore: number = getScore(queueWizzards[aIndex].history.filter((h: IHistoryItem) => h.gameTypeId === gameTypeId));
+          const aScore: number = getScore(queueWizzards[aIndex].history.filter((h: IWizardHistoryItem) => h.gameTypeId === gameTypeId));
           const bIndex: number = queueUsers.findIndex((u) => u === b);
-          const bScore: number = getScore(queueWizzards[bIndex].history.filter((h: IHistoryItem) => h.gameTypeId === gameTypeId));
+          const bScore: number = getScore(queueWizzards[bIndex].history.filter((h: IWizardHistoryItem) => h.gameTypeId === gameTypeId));
           if (aScore === bScore) {
             return 0;
           }

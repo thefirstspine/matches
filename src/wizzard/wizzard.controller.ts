@@ -1,7 +1,7 @@
 import { Controller, Get, UseGuards, Req, Post, Param, HttpException } from '@nestjs/common';
 import { WizzardService } from './wizzard.service';
 import { WizzardsStorageService } from '../storage/wizzards.storage.service';
-import { IWizzard } from '../@shared/arena-shared/wizzard';
+import { IWizard } from '@thefirstspine/types-arena';
 import { IAvatar } from '@thefirstspine/types-rest';
 import { RestService } from '../rest/rest.service';
 import { CertificateGuard } from '../certificate.guard';
@@ -40,7 +40,7 @@ export class WizzardController {
   @UseGuards(AuthGuard)
   async editAvatar(@Req() request: any) {
     // Get account
-    const wizzard: IWizzard = this.wizzardService.getWizzard(request.user);
+    const wizzard: IWizard = this.wizzardService.getWizzard(request.user);
 
     // Get avatar
     const avatar: IAvatar|null = request.body.avatar

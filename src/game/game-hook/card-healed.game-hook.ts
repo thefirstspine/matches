@@ -1,6 +1,6 @@
 import { IGameHook } from './game-hook.interface';
 import { Injectable } from '@nestjs/common';
-import { IGameInstance, IGameUser, IGameCard } from '../..//@shared/arena-shared/game';
+import { IGameInstance, IGameUser, IGameCard } from '@thefirstspine/types-arena';
 import { MessagingService } from '@thefirstspine/messaging-nest';
 
 /**

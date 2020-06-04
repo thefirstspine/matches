@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { WizzardsStorageService } from '../storage/wizzards.storage.service';
-import { IWizzard } from '../@shared/arena-shared/wizzard';
+import { IWizard } from '@thefirstspine/types-arena';
 import { MessagingService } from '@thefirstspine/messaging-nest';
 
 @Injectable()
@@ -11,13 +11,13 @@ export class WizzardService {
     private readonly messagingService: MessagingService,
   ) {}
 
-  getWizzard(user: number): IWizzard {
+  getWizzard(user: number): IWizard {
     // The user "0" is a default wizzard
     if (user === 0) {
       return this.getDefaultWizzardData(0);
     }
 
-    let wizzard: IWizzard|null = this.wizzardsStorageService.get(user);
+    let wizzard: IWizard|null = this.wizzardsStorageService.get(user);
     if (!wizzard) {
       wizzard = this.getDefaultWizzardData(user);
       this.messagingService.sendMessage([wizzard.id], 'TheFirstSpine:account', wizzard);
@@ -31,7 +31,7 @@ export class WizzardService {
     return wizzard;
   }
 
-  getDefaultWizzardData(user: number): IWizzard {
+  getDefaultWizzardData(user: number): IWizard {
     return {
       id: user,
       name: '',

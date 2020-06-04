@@ -3,9 +3,8 @@ import {
   IGameInstance,
   IGameAction,
   IGameCard,
-  ISubActionMoveCardOnBoard,
-  ISubActionMoveCardOnBoardPossibility,
-  anySubaction} from '../../../@shared/arena-shared/game';
+  IInteractionMoveCardOnBoard,
+  IInteractionMoveCardOnBoardPossibility } from '@thefirstspine/types-arena';
 import { Injectable } from '@nestjs/common';
 import { GameHookService } from '../../game-hook/game-hook.service';
 import { IHasGameHookService, IHasGameWorkerService } from '../../injections.interface';
@@ -32,7 +31,7 @@ export class Fpe8GameWorker implements IGameWorker, IHasGameHookService, IHasGam
   /**
    * @inheritdoc
    */
-  public async create(gameInstance: IGameInstance, data: {user: number}): Promise<IGameAction<ISubActionMoveCardOnBoard>> {
+  public async create(gameInstance: IGameInstance, data: {user: number}): Promise<IGameAction<IInteractionMoveCardOnBoard>> {
     return {
       createdAt: Date.now(),
       type: this.type,
@@ -62,14 +61,14 @@ export class Fpe8GameWorker implements IGameWorker, IHasGameHookService, IHasGam
   /**
    * @inheritdoc
    */
-  public async refresh(gameInstance: IGameInstance, gameAction: IGameAction<ISubActionMoveCardOnBoard>): Promise<void> {
+  public async refresh(gameInstance: IGameInstance, gameAction: IGameAction<IInteractionMoveCardOnBoard>): Promise<void> {
     gameAction.interaction.params.possibilities = this.getPossibilities(gameInstance, gameAction.user);
   }
 
   /**
    * @inheritdoc
    */
-  public async execute(gameInstance: IGameInstance, gameAction: IGameAction<ISubActionMoveCardOnBoard>): Promise<boolean> {
+  public async execute(gameInstance: IGameInstance, gameAction: IGameAction<IInteractionMoveCardOnBoard>): Promise<boolean> {
     // Validate the response form
     if (
       gameAction.response.boardCoordsFrom === undefined ||
@@ -84,7 +83,7 @@ export class Fpe8GameWorker implements IGameWorker, IHasGameHookService, IHasGam
     const boardCoordsTo: string = gameAction.response.boardCoordsTo;
     let allowed: boolean = false;
     gameAction.interaction.params.possibilities
-      .forEach((possibility: ISubActionMoveCardOnBoardPossibility) => {
+      .forEach((possibility: IInteractionMoveCardOnBoardPossibility) => {
       if (possibility.boardCoordsFrom === boardCoordsFrom && possibility.boardCoordsTo.includes(boardCoordsTo)) {
         allowed = true;
       }
@@ -142,7 +141,7 @@ export class Fpe8GameWorker implements IGameWorker, IHasGameHookService, IHasGam
    * @param gameInstance
    * @param user
    */
-  protected getPossibilities(gameInstance: IGameInstance, user: number): ISubActionMoveCardOnBoardPossibility[] {
+  protected getPossibilities(gameInstance: IGameInstance, user: number): IInteractionMoveCardOnBoardPossibility[] {
     return [{
       boardCoordsFrom: '3-3',
       boardCoordsTo: ['3-4'],
@@ -154,7 +153,7 @@ export class Fpe8GameWorker implements IGameWorker, IHasGameHookService, IHasGam
    * @param gameInstance
    * @param gameAction
    */
-  public async expires(gameInstance: IGameInstance, gameAction: IGameAction<ISubActionMoveCardOnBoard>): Promise<boolean> {
+  public async expires(gameInstance: IGameInstance, gameAction: IGameAction<IInteractionMoveCardOnBoard>): Promise<boolean> {
     return true;
   }
 
@@ -163,8 +162,8 @@ export class Fpe8GameWorker implements IGameWorker, IHasGameHookService, IHasGam
    * @param gameInstance
    * @param gameAction
    */
-  public async delete(gameInstance: IGameInstance, gameAction: IGameAction<ISubActionMoveCardOnBoard>): Promise<void> {
-    gameInstance.actions.current = gameInstance.actions.current.filter((gameActionRef: IGameAction<anySubaction>) => {
+  public async delete(gameInstance: IGameInstance, gameAction: IGameAction<IInteractionMoveCardOnBoard>): Promise<void> {
+    gameInstance.actions.current = gameInstance.actions.current.filter((gameActionRef: IGameAction<any>) => {
       if (gameActionRef === gameAction) {
         gameInstance.actions.previous.push({
           ...gameAction,

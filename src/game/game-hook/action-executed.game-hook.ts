@@ -1,6 +1,6 @@
 import { IGameHook } from './game-hook.interface';
 import { Injectable } from '@nestjs/common';
-import { IGameInstance, IGameCard, IGameAction } from '../../@shared/arena-shared/game';
+import { IGameInstance, IGameCard, IGameAction } from '@thefirstspine/types-arena';
 import { ICardCoords } from '@thefirstspine/types-rest';
 
 @Injectable()

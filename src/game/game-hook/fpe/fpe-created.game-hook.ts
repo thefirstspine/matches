@@ -1,6 +1,6 @@
 import { IGameHook } from '../game-hook.interface';
 import { Injectable } from '@nestjs/common';
-import { IGameInstance, IGameAction } from '../../../@shared/arena-shared/game';
+import { IGameInstance, IGameAction } from '@thefirstspine/types-arena';
 import { RestService } from '../../../rest/rest.service';
 import { ICard, ICardStat } from '@thefirstspine/types-rest';
 import { IHasGameWorkerService } from '../../injections.interface';

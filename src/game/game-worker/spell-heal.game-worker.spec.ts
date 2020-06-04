@@ -13,7 +13,7 @@ import { RoomsService } from '../../rooms/rooms.service';
 import { ArenaRoomsService } from '../../rooms/arena-rooms.service';
 import { GameHookService } from '../game-hook/game-hook.service';
 import { BotsService } from '../../bots/bots.service';
-import { IGameInstance, IGameAction } from '../../@shared/arena-shared/game';
+import { IGameInstance, IGameAction } from '@thefirstspine/types-arena';
 import { AuthService } from '@thefirstspine/auth-nest';
 import { LogsService } from '@thefirstspine/logs-nest';
 import { MessagingService } from '@thefirstspine/messaging-nest';

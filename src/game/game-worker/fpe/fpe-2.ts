@@ -1,5 +1,5 @@
 import { IGameWorker } from '../game-worker.interface';
-import { IGameInstance, IGameAction, IGameCard, ISubActionMoveCardToDiscard } from '../../../@shared/arena-shared/game';
+import { IGameInstance, IGameAction, IGameCard, IInteractionMoveCardToDiscard } from '@thefirstspine/types-arena';
 import { Injectable } from '@nestjs/common';
 import { GameHookService } from '../../game-hook/game-hook.service';
 import { IHasGameHookService, IHasGameWorkerService } from '../../injections.interface';
@@ -26,7 +26,7 @@ export class Fpe2GameWorker implements IGameWorker, IHasGameHookService, IHasGam
   /**
    * @inheritdoc
    */
-  public async create(gameInstance: IGameInstance, data: {user: number}): Promise<IGameAction<ISubActionMoveCardToDiscard>> {
+  public async create(gameInstance: IGameInstance, data: {user: number}): Promise<IGameAction<IInteractionMoveCardToDiscard>> {
     return {
       type: 'fpe-2',
       createdAt: Date.now(),
@@ -58,7 +58,7 @@ export class Fpe2GameWorker implements IGameWorker, IHasGameHookService, IHasGam
   /**
    * @inheritdoc
    */
-  public async execute(gameInstance: IGameInstance, gameAction: IGameAction<ISubActionMoveCardToDiscard>): Promise<boolean> {
+  public async execute(gameInstance: IGameInstance, gameAction: IGameAction<IInteractionMoveCardToDiscard>): Promise<boolean> {
     // Validate response inputs
     const allowedHandIndexes: number[] = gameAction.interaction.params.handIndexes;
     const responseHandIndexes: number[] = gameAction.response.handIndexes;
@@ -114,7 +114,7 @@ export class Fpe2GameWorker implements IGameWorker, IHasGameHookService, IHasGam
    * @param gameInstance
    * @param gameAction
    */
-  public async refresh(gameInstance: IGameInstance, gameAction: IGameAction<ISubActionMoveCardToDiscard>): Promise<void> {
+  public async refresh(gameInstance: IGameInstance, gameAction: IGameAction<IInteractionMoveCardToDiscard>): Promise<void> {
     return;
   }
 
@@ -123,7 +123,7 @@ export class Fpe2GameWorker implements IGameWorker, IHasGameHookService, IHasGam
    * @param gameInstance
    * @param gameAction
    */
-  public async expires(gameInstance: IGameInstance, gameAction: IGameAction<ISubActionMoveCardToDiscard>): Promise<boolean> {
+  public async expires(gameInstance: IGameInstance, gameAction: IGameAction<IInteractionMoveCardToDiscard>): Promise<boolean> {
     return true;
   }
 
@@ -132,8 +132,8 @@ export class Fpe2GameWorker implements IGameWorker, IHasGameHookService, IHasGam
    * @param gameInstance
    * @param gameAction
    */
-  public async delete(gameInstance: IGameInstance, gameAction: IGameAction<ISubActionMoveCardToDiscard>): Promise<void> {
-    gameInstance.actions.current = gameInstance.actions.current.filter((gameActionRef: IGameAction<ISubActionMoveCardToDiscard>) => {
+  public async delete(gameInstance: IGameInstance, gameAction: IGameAction<IInteractionMoveCardToDiscard>): Promise<void> {
+    gameInstance.actions.current = gameInstance.actions.current.filter((gameActionRef: IGameAction<IInteractionMoveCardToDiscard>) => {
       if (gameActionRef === gameAction) {
         gameInstance.actions.previous.push({
           ...gameAction,

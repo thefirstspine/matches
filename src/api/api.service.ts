@@ -3,20 +3,24 @@ import { ApiError } from './api.error';
 import { QueueService } from './../queue/queue.service';
 import { GameService } from '../game/game.service';
 import { WizzardService } from '../wizzard/wizzard.service';
-import { IGameUser, IGameInstance, IGameCard, IGameAction, anySubaction } from '../@shared/arena-shared/game';
-import { IRespondToActionParams,
-         IRespondToActionResponse,
-         IGetUsersResponse,
+import { IGameUser,
+         IGameInstance,
+         IGameCard,
+         IGameAction,
+         IApiRespondToActionParams,
+         IApiRespondToActionResponse,
+         IApiGetUsersResponse,
          IApiRequest,
-         IGetGameResponse,
-         IQueueResponse,
-         IRefreshQueueAskParams,
-         IJoinQueueParams,
-         IQuitQueueParams } from '../@shared/arena-shared/api';
-import { isRespondToActionParams,
+         IApiGetGameResponse,
+         IApiQueueResponse,
+         IApiRefreshQueueAskParams,
+         IApiJoinQueueParams,
+         IApiQuitQueueParams,
+         isRespondToActionParams,
          isQuitQueueParams,
          isRefreshAskQueueParams,
-         isJoinQueueParams } from '../@shared/arena-shared/api.types';
+         isJoinQueueParams,
+         IGameInteraction } from '@thefirstspine/types-arena';
 
 /**
  * All the methods of the API are mapped here. The controller will call that
@@ -35,7 +39,7 @@ export class ApiService {
    * Join a queue in the queue service
    * @param request
    */
-  async joinQueue(request: IApiRequest<IJoinQueueParams>): Promise<IQueueResponse> {
+  async joinQueue(request: IApiRequest<IApiJoinQueueParams>): Promise<IApiQueueResponse> {
     if (!isJoinQueueParams(request.params)) {
       throw new ApiError('Invalid method parameter(s).', ApiError.CODE_INVALID_PARAMS);
     }
@@ -59,7 +63,7 @@ export class ApiService {
    * Join a queue in the queue service
    * @param request
    */
-  async refreshQueueAsk(request: IApiRequest<IRefreshQueueAskParams>): Promise<IQueueResponse> {
+  async refreshQueueAsk(request: IApiRequest<IApiRefreshQueueAskParams>): Promise<IApiQueueResponse> {
     if (!isRefreshAskQueueParams(request.params)) {
       throw new ApiError('Invalid method parameter(s).', ApiError.CODE_INVALID_PARAMS);
     }
@@ -79,7 +83,7 @@ export class ApiService {
    * Quit a queue in the queue service
    * @param request
    */
-  async quitQueue(request: IApiRequest<IQuitQueueParams>): Promise<IQueueResponse> {
+  async quitQueue(request: IApiRequest<IApiQuitQueueParams>): Promise<IApiQueueResponse> {
     if (!isQuitQueueParams(request.params)) {
       throw new ApiError('Invalid method parameter(s).', ApiError.CODE_INVALID_PARAMS);
     }
@@ -96,7 +100,7 @@ export class ApiService {
    * Get the current game instance for the player
    * @param request
    */
-  async getCurrentGame(request: IApiRequest<undefined>): Promise<IGetGameResponse> {
+  async getCurrentGame(request: IApiRequest<undefined>): Promise<IApiGetGameResponse> {
     const gameInstance: IGameInstance|undefined = this.gameService.getGameInstances().find(
       (g: IGameInstance) => g.users.find((u: IGameUser) => u.user === request.user) !== undefined);
 
@@ -113,7 +117,7 @@ export class ApiService {
    * Get cards
    * @param request
    */
-  async getGame(request: IApiRequest<undefined>): Promise<IGetGameResponse> {
+  async getGame(request: IApiRequest<undefined>): Promise<IApiGetGameResponse> {
     // Get the ID of the game
     const id: number|undefined = request.id;
     if (!id) {
@@ -189,7 +193,7 @@ export class ApiService {
    * Get actions
    * @param request
    */
-  async getActions(request: IApiRequest<undefined>): Promise<Array<IGameAction<anySubaction>>> {
+  async getActions(request: IApiRequest<undefined>): Promise<Array<IGameAction<IGameInteraction>>> {
     // Get the ID of the game
     const id: number|undefined = request.id;
     if (!id) {
@@ -208,13 +212,13 @@ export class ApiService {
     }
 
     // Get the max priority of the pending actions
-    const maxPriority = gameInstance.actions.current.reduce((acc: number, action: IGameAction<anySubaction>) => {
+    const maxPriority = gameInstance.actions.current.reduce((acc: number, action: IGameAction<IGameInteraction>) => {
       return action.priority > acc ? action.priority : acc;
     }, 0);
 
     // Get the cards in the board OR in the discard OR in the user's deck OR in the user's hand
     return gameInstance.actions.current.filter(
-      (action: IGameAction<anySubaction>) => {
+      (action: IGameAction<IGameInteraction>) => {
         return action.user === request.user && action.priority === maxPriority;
       },
     );
@@ -224,7 +228,7 @@ export class ApiService {
    * Get users
    * @param request
    */
-  async getUsers(request: IApiRequest<undefined>): Promise<IGetUsersResponse> {
+  async getUsers(request: IApiRequest<undefined>): Promise<IApiGetUsersResponse> {
     // Get the ID of the game
     const id: number|undefined = request.id;
     if (!id) {
@@ -252,7 +256,7 @@ export class ApiService {
    * Get users
    * @param request
    */
-  async respondToAction(request: IApiRequest<IRespondToActionParams>): Promise<IRespondToActionResponse> {
+  async respondToAction(request: IApiRequest<IApiRespondToActionParams>): Promise<IApiRespondToActionResponse> {
     if (!isRespondToActionParams(request.params)) {
       throw new ApiError('Invalid method parameter(s).', ApiError.CODE_INVALID_PARAMS);
     }

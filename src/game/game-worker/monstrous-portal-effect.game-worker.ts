@@ -1,5 +1,5 @@
 import { IGameWorker } from './game-worker.interface';
-import { IGameInstance, IGameAction, IGameCard, ISubActionPutCardOnBoard } from '../../@shared/arena-shared/game';
+import { IGameInstance, IGameAction, IGameCard, IInteractionPutCardOnBoard } from '@thefirstspine/types-arena';
 import { Injectable } from '@nestjs/common';
 import { ICardCoords } from '@thefirstspine/types-rest';
 import { GameHookService } from '../game-hook/game-hook.service';
@@ -27,7 +27,7 @@ export class MonstrousPortalEffectGameWorker implements IGameWorker, IHasGameHoo
   /**
    * @inheritdoc
    */
-  public async create(gameInstance: IGameInstance, data: {user: number}): Promise<IGameAction<ISubActionPutCardOnBoard>> {
+  public async create(gameInstance: IGameInstance, data: {user: number}): Promise<IGameAction<IInteractionPutCardOnBoard>> {
     return {
       createdAt: Date.now(),
       type: this.type,
@@ -59,7 +59,7 @@ export class MonstrousPortalEffectGameWorker implements IGameWorker, IHasGameHoo
   /**
    * @inheritdoc
    */
-  public async refresh(gameInstance: IGameInstance, gameAction: IGameAction<ISubActionPutCardOnBoard>): Promise<void> {
+  public async refresh(gameInstance: IGameInstance, gameAction: IGameAction<IInteractionPutCardOnBoard>): Promise<void> {
     gameAction.interaction.params.handIndexes =
       this.getHandIndexes(gameInstance, gameAction.user);
   }
@@ -67,7 +67,7 @@ export class MonstrousPortalEffectGameWorker implements IGameWorker, IHasGameHoo
   /**
    * @inheritdoc
    */
-  public async execute(gameInstance: IGameInstance, gameAction: IGameAction<ISubActionPutCardOnBoard>): Promise<boolean> {
+  public async execute(gameInstance: IGameInstance, gameAction: IGameAction<IInteractionPutCardOnBoard>): Promise<boolean> {
     // Validate response form
     if (
       gameAction.response.handIndex === undefined ||
@@ -126,7 +126,7 @@ export class MonstrousPortalEffectGameWorker implements IGameWorker, IHasGameHoo
    * @param gameInstance
    * @param gameAction
    */
-  public async expires(gameInstance: IGameInstance, gameAction: IGameAction<ISubActionPutCardOnBoard>): Promise<boolean> {
+  public async expires(gameInstance: IGameInstance, gameAction: IGameAction<IInteractionPutCardOnBoard>): Promise<boolean> {
     const handIndexes = this.getHandIndexes(gameInstance, gameAction.user);
     const handIndex = handIndexes[randBetween(0, handIndexes.length)];
     const boardCoords = gameAction.interaction.params.boardCoords[0];
@@ -139,7 +139,7 @@ export class MonstrousPortalEffectGameWorker implements IGameWorker, IHasGameHoo
    * @param gameInstance
    * @param gameAction
    */
-  public async delete(gameInstance: IGameInstance, gameAction: IGameAction<ISubActionPutCardOnBoard>): Promise<void> {
+  public async delete(gameInstance: IGameInstance, gameAction: IGameAction<IInteractionPutCardOnBoard>): Promise<void> {
     gameInstance.actions.current = gameInstance.actions.current.filter((gameActionRef: IGameAction<any>) => {
       if (gameActionRef === gameAction) {
         gameInstance.actions.previous.push({

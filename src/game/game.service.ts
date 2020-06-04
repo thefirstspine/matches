@@ -3,8 +3,7 @@ import { shuffle } from '../utils/array.utils';
 import { randBetween } from '../utils/maths.utils';
 import { GamesStorageService } from '../storage/games.storage.service';
 import { WizzardService } from '../wizzard/wizzard.service';
-import { IGameInstance, IGameUser, IGameCard, IGameAction, anySubaction } from '../@shared/arena-shared/game';
-import { IWizzardItem } from '../@shared/arena-shared/wizzard';
+import { IGameInstance, IGameUser, IGameCard, IGameAction, IWizardItem, IGameInteraction } from '@thefirstspine/types-arena';
 import { RestService } from '../rest/rest.service';
 import { ICard } from '@thefirstspine/types-rest';
 import { IGameType, IDeck } from '@thefirstspine/types-rest';
@@ -94,7 +93,7 @@ export class GameService {
     users.forEach((gameUser: IGameUser, index: number) => {
       // Add the cursed cards
       const wizzard = this.wizzardService.getWizzard(gameUser.user);
-      const curseItem: IWizzardItem|undefined = wizzard.items.find((item: IWizzardItem) => item.name === 'curse');
+      const curseItem: IWizardItem|undefined = wizzard.items.find((item: IWizardItem) => item.name === 'curse');
       if (curseItem) {
         for (let i = 0; i < curseItem.num; i ++) {
           const randomId: number = randBetween(0, Number.MAX_SAFE_INTEGER);
@@ -134,7 +133,7 @@ export class GameService {
     };
 
     // Create the first action
-    const action: IGameAction<anySubaction> = await this.gameWorkerService.getWorker('throw-cards')
+    const action: IGameAction<IGameInteraction> = await this.gameWorkerService.getWorker('throw-cards')
       .create(gameInstance, {user: users[firstUserToPlay].user});
     gameInstance.actions.current.push(action);
 
@@ -242,13 +241,14 @@ export class GameService {
     const jsonHash: string = JSON.stringify(gameInstance);
 
     // Get the max priority of the pending actions
-    const maxPriority = gameInstance.actions.current.reduce((acc: number, action: IGameAction<anySubaction>) => {
+    const maxPriority = gameInstance.actions.current.reduce((acc: number, action: IGameAction<IGameInteraction>) => {
       return action.priority > acc ? action.priority : acc;
     }, 0);
 
     // Treat only max priority action with a response (only one reponse will be treated in an instance per tick)
-    const pendingGameAction: IGameAction<anySubaction>|undefined
-      = gameInstance.actions.current.find((action: IGameAction<anySubaction>) => action.priority === maxPriority && action.response !== undefined);
+    const pendingGameAction: IGameAction<IGameInteraction>|undefined =
+      gameInstance.actions.current
+        .find((action: IGameAction<IGameInteraction>) => action.priority === maxPriority && action.response !== undefined);
 
     // Executes the game actions when exists
     if (pendingGameAction) {
@@ -268,7 +268,7 @@ export class GameService {
           // Dispatch event after each action
           this.gameHookService.dispatch(gameInstance, `action:deleted:${pendingGameAction.type}`, {user: pendingGameAction.user});
           // Refresh the other ones
-          const refreshPromises: Array<Promise<void>> = gameInstance.actions.current.map(async (action: IGameAction<anySubaction>) => {
+          const refreshPromises: Array<Promise<void>> = gameInstance.actions.current.map(async (action: IGameAction<IGameInteraction>) => {
               this.gameWorkerService.getWorker(action.type).refresh(gameInstance, action);
               // Dispatch event after each action
               this.gameHookService.dispatch(gameInstance, `action:refreshed:${action.type}`, {user: action.user, action});
@@ -286,7 +286,7 @@ export class GameService {
     }
 
     // Get the pending game actions with expiration
-    const promises: Array<Promise<any>> = gameInstance.actions.current.map(async (gameAction: IGameAction<anySubaction>) => {
+    const promises: Array<Promise<any>> = gameInstance.actions.current.map(async (gameAction: IGameAction<IGameInteraction>) => {
       try {
         if (gameAction.expiresAt && gameAction.expiresAt < Date.now() && gameAction.priority === maxPriority) {
           await this.gameWorkerService.getWorker(gameAction.type).expires(gameInstance, gameAction);

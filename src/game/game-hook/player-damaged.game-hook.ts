@@ -1,10 +1,9 @@
 import { IGameHook } from './game-hook.interface';
 import { Injectable } from '@nestjs/common';
-import { IGameInstance, IGameUser, IGameResult, IGameCard } from '../../@shared/arena-shared/game';
+import { IGameInstance, IGameUser, IGameResult, IGameCard, IWizard, IWizardHistoryItem } from '@thefirstspine/types-arena';
 import { WizzardsStorageService } from '../../storage/wizzards.storage.service';
 import { WizzardService } from '../../wizzard/wizzard.service';
 import { ILoot, ICycle } from '@thefirstspine/types-rest';
-import { IWizzard, IHistoryItem } from '../../@shared/arena-shared/wizzard';
 import { mergeLootsInItems } from '../../utils/game.utils';
 import { RestService } from '../../rest/rest.service';
 import { LogsService } from '@thefirstspine/logs-nest';
@@ -116,10 +115,10 @@ export class PlayerDamagedGameHook implements IGameHook {
     additionalTriumphs: string[],
   ) {
     // Get wizard's account
-    const wizzard: IWizzard = this.wizzardService.getWizzard(gameUser.user);
+    const wizzard: IWizard = this.wizzardService.getWizzard(gameUser.user);
 
     // Register data in wizard's history
-    const historyItem: IHistoryItem = {
+    const historyItem: IWizardHistoryItem = {
       gameId: gameInstance.id,
       gameTypeId: gameInstance.gameTypeId,
       victory,

@@ -4,7 +4,7 @@ import { RestService } from '../../rest/rest.service';
 import { WizzardService } from '../../wizzard/wizzard.service';
 import { BaseGameService } from '../base.game.service';
 import { IGameHook } from './game-hook.interface';
-import { IGameInstance } from '../../@shared/arena-shared/game';
+import { IGameInstance } from '@thefirstspine/types-arena';
 import { CardDamagedGameHook } from './card-damaged.game-hook';
 import { CardHealedGameHook } from './card-healed.game-hook';
 import { PlayerDamagedGameHook } from './player-damaged.game-hook';

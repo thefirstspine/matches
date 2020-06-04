@@ -13,7 +13,7 @@ import { RoomsService } from '../../rooms/rooms.service';
 import { ArenaRoomsService } from '../../rooms/arena-rooms.service';
 import { GameHookService } from '../game-hook/game-hook.service';
 import { BotsService } from '../../bots/bots.service';
-import { IGameInstance, IGameAction, ISubActionMoveCardToDiscard } from '../../@shared/arena-shared/game';
+import { IGameInstance, IGameAction, IInteractionMoveCardToDiscard } from '@thefirstspine/types-arena';
 import { AuthService } from '@thefirstspine/auth-nest';
 import { LogsService } from '@thefirstspine/logs-nest';
 import { MessagingService } from '@thefirstspine/messaging-nest';
@@ -181,9 +181,9 @@ describe('Throw cards', () => {
     gameAction.response = {handIndexes: [0]};
     gameInstance.actions.current.push(gameAction);
     expect(gameAction.interaction.type).toBe('moveCardsToDiscard');
-    expect((gameAction.interaction as ISubActionMoveCardToDiscard).params.handIndexes).toBeDefined();
-    expect((gameAction.interaction as ISubActionMoveCardToDiscard).params.handIndexes.length).toBe(4);
-    expect((gameAction.interaction as ISubActionMoveCardToDiscard).params.handIndexes[0]).toBe(0);
+    expect((gameAction.interaction as IInteractionMoveCardToDiscard).params.handIndexes).toBeDefined();
+    expect((gameAction.interaction as IInteractionMoveCardToDiscard).params.handIndexes.length).toBe(4);
+    expect((gameAction.interaction as IInteractionMoveCardToDiscard).params.handIndexes[0]).toBe(0);
 
     // Execute
     const result: boolean = await gameWorkerService.getWorker('throw-cards').execute(
@@ -306,8 +306,8 @@ describe('Throw cards', () => {
     gameAction.response = {handIndexes: [0, 1]};
     gameInstance.actions.current.push(gameAction);
     expect(gameAction.interaction.type).toBe('moveCardsToDiscard');
-    expect((gameAction.interaction as ISubActionMoveCardToDiscard).params.handIndexes).toBeDefined();
-    expect((gameAction.interaction as ISubActionMoveCardToDiscard).params.handIndexes.length).toBe(4);
+    expect((gameAction.interaction as IInteractionMoveCardToDiscard).params.handIndexes).toBeDefined();
+    expect((gameAction.interaction as IInteractionMoveCardToDiscard).params.handIndexes.length).toBe(4);
 
     // Execute
     const result: boolean = await gameWorkerService.getWorker('throw-cards').execute(
@@ -410,9 +410,9 @@ describe('Throw cards', () => {
     gameAction.response = {handIndexes: [0]};
     gameInstance.actions.current.push(gameAction);
     expect(gameAction.interaction.type).toBe('moveCardsToDiscard');
-    expect((gameAction.interaction as ISubActionMoveCardToDiscard).params.handIndexes).toBeDefined();
-    expect((gameAction.interaction as ISubActionMoveCardToDiscard).params.handIndexes.length).toBe(4);
-    expect((gameAction.interaction as ISubActionMoveCardToDiscard).params.handIndexes[0]).toBe(0);
+    expect((gameAction.interaction as IInteractionMoveCardToDiscard).params.handIndexes).toBeDefined();
+    expect((gameAction.interaction as IInteractionMoveCardToDiscard).params.handIndexes.length).toBe(4);
+    expect((gameAction.interaction as IInteractionMoveCardToDiscard).params.handIndexes[0]).toBe(0);
 
     // Execute
     const result: boolean = await gameWorkerService.getWorker('throw-cards').execute(
@@ -519,8 +519,8 @@ describe('Throw cards', () => {
     gameAction.response = {handIndexes: [0, 1]};
     gameInstance.actions.current.push(gameAction);
     expect(gameAction.interaction.type).toBe('moveCardsToDiscard');
-    expect((gameAction.interaction as ISubActionMoveCardToDiscard).params.handIndexes).toBeDefined();
-    expect((gameAction.interaction as ISubActionMoveCardToDiscard).params.handIndexes.length).toBe(4);
+    expect((gameAction.interaction as IInteractionMoveCardToDiscard).params.handIndexes).toBeDefined();
+    expect((gameAction.interaction as IInteractionMoveCardToDiscard).params.handIndexes.length).toBe(4);
 
     // Execute
     const result: boolean = await gameWorkerService.getWorker('throw-cards').execute(

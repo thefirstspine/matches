@@ -1,6 +1,6 @@
 import { IGameHook } from './game-hook.interface';
 import { Injectable } from '@nestjs/common';
-import { IGameInstance, IGameUser, IGameCard } from '../../@shared/arena-shared/game';
+import { IGameInstance, IGameCard } from '@thefirstspine/types-arena';
 import { GameHookService } from './game-hook.service';
 import { ICard } from '@thefirstspine/types-rest';
 import { RestService } from '../../rest/rest.service';
@@ -17,7 +17,6 @@ import { MessagingService } from '@thefirstspine/messaging-nest';
 export class CardDestroyedGameHook implements IGameHook {
 
   constructor(
-    private readonly messagingService: MessagingService,
     private readonly gameHookService: GameHookService,
     private readonly restService: RestService,
   ) {}

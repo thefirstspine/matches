@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { WizzardService } from '../wizzard/wizzard.service';
 import { WizzardsStorageService } from '../storage/wizzards.storage.service';
 import fetch, { Response } from 'node-fetch';
-import { IWizzard, IWizzardItem } from '../@shared/arena-shared/wizzard';
+import { IWizard, IWizardItem } from '@thefirstspine/types-arena';
 import { IShopItem } from '@thefirstspine/types-rest';
 import { mergeLootsInItems } from '../utils/game.utils';
 import { LogsService } from '@thefirstspine/logs-nest';
@@ -27,14 +27,14 @@ export class ShopService {
     }
 
     // Get the wizzard
-    const wizzard: IWizzard = this.wizzardService.getWizzard(purchase.user);
+    const wizzard: IWizard = this.wizzardService.getWizzard(purchase.user);
     if (purchase.oneTimePurchase && wizzard.purchases.includes(purchase.id)) {
       throw new Error('Already purchased');
     }
 
     // Gather & check required items
     const lookedItem = purchase.price.currency === 'shards' ? 'shard' : purchase.price.currency;
-    const itemFrom: IWizzardItem = wizzard.items.find(item => item.name === lookedItem);
+    const itemFrom: IWizardItem = wizzard.items.find(item => item.name === lookedItem);
     if (!itemFrom || itemFrom.num < purchase.price.num) {
       throw new Error('No sufficient item count');
     }
@@ -172,7 +172,7 @@ export class ShopService {
       // The payment succeeded
       if (responseJson.status === 'succeeded') {
         // Add the loot
-        const wizzard: IWizzard = this.wizzardService.getWizzard(purchase.user);
+        const wizzard: IWizard = this.wizzardService.getWizzard(purchase.user);
         mergeLootsInItems(wizzard.items, purchase.loots);
         this.wizzardStorageService.save(wizzard);
         this.messagingService.sendMessage([wizzard.id], 'TheFirstSpine:account', wizzard);

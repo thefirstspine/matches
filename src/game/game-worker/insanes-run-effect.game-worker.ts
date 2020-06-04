@@ -1,5 +1,5 @@
 import { IGameWorker } from './game-worker.interface';
-import { IGameInstance, IGameAction, IGameCard, ISubActionChoseCardOnBoard } from '../../@shared/arena-shared/game';
+import { IGameInstance, IGameAction, IGameCard, IInteractionChoseCardOnBoard } from '@thefirstspine/types-arena';
 import { Injectable } from '@nestjs/common';
 import { GameHookService } from '../game-hook/game-hook.service';
 import { IHasGameHookService, IHasGameWorkerService } from '../injections.interface';
@@ -27,7 +27,7 @@ export class InsanesRunEffectGameWorker implements IGameWorker, IHasGameHookServ
   /**
    * @inheritdoc
    */
-  public async create(gameInstance: IGameInstance, data: {user: number}): Promise<IGameAction<ISubActionChoseCardOnBoard>> {
+  public async create(gameInstance: IGameInstance, data: {user: number}): Promise<IGameAction<IInteractionChoseCardOnBoard>> {
     return {
       createdAt: Date.now(),
       type: this.type,
@@ -58,7 +58,7 @@ export class InsanesRunEffectGameWorker implements IGameWorker, IHasGameHookServ
   /**
    * @inheritdoc
    */
-  public async refresh(gameInstance: IGameInstance, gameAction: IGameAction<ISubActionChoseCardOnBoard>): Promise<void> {
+  public async refresh(gameInstance: IGameInstance, gameAction: IGameAction<IInteractionChoseCardOnBoard>): Promise<void> {
     gameAction.interaction.params.boardCoords =
       this.getBoardCoords(gameInstance, gameAction.user);
   }
@@ -66,7 +66,7 @@ export class InsanesRunEffectGameWorker implements IGameWorker, IHasGameHookServ
   /**
    * @inheritdoc
    */
-  public async execute(gameInstance: IGameInstance, gameAction: IGameAction<ISubActionChoseCardOnBoard>): Promise<boolean> {
+  public async execute(gameInstance: IGameInstance, gameAction: IGameAction<IInteractionChoseCardOnBoard>): Promise<boolean> {
     // Validate response form
     if (
       gameAction.response.boardCoords === undefined
@@ -121,7 +121,7 @@ export class InsanesRunEffectGameWorker implements IGameWorker, IHasGameHookServ
    * @param gameInstance
    * @param gameAction
    */
-  public async expires(gameInstance: IGameInstance, gameAction: IGameAction<ISubActionChoseCardOnBoard>): Promise<boolean> {
+  public async expires(gameInstance: IGameInstance, gameAction: IGameAction<IInteractionChoseCardOnBoard>): Promise<boolean> {
     const boardCoords: string[] = this.getBoardCoords(gameInstance, gameAction.user);
     gameAction.response = {
       boardCoords: boardCoords[randBetween(0, boardCoords.length - 1)],
@@ -134,8 +134,8 @@ export class InsanesRunEffectGameWorker implements IGameWorker, IHasGameHookServ
    * @param gameInstance
    * @param gameAction
    */
-  public async delete(gameInstance: IGameInstance, gameAction: IGameAction<ISubActionChoseCardOnBoard>): Promise<void> {
-    gameInstance.actions.current = gameInstance.actions.current.filter((gameActionRef: IGameAction<ISubActionChoseCardOnBoard>) => {
+  public async delete(gameInstance: IGameInstance, gameAction: IGameAction<IInteractionChoseCardOnBoard>): Promise<void> {
+    gameInstance.actions.current = gameInstance.actions.current.filter((gameActionRef: IGameAction<IInteractionChoseCardOnBoard>) => {
       if (gameActionRef === gameAction) {
         gameInstance.actions.previous.push({
           ...gameAction,

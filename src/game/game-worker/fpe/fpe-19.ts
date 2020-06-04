@@ -1,5 +1,5 @@
 import { IGameWorker } from '../game-worker.interface';
-import { IGameInstance, IGameAction, ISubActionSelectCoupleOnBoard, ISubActionPass, anySubaction } from '../../../@shared/arena-shared/game';
+import { IGameInstance, IGameAction, IInteractionPass } from '@thefirstspine/types-arena';
 import { Injectable } from '@nestjs/common';
 import { GameWorkerService } from '../game-worker.service';
 import { GameHookService } from '../../game-hook/game-hook.service';
@@ -24,7 +24,7 @@ export class Fpe19GameWorker implements IGameWorker, IHasGameHookService {
   /**
    * @inheritdoc
    */
-  public async create(gameInstance: IGameInstance, data: {user: number}): Promise<IGameAction<ISubActionPass>> {
+  public async create(gameInstance: IGameInstance, data: {user: number}): Promise<IGameAction<IInteractionPass>> {
     return {
       createdAt: Date.now(),
       type: this.type,
@@ -53,9 +53,9 @@ export class Fpe19GameWorker implements IGameWorker, IHasGameHookService {
   /**
    * @inheritdoc
    */
-  public async execute(gameInstance: IGameInstance, gameAction: IGameAction<ISubActionPass>): Promise<boolean> {
+  public async execute(gameInstance: IGameInstance, gameAction: IGameAction<IInteractionPass>): Promise<boolean> {
     // Deletes all the current actions
-    gameInstance.actions.current.forEach((currentGameAction: IGameAction<anySubaction>) => {
+    gameInstance.actions.current.forEach((currentGameAction: IGameAction<any>) => {
       if (currentGameAction !== gameAction) {
         this.gameWorkerService.getWorker(currentGameAction.type).delete(gameInstance, currentGameAction);
       }
@@ -85,7 +85,7 @@ export class Fpe19GameWorker implements IGameWorker, IHasGameHookService {
    * @param gameInstance
    * @param gameAction
    */
-  public async refresh(gameInstance: IGameInstance, gameAction: IGameAction<ISubActionPass>): Promise<void> {
+  public async refresh(gameInstance: IGameInstance, gameAction: IGameAction<IInteractionPass>): Promise<void> {
     return;
   }
 
@@ -94,7 +94,7 @@ export class Fpe19GameWorker implements IGameWorker, IHasGameHookService {
    * @param gameInstance
    * @param gameAction
    */
-  public async expires(gameInstance: IGameInstance, gameAction: IGameAction<ISubActionPass>): Promise<boolean> {
+  public async expires(gameInstance: IGameInstance, gameAction: IGameAction<IInteractionPass>): Promise<boolean> {
     gameAction.response = {pass: true};
     return true;
   }
@@ -104,7 +104,7 @@ export class Fpe19GameWorker implements IGameWorker, IHasGameHookService {
    * @param gameInstance
    * @param gameAction
    */
-  public async delete(gameInstance: IGameInstance, gameAction: IGameAction<ISubActionPass>): Promise<void> {
+  public async delete(gameInstance: IGameInstance, gameAction: IGameAction<IInteractionPass>): Promise<void> {
     gameInstance.actions.current = gameInstance.actions.current.filter((gameActionRef: IGameAction<any>) => {
       if (gameActionRef === gameAction) {
         gameInstance.actions.previous.push({

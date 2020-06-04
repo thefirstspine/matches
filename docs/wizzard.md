@@ -8,7 +8,7 @@ Get the Arena's account. This endpoint is protected with a user JWT token.
 
 ### Response
 
-Returns an `IWizzard` instance.
+Returns an `IWizard` instance.
 
 For more infomation about this type, see <https://github.com/thefirstspine/arena-shared/blob/master/wizzard.d.ts>
 
@@ -23,6 +23,6 @@ Edit fields of a wizzard.
 
 ### Response
 
-Returns an `IWizzard` instance.
+Returns an `IWizard` instance.
 
 For more infomation about this type, see <https://github.com/thefirstspine/arena-shared/blob/master/wizzard.d.ts>

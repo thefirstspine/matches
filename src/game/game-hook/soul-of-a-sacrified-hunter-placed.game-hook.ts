@@ -1,6 +1,6 @@
 import { IGameHook } from './game-hook.interface';
 import { Injectable } from '@nestjs/common';
-import { IGameInstance, IGameCard } from '../../@shared/arena-shared/game';
+import { IGameInstance, IGameCard } from '@thefirstspine/types-arena';
 
 /**
  * This subscriber is executed once a 'card:lifeChanged:damaged' event is thrown. It will look for dead

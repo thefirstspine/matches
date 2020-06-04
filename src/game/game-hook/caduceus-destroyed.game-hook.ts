@@ -1,6 +1,6 @@
 import { IGameHook } from './game-hook.interface';
 import { Injectable } from '@nestjs/common';
-import { IGameInstance, IGameCard } from '../../@shared/arena-shared/game';
+import { IGameInstance, IGameCard } from '@thefirstspine/types-arena';
 
 /**
  * This subscriber is executed once a 'card:destroyed:caduceus' event is thrown.
