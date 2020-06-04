@@ -1,9 +1,7 @@
 import { IGameHook } from './game-hook.interface';
 import { Injectable } from '@nestjs/common';
 import { IGameInstance, IGameUser, IGameCard } from '../..//@shared/arena-shared/game';
-import { MessagingService } from '../..//@shared/messaging-shared/messaging.service';
-import { ICard } from '../..//@shared/rest-shared/card';
-import { RestService } from '../..//rest/rest.service';
+import { MessagingService } from '@thefirstspine/messaging-nest';
 
 /**
  * This subscriber is executed once a 'card:lifeChanged:healed' event is thrown. It will look for cards that
@@ -16,7 +14,6 @@ export class CardHealedGameHook implements IGameHook {
 
   constructor(
     private readonly messagingService: MessagingService,
-    private readonly restService: RestService,
   ) {}
 
   async execute(gameInstance: IGameInstance, params: {gameCard: IGameCard, lifeChanged: number}): Promise<boolean> {

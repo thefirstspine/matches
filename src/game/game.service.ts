@@ -9,10 +9,10 @@ import { RestService } from '../rest/rest.service';
 import { ICard } from '../@shared/rest-shared/card';
 import { IGameType, IDeck } from '../@shared/rest-shared/entities';
 import { ArenaRoomsService } from '../rooms/arena-rooms.service';
-import { MessagingService } from '../@shared/messaging-shared/messaging.service';
 import { GameWorkerService } from './game-worker/game-worker.service';
 import { GameHookService } from './game-hook/game-hook.service';
 import { LogsService } from '@thefirstspine/logs-nest';
+import { MessagingService } from '@thefirstspine/messaging-nest';
 
 /**
  * Service to manage game instances

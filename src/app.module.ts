@@ -11,11 +11,9 @@ import { WizzardsStorageService } from './storage/wizzards.storage.service';
 import { WizzardController } from './wizzard/wizzard.controller';
 import { ShopController } from './shop/shop.controller';
 import { ShopService } from './shop/shop.service';
-import { LogService } from './@shared/log-shared/log.service';
 import { RestService } from './rest/rest.service';
 import { RoomsService } from './rooms/rooms.service';
 import { ArenaRoomsService } from './rooms/arena-rooms.service';
-import { MessagingService } from './@shared/messaging-shared/messaging.service';
 import { GameWorkerService } from './game/game-worker/game-worker.service';
 import { GameHookService } from './game/game-hook/game-hook.service';
 import { BotsService } from './bots/bots.service';
@@ -24,6 +22,7 @@ import { FileSocketModule } from 'nest-filesocket';
 import { FileSocketMethodsService } from './file-socket-methods/file-socket-methods.service';
 import { AuthService } from '@thefirstspine/auth-nest';
 import { LogsService } from '@thefirstspine/logs-nest';
+import { MessagingService } from '@thefirstspine/messaging-nest';
 
 @Module({
   imports: [
@@ -43,7 +42,6 @@ import { LogsService } from '@thefirstspine/logs-nest';
     WizzardsStorageService,
     ShopService,
     AuthService,
-    {provide: LogService, useValue: new LogService('arena')},
     LogsService,
     RestService,
     RoomsService,

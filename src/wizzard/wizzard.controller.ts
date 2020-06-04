@@ -4,10 +4,10 @@ import { WizzardsStorageService } from '../storage/wizzards.storage.service';
 import { IWizzard } from '../@shared/arena-shared/wizzard';
 import { IAvatar } from '../@shared/rest-shared/entities';
 import { RestService } from '../rest/rest.service';
-import { MessagingService } from '../@shared/messaging-shared/messaging.service';
 import { CertificateGuard } from '../certificate.guard';
 import { mergeLootsInItems } from '../utils/game.utils';
 import { AuthGuard } from '@thefirstspine/auth-nest';
+import { MessagingService } from '@thefirstspine/messaging-nest';
 
 /**
  * Main wizard endpoint

@@ -1,5 +1,4 @@
 import { Injectable, forwardRef, Inject } from '@nestjs/common';
-import { MessagingService } from '../../@shared/messaging-shared/messaging.service';
 import { ArenaRoomsService } from '../../rooms/arena-rooms.service';
 import { RestService } from '../../rest/rest.service';
 import { WizzardService } from '../../wizzard/wizzard.service';
@@ -44,7 +43,7 @@ import { SpellCureGameWorker } from './spell-cure.game-worker';
 import { SpellTheVoidGameWorker } from './spell-the-void.game-worker';
 import { SpellPainGameWorker } from './spell-pain.game-worker';
 import { LogsService } from '@thefirstspine/logs-nest';
-import { LogService } from '../../@shared/log-shared/log.service';
+import { MessagingService } from '@thefirstspine/messaging-nest';
 
 /**
  * Main service that manages game workers. Each game worker is responsible of a game action type. This service
@@ -58,7 +57,6 @@ export class GameWorkerService extends BaseGameService<IGameWorker> {
   constructor(
     private readonly messagingService: MessagingService,
     private readonly logsService: LogsService,
-    private readonly logService: LogService,
     private readonly wizzardService: WizzardService,
     private readonly restService: RestService,
     private readonly arenaRoomsService: ArenaRoomsService,
@@ -77,7 +75,6 @@ export class GameWorkerService extends BaseGameService<IGameWorker> {
     // Defer injections for game workers constructions
     this.deferInjection(this.messagingService);
     this.deferInjection(this.logsService);
-    this.deferInjection(this.logService);
     this.deferInjection(this.wizzardService);
     this.deferInjection(this.restService);
     this.deferInjection(this.arenaRoomsService);

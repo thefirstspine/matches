@@ -1,6 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { GameWorkerService } from './game-worker.service';
-import { MessagingService } from '../../@shared/messaging-shared/messaging.service';
 import { ApiService } from '../../api/api.service';
 import { GameService } from '../game.service';
 import { QueueService } from '../../queue/queue.service';
@@ -17,7 +16,7 @@ import { BotsService } from '../../bots/bots.service';
 import { IGameInstance, IGameAction, ISubActionMoveCardToDiscard } from '../../@shared/arena-shared/game';
 import { AuthService } from '@thefirstspine/auth-nest';
 import { LogsService } from '@thefirstspine/logs-nest';
-import { LogService } from '../../@shared/log-shared/log.service';
+import { MessagingService } from '@thefirstspine/messaging-nest';
 
 describe('Throw cards', () => {
   let gameWorkerService: GameWorkerService;
@@ -44,7 +43,6 @@ describe('Throw cards', () => {
         ShopService,
         AuthService,
         LogsService,
-        {provide: LogService, useValue: new LogService('arena')},
         RestService,
         RoomsService,
         ArenaRoomsService,

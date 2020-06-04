@@ -1,11 +1,11 @@
 import { IGameHook } from './game-hook.interface';
 import { Injectable } from '@nestjs/common';
 import { IGameInstance, IGameUser, IGameCard } from '../../@shared/arena-shared/game';
-import { MessagingService } from '../../@shared/messaging-shared/messaging.service';
 import { GameHookService } from './game-hook.service';
 import { ICard } from '../../@shared/rest-shared/card';
 import { RestService } from '../../rest/rest.service';
 import { randBetween } from '../../utils/maths.utils';
+import { MessagingService } from '@thefirstspine/messaging-nest';
 
 /**
  * This subscriber is executed once a 'game:card:destroyed' event is thrown. It will look for dead

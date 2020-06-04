@@ -7,8 +7,8 @@ import { ILoot, ICycle } from '../../@shared/rest-shared/entities';
 import { IWizzard, IHistoryItem } from '../../@shared/arena-shared/wizzard';
 import { mergeLootsInItems } from '../../utils/game.utils';
 import { RestService } from '../../rest/rest.service';
-import { MessagingService } from '../../@shared/messaging-shared/messaging.service';
 import { LogsService } from '@thefirstspine/logs-nest';
+import { MessagingService } from '@thefirstspine/messaging-nest';
 
 /**
  * This subscriber is executed once a 'card:lifeChanged:damaged:{player}' event is thrown and look for dead

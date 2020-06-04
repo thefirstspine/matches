@@ -6,8 +6,8 @@ import { IWizzardItem, IWizzard, IHistoryItem } from '../@shared/arena-shared/wi
 import { IGameType } from '../@shared/rest-shared/entities';
 import { RestService } from '../rest/rest.service';
 import { getScore } from '../utils/game.utils';
-import { MessagingService } from '../@shared/messaging-shared/messaging.service';
 import { BotsService } from '../bots/bots.service';
+import { MessagingService } from '@thefirstspine/messaging-nest';
 
 /**
  * Service to manage the game queue
