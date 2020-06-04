@@ -6,7 +6,7 @@ import { IHasGameHookService, IHasGameWorkerService } from '../injections.interf
 import { ArenaRoomsService } from '../../rooms/arena-rooms.service';
 import { GameWorkerService } from './game-worker.service';
 import { RestService } from '../../rest/rest.service';
-import { ICard } from '../../@shared/rest-shared/card';
+import { ICard } from '@thefirstspine/types-rest';
 
 /**
  * Terminate the turn of the user.

@@ -2,8 +2,7 @@ import { IGameHook } from './game-hook.interface';
 import { Injectable } from '@nestjs/common';
 import { IGameInstance, IGameUser } from '../../@shared/arena-shared/game';
 import { RestService } from '../../rest/rest.service';
-import { ICycle } from '../../@shared/rest-shared/entities';
-import { ICard } from '../../@shared/rest-shared/card';
+import { ICycle, ICard } from '@thefirstspine/types-rest';
 import { randBetween } from '../../utils/maths.utils';
 import { shuffle } from '../../utils/array.utils';
 

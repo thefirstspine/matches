@@ -1,6 +1,3 @@
 [submodule "src/@shared/arena-shared"]
 	path = src/@shared/arena-shared
 	url = https://github.com/thefirstspine/arena-shared
-[submodule "src/@shared/rest-shared"]
-	path = src/@shared/rest-shared
-	url = https://github.com/thefirstspine/rest-shared

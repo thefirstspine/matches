@@ -5,7 +5,7 @@ import clear = require('clear');
 import chalk = require('chalk');
 import program = require('commander');
 import { RestService } from '../rest/rest.service';
-import { ICycle, ILoot } from '../@shared/rest-shared/entities';
+import { ICycle } from '@thefirstspine/types-rest';
 import { GamesStorageService } from '../storage/games.storage.service';
 import { IGameInstance, IGameResult } from '../@shared/arena-shared/game';
 import { WizzardsStorageService } from '../storage/wizzards.storage.service';

@@ -2,7 +2,7 @@ import { Controller, Get, UseGuards, Req, Post, Param, HttpException } from '@ne
 import { WizzardService } from './wizzard.service';
 import { WizzardsStorageService } from '../storage/wizzards.storage.service';
 import { IWizzard } from '../@shared/arena-shared/wizzard';
-import { IAvatar } from '../@shared/rest-shared/entities';
+import { IAvatar } from '@thefirstspine/types-rest';
 import { RestService } from '../rest/rest.service';
 import { CertificateGuard } from '../certificate.guard';
 import { mergeLootsInItems } from '../utils/game.utils';

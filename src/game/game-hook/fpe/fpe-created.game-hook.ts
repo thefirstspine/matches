@@ -2,7 +2,7 @@ import { IGameHook } from '../game-hook.interface';
 import { Injectable } from '@nestjs/common';
 import { IGameInstance, IGameAction } from '../../../@shared/arena-shared/game';
 import { RestService } from '../../../rest/rest.service';
-import { ICard, ICardStat } from '../../../@shared/rest-shared/card';
+import { ICard, ICardStat } from '@thefirstspine/types-rest';
 import { IHasGameWorkerService } from '../../injections.interface';
 import { GameWorkerService } from '../../game-worker/game-worker.service';
 

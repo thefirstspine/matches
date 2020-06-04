@@ -6,7 +6,7 @@ import { IGameInstance,
   IGameCard,
   anySubaction} from '../../../@shared/arena-shared/game';
 import { Injectable } from '@nestjs/common';
-import { cardSide } from '../../../@shared/rest-shared/base';
+import { cardSide } from '@thefirstspine/types-rest';
 import { GameWorkerService } from '../game-worker.service';
 import { GameHookService } from '../../game-hook/game-hook.service';
 import { IHasGameHookService, IHasGameWorkerService } from '../../injections.interface';

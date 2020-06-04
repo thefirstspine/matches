@@ -1,6 +1,6 @@
-import { Controller, Post, Body, UseGuards, Req, Get, Param } from '@nestjs/common';
-import { ShopService, IShopPurchase, IPurchase } from './shop.service';
-import { IShopItem } from '../@shared/rest-shared/entities';
+import { Controller, Post, UseGuards, Req, Get, Param } from '@nestjs/common';
+import { ShopService, IShopPurchase } from './shop.service';
+import { IShopItem } from '@thefirstspine/types-rest';
 import { RestService } from '../rest/rest.service';
 import * as fs from 'fs';
 import { AuthGuard } from '@thefirstspine/auth-nest';

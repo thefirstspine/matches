@@ -3,7 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { IGameInstance, IGameCard } from '../../@shared/arena-shared/game';
 import { randBetween } from '../../utils/maths.utils';
 import { RestService } from '../../rest/rest.service';
-import { ICard } from '../../@shared/rest-shared/card';
+import { ICard } from '@thefirstspine/types-rest';
 
 /**
  * This subscriber is executed once a 'card:destroyed:medusa' event is thrown.

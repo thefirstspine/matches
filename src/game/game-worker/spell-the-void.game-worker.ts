@@ -4,7 +4,7 @@ import { Injectable } from '@nestjs/common';
 import { GameHookService } from '../game-hook/game-hook.service';
 import { IHasGameHookService } from '../injections.interface';
 import { ArenaRoomsService } from '../../rooms/arena-rooms.service';
-import { ICard } from '../../@shared/rest-shared/card';
+import { ICard } from '@thefirstspine/types-rest';
 import { RestService } from '../../rest/rest.service';
 import { randBetween } from '../../utils/maths.utils';
 import { LogsService } from '@thefirstspine/logs-nest';

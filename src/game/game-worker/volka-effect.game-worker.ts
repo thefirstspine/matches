@@ -5,7 +5,7 @@ import { GameHookService } from '../game-hook/game-hook.service';
 import { IHasGameHookService, IHasGameWorkerService } from '../injections.interface';
 import { ArenaRoomsService } from '../../rooms/arena-rooms.service';
 import { GameWorkerService } from './game-worker.service';
-import { ICardCoords } from '../../@shared/rest-shared/card';
+import { ICardCoords } from '@thefirstspine/types-rest';
 import { randBetween } from '../../utils/maths.utils';
 import { LogsService } from '@thefirstspine/logs-nest';
 

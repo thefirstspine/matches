@@ -3,7 +3,7 @@ import { IGameInstance, IGameUser } from '../@shared/arena-shared/game';
 import { RoomsService, IRoom, IRoomCreated, ISender } from './rooms.service';
 import { WizzardService } from '../wizzard/wizzard.service';
 import { IWizzard } from '../@shared/arena-shared/wizzard';
-import { ILocalized } from '../@shared/rest-shared/base';
+import { ILocalized } from '@thefirstspine/types-rest';
 
 /**
  * Manages rooms for games inside the rooms service

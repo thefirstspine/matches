@@ -3,7 +3,7 @@ import { GameService } from '../game/game.service';
 import { WizzardService } from '../wizzard/wizzard.service';
 import { IGameUser, IGameInstance } from '../@shared/arena-shared/game';
 import { IWizzardItem, IWizzard, IHistoryItem } from '../@shared/arena-shared/wizzard';
-import { IGameType } from '../@shared/rest-shared/entities';
+import { IGameType } from '@thefirstspine/types-rest';
 import { RestService } from '../rest/rest.service';
 import { getScore } from '../utils/game.utils';
 import { BotsService } from '../bots/bots.service';

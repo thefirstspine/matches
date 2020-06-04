@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { ICard } from '../@shared/rest-shared/card';
-import { IGameType, IDeck, IShopItem, IAvatar, ICycle } from '../@shared/rest-shared/entities';
+import { ICard, IGameType, IDeck, IShopItem, IAvatar, ICycle } from '@thefirstspine/types-rest';
 import fetch, { Response } from 'node-fetch';
 
 @Injectable()

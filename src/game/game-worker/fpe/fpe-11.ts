@@ -7,9 +7,8 @@ import { IGameInstance,
   anySubaction,
   IGameActionPassed} from '../../../@shared/arena-shared/game';
 import { Injectable } from '@nestjs/common';
-import { cardSide } from '../../../@shared/rest-shared/base';
 import { GameWorkerService } from './../game-worker.service';
-import { ICardCoords, ICard } from '../../../@shared/rest-shared/card';
+import { cardSide, ICardCoords, ICard } from '@thefirstspine/types-rest';
 import { GameHookService } from '../../game-hook/game-hook.service';
 import { IHasGameHookService, IHasGameWorkerService } from '../../injections.interface';
 import { ArenaRoomsService } from '../../../rooms/arena-rooms.service';

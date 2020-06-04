@@ -3,7 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { IGameInstance, IGameUser, IGameResult, IGameCard } from '../../@shared/arena-shared/game';
 import { WizzardsStorageService } from '../../storage/wizzards.storage.service';
 import { WizzardService } from '../../wizzard/wizzard.service';
-import { ILoot, ICycle } from '../../@shared/rest-shared/entities';
+import { ILoot, ICycle } from '@thefirstspine/types-rest';
 import { IWizzard, IHistoryItem } from '../../@shared/arena-shared/wizzard';
 import { mergeLootsInItems } from '../../utils/game.utils';
 import { RestService } from '../../rest/rest.service';

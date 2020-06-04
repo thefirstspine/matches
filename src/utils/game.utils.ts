@@ -1,5 +1,5 @@
 import { IHistoryItem, IWizzardItem } from '../@shared/arena-shared/wizzard';
-import { ILoot } from '../@shared/rest-shared/entities';
+import { ILoot } from '@thefirstspine/types-rest';
 
 /**
  * Get the score of the user based on his history
