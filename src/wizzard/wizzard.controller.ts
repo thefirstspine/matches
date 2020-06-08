@@ -4,7 +4,7 @@ import { WizzardsStorageService } from '../storage/wizzards.storage.service';
 import { IWizard } from '@thefirstspine/types-arena';
 import { IAvatar } from '@thefirstspine/types-rest';
 import { RestService } from '../rest/rest.service';
-import { CertificateGuard } from '../certificate.guard';
+import { CertificateGuard } from '@thefirstspine/certificate-nest';
 import { mergeLootsInItems } from '../utils/game.utils';
 import { AuthGuard } from '@thefirstspine/auth-nest';
 import { MessagingService } from '@thefirstspine/messaging-nest';
