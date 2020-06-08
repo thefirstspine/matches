@@ -1,6 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { GameWorkerService } from './game-worker.service';
-import { MessagingService } from '../../@shared/messaging-shared/messaging.service';
 import { ApiService } from '../../api/api.service';
 import { GameService } from '../game.service';
 import { QueueService } from '../../queue/queue.service';
@@ -9,14 +8,15 @@ import { TickerService } from '../../ticker/ticker.service';
 import { WizzardService } from '../../wizzard/wizzard.service';
 import { WizzardsStorageService } from '../../storage/wizzards.storage.service';
 import { ShopService } from '../../shop/shop.service';
-import { AuthService } from '../../@shared/auth-shared/auth.service';
 import { RestService } from '../../rest/rest.service';
 import { RoomsService } from '../../rooms/rooms.service';
 import { ArenaRoomsService } from '../../rooms/arena-rooms.service';
 import { GameHookService } from '../game-hook/game-hook.service';
 import { BotsService } from '../../bots/bots.service';
-import { LogService } from '../../@shared/log-shared/log.service';
-import { IGameInstance, IGameAction, ISubActionMoveCardToDiscard } from '../../@shared/arena-shared/game';
+import { IGameInstance, IGameAction, IInteractionMoveCardToDiscard } from '@thefirstspine/types-arena';
+import { AuthService } from '@thefirstspine/auth-nest';
+import { LogsService } from '@thefirstspine/logs-nest';
+import { MessagingService } from '@thefirstspine/messaging-nest';
 
 describe('Throw cards', () => {
   let gameWorkerService: GameWorkerService;
@@ -30,6 +30,7 @@ describe('Throw cards', () => {
    */
 
   beforeEach(async () => {
+    require('dotenv').config();
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         ApiService,
@@ -41,7 +42,7 @@ describe('Throw cards', () => {
         WizzardsStorageService,
         ShopService,
         AuthService,
-        {provide: LogService, useValue: new LogService('arena')},
+        LogsService,
         RestService,
         RoomsService,
         ArenaRoomsService,
@@ -175,14 +176,14 @@ describe('Throw cards', () => {
     });
 
     // Create game action & add it to the instance
-    const gameAction: IGameAction = await gameWorkerService.getWorker('throw-cards').create(gameInstance, {user: gameInstance.users[0].user});
-    gameAction.responses = [[0]];
+    const gameAction: IGameAction<any> =
+      await gameWorkerService.getWorker('throw-cards').create(gameInstance, {user: gameInstance.users[0].user});
+    gameAction.response = {handIndexes: [0]};
     gameInstance.actions.current.push(gameAction);
-    expect(gameAction.subactions.length).toBe(1);
-    expect(gameAction.subactions[0].type).toBe('moveCardsToDiscard');
-    expect((gameAction.subactions[0] as ISubActionMoveCardToDiscard).params.handIndexes).toBeDefined();
-    expect((gameAction.subactions[0] as ISubActionMoveCardToDiscard).params.handIndexes.length).toBe(4);
-    expect((gameAction.subactions[0] as ISubActionMoveCardToDiscard).params.handIndexes[0]).toBe(0);
+    expect(gameAction.interaction.type).toBe('moveCardsToDiscard');
+    expect((gameAction.interaction as IInteractionMoveCardToDiscard).params.handIndexes).toBeDefined();
+    expect((gameAction.interaction as IInteractionMoveCardToDiscard).params.handIndexes.length).toBe(4);
+    expect((gameAction.interaction as IInteractionMoveCardToDiscard).params.handIndexes[0]).toBe(0);
 
     // Execute
     const result: boolean = await gameWorkerService.getWorker('throw-cards').execute(
@@ -300,13 +301,13 @@ describe('Throw cards', () => {
     });
 
     // Create game action & add it to the instance
-    const gameAction: IGameAction = await gameWorkerService.getWorker('throw-cards').create(gameInstance, {user: gameInstance.users[0].user});
-    gameAction.responses = [[0, 1]];
+    const gameAction: IGameAction<any> =
+      await gameWorkerService.getWorker('throw-cards').create(gameInstance, {user: gameInstance.users[0].user});
+    gameAction.response = {handIndexes: [0, 1]};
     gameInstance.actions.current.push(gameAction);
-    expect(gameAction.subactions.length).toBe(1);
-    expect(gameAction.subactions[0].type).toBe('moveCardsToDiscard');
-    expect((gameAction.subactions[0] as ISubActionMoveCardToDiscard).params.handIndexes).toBeDefined();
-    expect((gameAction.subactions[0] as ISubActionMoveCardToDiscard).params.handIndexes.length).toBe(4);
+    expect(gameAction.interaction.type).toBe('moveCardsToDiscard');
+    expect((gameAction.interaction as IInteractionMoveCardToDiscard).params.handIndexes).toBeDefined();
+    expect((gameAction.interaction as IInteractionMoveCardToDiscard).params.handIndexes.length).toBe(4);
 
     // Execute
     const result: boolean = await gameWorkerService.getWorker('throw-cards').execute(
@@ -404,14 +405,14 @@ describe('Throw cards', () => {
     });
 
     // Create game action & add it to the instance
-    const gameAction: IGameAction = await gameWorkerService.getWorker('throw-cards').create(gameInstance, {user: gameInstance.users[0].user});
-    gameAction.responses = [[0]];
+    const gameAction: IGameAction<any> =
+      await gameWorkerService.getWorker('throw-cards').create(gameInstance, {user: gameInstance.users[0].user});
+    gameAction.response = {handIndexes: [0]};
     gameInstance.actions.current.push(gameAction);
-    expect(gameAction.subactions.length).toBe(1);
-    expect(gameAction.subactions[0].type).toBe('moveCardsToDiscard');
-    expect((gameAction.subactions[0] as ISubActionMoveCardToDiscard).params.handIndexes).toBeDefined();
-    expect((gameAction.subactions[0] as ISubActionMoveCardToDiscard).params.handIndexes.length).toBe(4);
-    expect((gameAction.subactions[0] as ISubActionMoveCardToDiscard).params.handIndexes[0]).toBe(0);
+    expect(gameAction.interaction.type).toBe('moveCardsToDiscard');
+    expect((gameAction.interaction as IInteractionMoveCardToDiscard).params.handIndexes).toBeDefined();
+    expect((gameAction.interaction as IInteractionMoveCardToDiscard).params.handIndexes.length).toBe(4);
+    expect((gameAction.interaction as IInteractionMoveCardToDiscard).params.handIndexes[0]).toBe(0);
 
     // Execute
     const result: boolean = await gameWorkerService.getWorker('throw-cards').execute(
@@ -513,13 +514,13 @@ describe('Throw cards', () => {
     });
 
     // Create game action & add it to the instance
-    const gameAction: IGameAction = await gameWorkerService.getWorker('throw-cards').create(gameInstance, {user: gameInstance.users[0].user});
-    gameAction.responses = [[0, 1]];
+    const gameAction: IGameAction<any> =
+      await gameWorkerService.getWorker('throw-cards').create(gameInstance, {user: gameInstance.users[0].user});
+    gameAction.response = {handIndexes: [0, 1]};
     gameInstance.actions.current.push(gameAction);
-    expect(gameAction.subactions.length).toBe(1);
-    expect(gameAction.subactions[0].type).toBe('moveCardsToDiscard');
-    expect((gameAction.subactions[0] as ISubActionMoveCardToDiscard).params.handIndexes).toBeDefined();
-    expect((gameAction.subactions[0] as ISubActionMoveCardToDiscard).params.handIndexes.length).toBe(4);
+    expect(gameAction.interaction.type).toBe('moveCardsToDiscard');
+    expect((gameAction.interaction as IInteractionMoveCardToDiscard).params.handIndexes).toBeDefined();
+    expect((gameAction.interaction as IInteractionMoveCardToDiscard).params.handIndexes.length).toBe(4);
 
     // Execute
     const result: boolean = await gameWorkerService.getWorker('throw-cards').execute(

@@ -1,6 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { GameWorkerService } from './game-worker.service';
-import { MessagingService } from '../../@shared/messaging-shared/messaging.service';
 import { ApiService } from '../../api/api.service';
 import { GameService } from '../game.service';
 import { QueueService } from '../../queue/queue.service';
@@ -9,14 +8,15 @@ import { TickerService } from '../../ticker/ticker.service';
 import { WizzardService } from '../../wizzard/wizzard.service';
 import { WizzardsStorageService } from '../../storage/wizzards.storage.service';
 import { ShopService } from '../../shop/shop.service';
-import { AuthService } from '../../@shared/auth-shared/auth.service';
 import { RestService } from '../../rest/rest.service';
 import { RoomsService } from '../../rooms/rooms.service';
 import { ArenaRoomsService } from '../../rooms/arena-rooms.service';
 import { GameHookService } from '../game-hook/game-hook.service';
 import { BotsService } from '../../bots/bots.service';
-import { LogService } from '../../@shared/log-shared/log.service';
-import { IGameInstance, IGameAction, ISubActionPutCardOnBoard } from '../../@shared/arena-shared/game';
+import { IGameInstance, IGameAction, IInteractionPutCardOnBoard } from '@thefirstspine/types-arena';
+import { AuthService } from '@thefirstspine/auth-nest';
+import { LogsService } from '@thefirstspine/logs-nest';
+import { MessagingService } from '@thefirstspine/messaging-nest';
 
 describe('Spell replacement', () => {
   let gameWorkerService: GameWorkerService;
@@ -30,6 +30,7 @@ describe('Spell replacement', () => {
    */
 
   beforeEach(async () => {
+    require('dotenv').config();
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         ApiService,
@@ -41,7 +42,7 @@ describe('Spell replacement', () => {
         WizzardsStorageService,
         ShopService,
         AuthService,
-        {provide: LogService, useValue: new LogService('arena')},
+        LogsService,
         RestService,
         RoomsService,
         ArenaRoomsService,
@@ -160,18 +161,18 @@ describe('Spell replacement', () => {
     });
 
     // Create game action & add it to the instance
-    const gameAction: IGameAction = await gameWorkerService.getWorker('spell-replacement').create(gameInstance, {user: gameInstance.users[0].user});
-    gameAction.responses = [{handIndex: 0, boardCoords: '3-3'}];
+    const gameAction: IGameAction<any> =
+      await gameWorkerService.getWorker('spell-replacement').create(gameInstance, {user: gameInstance.users[0].user});
+    gameAction.response = {handIndex: 0, boardCoords: '3-3'};
     gameInstance.actions.current.push(gameAction);
-    expect(gameAction.subactions.length).toBe(1);
-    expect(gameAction.subactions[0].type).toBe('putCardOnBoard');
-    expect((gameAction.subactions[0] as ISubActionPutCardOnBoard).params.boardCoords).toBeDefined();
-    expect((gameAction.subactions[0] as ISubActionPutCardOnBoard).params.boardCoords.length).toBe(2);
-    expect((gameAction.subactions[0] as ISubActionPutCardOnBoard).params.boardCoords[0]).toBe('3-3');
-    expect((gameAction.subactions[0] as ISubActionPutCardOnBoard).params.boardCoords[1]).toBe('3-2');
-    expect((gameAction.subactions[0] as ISubActionPutCardOnBoard).params.handIndexes).toBeDefined();
-    expect((gameAction.subactions[0] as ISubActionPutCardOnBoard).params.handIndexes.length).toBe(1);
-    expect((gameAction.subactions[0] as ISubActionPutCardOnBoard).params.handIndexes[0]).toBe(0);
+    expect(gameAction.interaction.type).toBe('putCardOnBoard');
+    expect((gameAction.interaction as IInteractionPutCardOnBoard).params.boardCoords).toBeDefined();
+    expect((gameAction.interaction as IInteractionPutCardOnBoard).params.boardCoords.length).toBe(2);
+    expect((gameAction.interaction as IInteractionPutCardOnBoard).params.boardCoords[0]).toBe('3-3');
+    expect((gameAction.interaction as IInteractionPutCardOnBoard).params.boardCoords[1]).toBe('3-2');
+    expect((gameAction.interaction as IInteractionPutCardOnBoard).params.handIndexes).toBeDefined();
+    expect((gameAction.interaction as IInteractionPutCardOnBoard).params.handIndexes.length).toBe(1);
+    expect((gameAction.interaction as IInteractionPutCardOnBoard).params.handIndexes[0]).toBe(0);
 
     // Execute
     const result: boolean = await gameWorkerService.getWorker('spell-replacement').execute(
@@ -195,9 +196,9 @@ describe('Spell replacement', () => {
     // Test on action
     expect(gameInstance.actions.current[0]).toBeDefined();
     expect(gameInstance.actions.current[0].type).toBe('replace-card');
-    expect((gameInstance.actions.current[0].subactions[0] as ISubActionPutCardOnBoard).params.handIndexes).toBeDefined();
-    expect((gameInstance.actions.current[0].subactions[0] as ISubActionPutCardOnBoard).params.handIndexes.includes(0)).toBeTruthy();
-    expect((gameInstance.actions.current[0].subactions[0] as ISubActionPutCardOnBoard).params.boardCoords.includes('3-3')).toBeTruthy();
+    expect((gameInstance.actions.current[0].interaction as IInteractionPutCardOnBoard).params.handIndexes).toBeDefined();
+    expect((gameInstance.actions.current[0].interaction as IInteractionPutCardOnBoard).params.handIndexes.includes(0)).toBeTruthy();
+    expect((gameInstance.actions.current[0].interaction as IInteractionPutCardOnBoard).params.boardCoords.includes('3-3')).toBeTruthy();
   });
 
   /**
@@ -274,18 +275,18 @@ describe('Spell replacement', () => {
     });
 
     // Create game action & add it to the instance
-    const gameAction: IGameAction = await gameWorkerService.getWorker('spell-replacement').create(gameInstance, {user: gameInstance.users[0].user});
-    gameAction.responses = [{handIndex: 0, boardCoords: '3-3'}];
+    const gameAction: IGameAction<any> =
+      await gameWorkerService.getWorker('spell-replacement').create(gameInstance, {user: gameInstance.users[0].user});
+    gameAction.response = {handIndex: 0, boardCoords: '3-3'};
     gameInstance.actions.current.push(gameAction);
-    expect(gameAction.subactions.length).toBe(1);
-    expect(gameAction.subactions[0].type).toBe('putCardOnBoard');
-    expect((gameAction.subactions[0] as ISubActionPutCardOnBoard).params.boardCoords).toBeDefined();
-    expect((gameAction.subactions[0] as ISubActionPutCardOnBoard).params.boardCoords.length).toBe(2);
-    expect((gameAction.subactions[0] as ISubActionPutCardOnBoard).params.boardCoords[0]).toBe('3-3');
-    expect((gameAction.subactions[0] as ISubActionPutCardOnBoard).params.boardCoords[1]).toBe('3-2');
-    expect((gameAction.subactions[0] as ISubActionPutCardOnBoard).params.handIndexes).toBeDefined();
-    expect((gameAction.subactions[0] as ISubActionPutCardOnBoard).params.handIndexes.length).toBe(1);
-    expect((gameAction.subactions[0] as ISubActionPutCardOnBoard).params.handIndexes[0]).toBe(0);
+    expect(gameAction.interaction.type).toBe('putCardOnBoard');
+    expect((gameAction.interaction as IInteractionPutCardOnBoard).params.boardCoords).toBeDefined();
+    expect((gameAction.interaction as IInteractionPutCardOnBoard).params.boardCoords.length).toBe(2);
+    expect((gameAction.interaction as IInteractionPutCardOnBoard).params.boardCoords[0]).toBe('3-3');
+    expect((gameAction.interaction as IInteractionPutCardOnBoard).params.boardCoords[1]).toBe('3-2');
+    expect((gameAction.interaction as IInteractionPutCardOnBoard).params.handIndexes).toBeDefined();
+    expect((gameAction.interaction as IInteractionPutCardOnBoard).params.handIndexes.length).toBe(1);
+    expect((gameAction.interaction as IInteractionPutCardOnBoard).params.handIndexes[0]).toBe(0);
 
     // Execute
     const result: boolean = await gameWorkerService.getWorker('spell-replacement').execute(

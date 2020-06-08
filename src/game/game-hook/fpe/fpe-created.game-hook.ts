@@ -1,8 +1,8 @@
 import { IGameHook } from '../game-hook.interface';
 import { Injectable } from '@nestjs/common';
-import { IGameInstance, IGameAction } from '../../../@shared/arena-shared/game';
+import { IGameInstance, IGameAction } from '@thefirstspine/types-arena';
 import { RestService } from '../../../rest/rest.service';
-import { ICard, ICardStat } from '../../../@shared/rest-shared/card';
+import { ICard, ICardStat } from '@thefirstspine/types-rest';
 import { IHasGameWorkerService } from '../../injections.interface';
 import { GameWorkerService } from '../../game-worker/game-worker.service';
 
@@ -180,7 +180,8 @@ export class FpeCreatedGameHook implements IGameHook, IHasGameWorkerService {
     ];
 
     // Add the first action
-    const action: IGameAction = await this.gameWorkerService.getWorker('fpe-2').create(gameInstance, {user: gameInstance.users[0].user});
+    const action: IGameAction<any> =
+      await this.gameWorkerService.getWorker('fpe-2').create(gameInstance, {user: gameInstance.users[0].user});
     gameInstance.actions.current = [action];
 
     return true;

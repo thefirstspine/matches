@@ -2,12 +2,11 @@ import { Injectable } from '@nestjs/common';
 import { WizzardService } from '../wizzard/wizzard.service';
 import { WizzardsStorageService } from '../storage/wizzards.storage.service';
 import fetch, { Response } from 'node-fetch';
-import env from '../@shared/env-shared/env';
-import { IWizzard, IWizzardItem } from '../@shared/arena-shared/wizzard';
-import { MessagingService } from '../@shared/messaging-shared/messaging.service';
-import { IShopItem, ILoot } from '../@shared/rest-shared/entities';
-import { LogService } from '../@shared/log-shared/log.service';
+import { IWizard, IWizardItem } from '@thefirstspine/types-arena';
+import { IShopItem } from '@thefirstspine/types-rest';
 import { mergeLootsInItems } from '../utils/game.utils';
+import { LogsService } from '@thefirstspine/logs-nest';
+import { MessagingService } from '@thefirstspine/messaging-nest';
 
 @Injectable()
 export class ShopService {
@@ -18,34 +17,30 @@ export class ShopService {
     private readonly wizzardService: WizzardService,
     private readonly wizzardStorageService: WizzardsStorageService,
     private readonly messagingService: MessagingService,
-    private readonly logService: LogService,
+    private readonly logsService: LogsService,
   ) {}
 
   exchange(purchase: IPurchase) {
     // Check for currency
-    if (purchase.price.currency !== 'shards') {
-      throw new Error('Can only exchange with `shards` currency');
+    if (purchase.price.currency === 'eur') {
+      throw new Error('Cannot only exchange with `eur` currency');
     }
 
     // Get the wizzard
-    const wizzard: IWizzard = this.wizzardService.getWizzard(purchase.user);
+    const wizzard: IWizard = this.wizzardService.getWizzard(purchase.user);
     if (purchase.oneTimePurchase && wizzard.purchases.includes(purchase.id)) {
       throw new Error('Already purchased');
     }
 
     // Gather & check required items
-    const itemFrom: IWizzardItem[] = wizzard.items.filter(item => item.name === 'shard');
-    if (itemFrom.length <= 0 || itemFrom[0].num < purchase.price.num) {
+    const lookedItem = purchase.price.currency === 'shards' ? 'shard' : purchase.price.currency;
+    const itemFrom: IWizardItem = wizzard.items.find(item => item.name === lookedItem);
+    if (!itemFrom || itemFrom.num < purchase.price.num) {
       throw new Error('No sufficient item count');
     }
-    itemFrom[0].num -= purchase.price.num;
-    wizzard.items = wizzard.items.map((i: IWizzardItem) => {
-      return i.name === itemFrom[0].name ?
-        itemFrom[0] :
-        i;
-    });
 
     // Gather or create item
+    mergeLootsInItems(wizzard.items, [{name: lookedItem, num: -purchase.price.num}]);
     mergeLootsInItems(wizzard.items, purchase.loots);
 
     // Add purchase to history
@@ -70,25 +65,25 @@ export class ShopService {
         description: 'Achat depuis Arena',
         price: purchase.price.num * 100,
       },
-      successUrl: `${env.config.ARENA_URL}/shop/v/success`,
-      cancelUrl: `${env.config.ARENA_URL}/shop/v/cancel`,
+      successUrl: `${process.env.ARENA_URL}/shop/v/success`,
+      cancelUrl: `${process.env.ARENA_URL}/shop/v/cancel`,
     };
-    this.logService.info('Send message to shop service', body);
+    this.logsService.info('Send message to shop service', body);
     const result: Response = await fetch(
-      env.config.SHOP_URL + '/api/purchase',
+      process.env.SHOP_URL + '/api/purchase',
       {
         method: 'post',
         body: JSON.stringify(body),
         headers: {
           'Content-Type': 'application/json',
-          'X-Client-Cert': Buffer.from(env.config.SHOP_PUBLIC_KEY.replace(/\\n/gm, '\n')).toString('base64'),
+          'X-Client-Cert': Buffer.from(process.env.SHOP_PUBLIC_KEY.replace(/\\n/gm, '\n')).toString('base64'),
         },
       },
     );
 
     // Ready result
     const json = await result.json();
-    this.logService.info('Response from shop service', json);
+    this.logsService.info('Response from shop service', json);
 
     if (json.status) {
       // Save the purchase to the history for further checking
@@ -115,22 +110,22 @@ export class ShopService {
       googlePlayProductId,
       googlePlayToken,
     };
-    this.logService.info('Send message to shop service', body);
+    this.logsService.info('Send message to shop service', body);
     const result: Response = await fetch(
-      env.config.SHOP_URL + '/api/purchase/google-play',
+      process.env.SHOP_URL + '/api/purchase/google-play',
       {
         method: 'post',
         body: JSON.stringify(body),
         headers: {
           'Content-Type': 'application/json',
-          'X-Client-Cert': Buffer.from(env.config.SHOP_PUBLIC_KEY.replace(/\\n/gm, '\n')).toString('base64'),
+          'X-Client-Cert': Buffer.from(process.env.SHOP_PUBLIC_KEY.replace(/\\n/gm, '\n')).toString('base64'),
         },
       },
     );
 
     // Ready result
     const json = await result.json();
-    this.logService.info('Response from shop service', json);
+    this.logsService.info('Response from shop service', json);
 
     if (json.status) {
       const shopPurchase: IShopPurchase = {
@@ -148,11 +143,11 @@ export class ShopService {
   async lookForCompletePurchases() {
     const promises: Array<Promise<any>> = this.shopPurchases.map(async (purchase: IShopPurchase) => {
       const response: Response = await fetch(
-        env.config.SHOP_URL + `/api/payments/${purchase.paymentId}`,
+        process.env.SHOP_URL + `/api/payments/${purchase.paymentId}`,
         {
           headers: {
             'Content-Type': 'application/json',
-            'X-Client-Cert': Buffer.from(env.config.SHOP_PUBLIC_KEY.replace(/\\n/gm, '\n')).toString('base64'),
+            'X-Client-Cert': Buffer.from(process.env.SHOP_PUBLIC_KEY.replace(/\\n/gm, '\n')).toString('base64'),
           },
         },
       );
@@ -161,7 +156,7 @@ export class ShopService {
       // The status is unknown
       if (responseJson.status === 'unknown') {
         // Remove the purchase
-        this.logService.warning(`Unknown status for purchase #${purchase.paymentId}`, purchase);
+        this.logsService.warning(`Unknown status for purchase #${purchase.paymentId}`, purchase);
         this.shopPurchases = this.shopPurchases.filter((p: IShopPurchase) => purchase !== p);
         return;
       }
@@ -169,7 +164,7 @@ export class ShopService {
       // The payment failed
       if (responseJson.status === 'failed') {
         // Remove the purchase
-        this.logService.info(`Unknown status for purchase #${purchase.paymentId}`, purchase);
+        this.logsService.info(`Unknown status for purchase #${purchase.paymentId}`, purchase);
         this.shopPurchases = this.shopPurchases.filter((p: IShopPurchase) => purchase !== p);
         return;
       }
@@ -177,7 +172,7 @@ export class ShopService {
       // The payment succeeded
       if (responseJson.status === 'succeeded') {
         // Add the loot
-        const wizzard: IWizzard = this.wizzardService.getWizzard(purchase.user);
+        const wizzard: IWizard = this.wizzardService.getWizzard(purchase.user);
         mergeLootsInItems(wizzard.items, purchase.loots);
         this.wizzardStorageService.save(wizzard);
         this.messagingService.sendMessage([wizzard.id], 'TheFirstSpine:account', wizzard);
@@ -186,7 +181,7 @@ export class ShopService {
         // Remove the purchase
         this.shopPurchases = this.shopPurchases.filter((p: IShopPurchase) => purchase !== p);
 
-        this.logService.info(`Purchase #${purchase.paymentId} succeeded`, purchase);
+        this.logsService.info(`Purchase #${purchase.paymentId} succeeded`, purchase);
         return;
       }
     });

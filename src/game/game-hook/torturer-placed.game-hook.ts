@@ -1,6 +1,8 @@
 import { IGameHook } from './game-hook.interface';
 import { Injectable } from '@nestjs/common';
 import { IGameInstance, IGameCard } from '@thefirstspine/types-arena';
+import { IHasGameHookService } from '../injections.interface';
+import { GameHookService } from './game-hook.service';
 
 /**
  * This subscriber is executed once a 'card:lifeChanged:damaged' event is thrown. It will look for dead
@@ -9,7 +11,9 @@ import { IGameInstance, IGameCard } from '@thefirstspine/types-arena';
  * @param params
  */
 @Injectable()
-export class CaduceusPlacesGameHook implements IGameHook {
+export class TorturerPlacesGameHook implements IGameHook, IHasGameHookService {
+
+  public gameHookService: GameHookService;
 
   async execute(gameInstance: IGameInstance, params: {gameCard: IGameCard}): Promise<boolean> {
     // Get the player card of the user
@@ -23,11 +27,18 @@ export class CaduceusPlacesGameHook implements IGameHook {
       return true;
     }
 
-    // Add life to the wizard
-    wizardCard.currentStats.bottom.defense += 1;
-    wizardCard.currentStats.left.defense += 1;
-    wizardCard.currentStats.right.defense += 1;
-    wizardCard.currentStats.top.defense += 1;
+    // Add strength to the wizard
+    wizardCard.currentStats.bottom.strength += 1;
+    wizardCard.currentStats.left.strength += 1;
+    wizardCard.currentStats.right.strength += 1;
+    wizardCard.currentStats.top.strength += 1;
+
+    // Remove life
+    wizardCard.currentStats.life -= 1;
+    this.gameHookService.dispatch(
+      gameInstance,
+      `card:lifeChanged:damaged:${wizardCard.card.id}`,
+      {gameCard: wizardCard, source: params.gameCard, lifeChanged: -1});
 
     return true;
   }

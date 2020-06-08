@@ -1,7 +1,7 @@
 import { Controller, Post, Body, UseGuards, Req } from '@nestjs/common';
 import { ApiService } from './api.service';
 import { ApiError } from './api.error';
-import { AuthGuard } from '../@shared/auth-shared/auth.guard';
+import { AuthGuard } from '@thefirstspine/auth-nest';
 
 /**
  * Main API Controller. The controller does accept only one POST request.

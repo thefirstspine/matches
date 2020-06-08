@@ -1,6 +1,5 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import env from '../@shared/env-shared/env';
 
 /**
  * The abstract storage service. Every data that has to be stored on the disc have to use this
@@ -74,14 +73,14 @@ export abstract class StorageService<T extends ISaveable> {
    * Get the data directory
    */
   protected getDirData(): string {
-    return (env.dist ? '/data' : path.join(__dirname, '../../data'));
+    return ('/data');
   }
 
   /**
    * Get the object data directory
    */
   protected getDirDataSave(): string {
-    return (env.dist ? `/data/${this.directory}` : path.join(__dirname, '../../data', this.directory));
+    return (`/data/${this.directory}`);
   }
 
 }

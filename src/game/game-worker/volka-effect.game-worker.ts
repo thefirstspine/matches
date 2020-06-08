@@ -1,13 +1,13 @@
 import { IGameWorker } from './game-worker.interface';
-import { IGameInstance, IGameAction, IGameCard, ISubActionChoseCardOnBoard } from '../../@shared/arena-shared/game';
-import { LogService } from '../../@shared/log-shared/log.service';
+import { IGameInstance, IGameAction, IGameCard, IInteractionChoseSquareOnBoard } from '@thefirstspine/types-arena';
 import { Injectable } from '@nestjs/common';
 import { GameHookService } from '../game-hook/game-hook.service';
 import { IHasGameHookService, IHasGameWorkerService } from '../injections.interface';
 import { ArenaRoomsService } from '../../rooms/arena-rooms.service';
 import { GameWorkerService } from './game-worker.service';
-import { ICardCoords } from '../../@shared/rest-shared/card';
+import { ICardCoords } from '@thefirstspine/types-rest';
 import { randBetween } from '../../utils/maths.utils';
+import { LogsService } from '@thefirstspine/logs-nest';
 
 /**
  * When Volk'ha dies, the player can chose to replace him elsewhere around him.
@@ -21,14 +21,14 @@ export class VolkaEffectGameWorker implements IGameWorker, IHasGameHookService, 
   readonly type: string = 'volka-effect';
 
   constructor(
-    private readonly logService: LogService,
+    private readonly logsService: LogsService,
     private readonly arenaRoomsService: ArenaRoomsService,
   ) {}
 
   /**
    * @inheritdoc
    */
-  public async create(gameInstance: IGameInstance, data: {user: number}): Promise<IGameAction> {
+  public async create(gameInstance: IGameInstance, data: {user: number}): Promise<IGameAction<IInteractionChoseSquareOnBoard>> {
     return {
       createdAt: Date.now(),
       type: this.type,
@@ -43,47 +43,44 @@ export class VolkaEffectGameWorker implements IGameWorker, IHasGameHookService, 
       user: data.user as number,
       priority: 3,
       expiresAt: Date.now() + (30 * 1000), // expires in 30 seconds
-      subactions: [
-        {
-          type: 'choseSquareOnBoard',
-          description: {
-            en: ``,
-            fr: `Placer Volk'ha autour de vous`,
-          },
-          params: {
-            boardCoords: this.getBoardCoords(gameInstance, data.user),
-          },
+      interaction: {
+        type: 'choseSquareOnBoard',
+        description: {
+          en: ``,
+          fr: `Placer Volk'ha autour de vous`,
         },
-      ],
+        params: {
+          boardCoords: this.getBoardCoords(gameInstance, data.user),
+        },
+      },
     };
   }
 
   /**
    * @inheritdoc
    */
-  public async refresh(gameInstance: IGameInstance, gameAction: IGameAction): Promise<void> {
-    (gameAction.subactions[0] as ISubActionChoseCardOnBoard).params.boardCoords =
-      this.getBoardCoords(gameInstance, gameAction.user);
+  public async refresh(gameInstance: IGameInstance, gameAction: IGameAction<IInteractionChoseSquareOnBoard>): Promise<void> {
+    gameAction.interaction.params.boardCoords = this.getBoardCoords(gameInstance, gameAction.user);
   }
 
   /**
    * @inheritdoc
    */
-  public async execute(gameInstance: IGameInstance, gameAction: IGameAction): Promise<boolean> {
+  public async execute(gameInstance: IGameInstance, gameAction: IGameAction<IInteractionChoseSquareOnBoard>): Promise<boolean> {
     // Validate response form
     if (
-      !gameAction.responses[0] ||
-      gameAction.responses[0].boardCoords === undefined
+      !gameAction.response ||
+      gameAction.response.boardCoords === undefined
     ) {
-      this.logService.warning('Response in a wrong format', gameAction);
+      this.logsService.warning('Response in a wrong format', gameAction);
       return false;
     }
 
     // Validate response inputs
-    const allowedCoordsOnBoard: string[] = (gameAction.subactions[0] as ISubActionChoseCardOnBoard).params.boardCoords;
-    const responseBoardCoords: string = gameAction.responses[0].boardCoords;
+    const allowedCoordsOnBoard: string[] = gameAction.interaction.params.boardCoords;
+    const responseBoardCoords: string = gameAction.response.boardCoords;
     if (!allowedCoordsOnBoard.includes(responseBoardCoords)) {
-      this.logService.warning('Not allowed board coords', gameAction);
+      this.logsService.warning('Not allowed board coords', gameAction);
       return false;
     }
 
@@ -105,11 +102,11 @@ export class VolkaEffectGameWorker implements IGameWorker, IHasGameHookService, 
    * @param gameInstance
    * @param gameAction
    */
-  public async expires(gameInstance: IGameInstance, gameAction: IGameAction): Promise<boolean> {
+  public async expires(gameInstance: IGameInstance, gameAction: IGameAction<IInteractionChoseSquareOnBoard>): Promise<boolean> {
     const boardCoords: string[] = this.getBoardCoords(gameInstance, gameAction.user);
-    gameAction.responses = [{
+    gameAction.response = {
       boardCoords: boardCoords[randBetween(0, boardCoords.length - 1)],
-    }];
+    };
     return true;
   }
 
@@ -118,8 +115,8 @@ export class VolkaEffectGameWorker implements IGameWorker, IHasGameHookService, 
    * @param gameInstance
    * @param gameAction
    */
-  public async delete(gameInstance: IGameInstance, gameAction: IGameAction): Promise<void> {
-    gameInstance.actions.current = gameInstance.actions.current.filter((gameActionRef: IGameAction) => {
+  public async delete(gameInstance: IGameInstance, gameAction: IGameAction<IInteractionChoseSquareOnBoard>): Promise<void> {
+    gameInstance.actions.current = gameInstance.actions.current.filter((gameActionRef: IGameAction<any>) => {
       if (gameActionRef === gameAction) {
         gameInstance.actions.previous.push({
           ...gameAction,

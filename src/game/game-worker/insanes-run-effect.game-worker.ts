@@ -1,12 +1,12 @@
 import { IGameWorker } from './game-worker.interface';
-import { IGameInstance, IGameAction, IGameCard, ISubActionChoseCardOnBoard } from '../../@shared/arena-shared/game';
-import { LogService } from '../../@shared/log-shared/log.service';
+import { IGameInstance, IGameAction, IGameCard, IInteractionChoseCardOnBoard } from '@thefirstspine/types-arena';
 import { Injectable } from '@nestjs/common';
 import { GameHookService } from '../game-hook/game-hook.service';
 import { IHasGameHookService, IHasGameWorkerService } from '../injections.interface';
 import { ArenaRoomsService } from '../../rooms/arena-rooms.service';
 import { GameWorkerService } from './game-worker.service';
 import { randBetween } from '../../utils/maths.utils';
+import { LogsService } from '@thefirstspine/logs-nest';
 
 /**
  * Worker for "insanes-run-effect" spell.
@@ -20,14 +20,14 @@ export class InsanesRunEffectGameWorker implements IGameWorker, IHasGameHookServ
   readonly type: string = 'insanes-run-effect';
 
   constructor(
-    private readonly logService: LogService,
+    private readonly logsService: LogsService,
     private readonly arenaRoomsService: ArenaRoomsService,
   ) {}
 
   /**
    * @inheritdoc
    */
-  public async create(gameInstance: IGameInstance, data: {user: number}): Promise<IGameAction> {
+  public async create(gameInstance: IGameInstance, data: {user: number}): Promise<IGameAction<IInteractionChoseCardOnBoard>> {
     return {
       createdAt: Date.now(),
       type: this.type,
@@ -42,47 +42,44 @@ export class InsanesRunEffectGameWorker implements IGameWorker, IHasGameHookServ
       user: data.user as number,
       priority: 3,
       expiresAt: Date.now() + (30 * 1000), // expires in 30 seconds
-      subactions: [
-        {
-          type: 'choseCardOnBoard',
-          description: {
-            en: ``,
-            fr: `Détruire une carte`,
-          },
-          params: {
-            boardCoords: this.getBoardCoords(gameInstance, data.user),
-          },
+      interaction: {
+        type: 'choseCardOnBoard',
+        description: {
+          en: ``,
+          fr: `Détruire une carte`,
         },
-      ],
+        params: {
+          boardCoords: this.getBoardCoords(gameInstance, data.user),
+        },
+      },
     };
   }
 
   /**
    * @inheritdoc
    */
-  public async refresh(gameInstance: IGameInstance, gameAction: IGameAction): Promise<void> {
-    (gameAction.subactions[0] as ISubActionChoseCardOnBoard).params.boardCoords =
+  public async refresh(gameInstance: IGameInstance, gameAction: IGameAction<IInteractionChoseCardOnBoard>): Promise<void> {
+    gameAction.interaction.params.boardCoords =
       this.getBoardCoords(gameInstance, gameAction.user);
   }
 
   /**
    * @inheritdoc
    */
-  public async execute(gameInstance: IGameInstance, gameAction: IGameAction): Promise<boolean> {
+  public async execute(gameInstance: IGameInstance, gameAction: IGameAction<IInteractionChoseCardOnBoard>): Promise<boolean> {
     // Validate response form
     if (
-      !gameAction.responses[0] ||
-      gameAction.responses[0].boardCoords === undefined
+      gameAction.response.boardCoords === undefined
     ) {
-      this.logService.warning('Response in a wrong format', gameAction);
+      this.logsService.warning('Response in a wrong format', gameAction);
       return false;
     }
 
     // Validate response inputs
-    const allowedCoordsOnBoard: string[] = (gameAction.subactions[0] as ISubActionChoseCardOnBoard).params.boardCoords;
-    const responseBoardCoords: string = gameAction.responses[0].boardCoords;
+    const allowedCoordsOnBoard: string[] = gameAction.interaction.params.boardCoords;
+    const responseBoardCoords: string = gameAction.response.boardCoords;
     if (!allowedCoordsOnBoard.includes(responseBoardCoords)) {
-      this.logService.warning('Not allowed board coords', gameAction);
+      this.logsService.warning('Not allowed board coords', gameAction);
       return false;
     }
 
@@ -94,7 +91,7 @@ export class InsanesRunEffectGameWorker implements IGameWorker, IHasGameHookServ
     const cardTarget: IGameCard|undefined = gameInstance.cards
       .find((c: IGameCard) => c.location === 'board' && c.coords && c.coords.x === x && c.coords.y === y);
     if (!cardTarget) {
-      this.logService.warning('Target not found', gameAction);
+      this.logsService.warning('Target not found', gameAction);
       return false;
     }
     cardTarget.location = 'discard';
@@ -124,11 +121,11 @@ export class InsanesRunEffectGameWorker implements IGameWorker, IHasGameHookServ
    * @param gameInstance
    * @param gameAction
    */
-  public async expires(gameInstance: IGameInstance, gameAction: IGameAction): Promise<boolean> {
+  public async expires(gameInstance: IGameInstance, gameAction: IGameAction<IInteractionChoseCardOnBoard>): Promise<boolean> {
     const boardCoords: string[] = this.getBoardCoords(gameInstance, gameAction.user);
-    gameAction.responses = [{
+    gameAction.response = {
       boardCoords: boardCoords[randBetween(0, boardCoords.length - 1)],
-    }];
+    };
     return true;
   }
 
@@ -137,8 +134,8 @@ export class InsanesRunEffectGameWorker implements IGameWorker, IHasGameHookServ
    * @param gameInstance
    * @param gameAction
    */
-  public async delete(gameInstance: IGameInstance, gameAction: IGameAction): Promise<void> {
-    gameInstance.actions.current = gameInstance.actions.current.filter((gameActionRef: IGameAction) => {
+  public async delete(gameInstance: IGameInstance, gameAction: IGameAction<IInteractionChoseCardOnBoard>): Promise<void> {
+    gameInstance.actions.current = gameInstance.actions.current.filter((gameActionRef: IGameAction<IInteractionChoseCardOnBoard>) => {
       if (gameActionRef === gameAction) {
         gameInstance.actions.previous.push({
           ...gameAction,

@@ -1,6 +1,6 @@
 import { StorageService } from './storage.service';
 import { Injectable } from '@nestjs/common';
-import { IGameInstance } from '../@shared/arena-shared/game';
+import { IGameInstance } from '@thefirstspine/types-arena';
 
 /**
  * The storage service for the "IGameInstance" objects.

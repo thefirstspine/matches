@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { QueueService } from './../queue/queue.service';
 import { GameService } from '../game/game.service';
 import { ShopService } from '../shop/shop.service';
-import { LogService } from '../@shared/log-shared/log.service';
+import { LogsService } from '@thefirstspine/logs-nest';
 
 /**
  * The ticker service will handle all the async operations, such as
@@ -17,7 +17,7 @@ export class TickerService {
     private readonly queueService: QueueService,
     private readonly gameService: GameService,
     private readonly shopService: ShopService,
-    private readonly logService: LogService,
+    private readonly logsService: LogsService,
   ) {}
 
   /**
@@ -32,7 +32,7 @@ export class TickerService {
     try {
       await this.queueService.lookForExpiredQueueAsks();
     } catch (e) {
-      this.logService.error(`Ticker queue expiration error`, {name: e.name, message: e.message, stack: e.stack});
+      this.logsService.error(`Ticker queue expiration error`, {name: e.name, message: e.message, stack: e.stack});
     }
 
     // Look for spawn bots every 15 tick
@@ -40,7 +40,7 @@ export class TickerService {
       try {
         await this.queueService.processBotSpawns();
       } catch (e) {
-        this.logService.error(`Ticker bots spawn error`, {name: e.name, message: e.message, stack: e.stack});
+        this.logsService.error(`Ticker bots spawn error`, {name: e.name, message: e.message, stack: e.stack});
       }
     }
 
@@ -49,7 +49,7 @@ export class TickerService {
       try {
         await this.queueService.processMatchmakings();
       } catch (e) {
-        this.logService.error(`Ticker matchmaking error`, {name: e.name, message: e.message, stack: e.stack});
+        this.logsService.error(`Ticker matchmaking error`, {name: e.name, message: e.message, stack: e.stack});
       }
     }
 
@@ -57,14 +57,14 @@ export class TickerService {
     try {
       await this.gameService.lookForPendingActions();
     } catch (e) {
-      this.logService.error(`Ticker game actions error`, {name: e.name, message: e.message, stack: e.stack});
+      this.logsService.error(`Ticker game actions error`, {name: e.name, message: e.message, stack: e.stack});
     }
 
     // Manages purshases from shop service every tick
     try {
       await this.shopService.lookForCompletePurchases();
     } catch (e) {
-      this.logService.error(`Ticker shop purshases error`, {name: e.name, message: e.message, stack: e.stack});
+      this.logsService.error(`Ticker shop purshases error`, {name: e.name, message: e.message, stack: e.stack});
     }
   }
 

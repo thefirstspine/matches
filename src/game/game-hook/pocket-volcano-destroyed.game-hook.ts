@@ -1,9 +1,9 @@
 import { IGameHook } from './game-hook.interface';
 import { Injectable } from '@nestjs/common';
-import { IGameInstance, IGameCard } from '../../@shared/arena-shared/game';
+import { IGameInstance, IGameCard } from '@thefirstspine/types-arena';
 import { randBetween } from '../../utils/maths.utils';
 import { RestService } from '../../rest/rest.service';
-import { ICard } from '../../@shared/rest-shared/card';
+import { ICard } from '@thefirstspine/types-rest';
 
 /**
  * This subscriber is executed once a 'card:destroyed:pocket-volcano' event is thrown.

@@ -1,9 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { IGameInstance, IGameUser } from '../@shared/arena-shared/game';
+import { IWizard, IGameInstance, IGameUser } from '@thefirstspine/types-arena';
 import { RoomsService, IRoom, IRoomCreated, ISender } from './rooms.service';
 import { WizzardService } from '../wizzard/wizzard.service';
-import { IWizzard } from '../@shared/arena-shared/wizzard';
-import { ILocalized } from '../@shared/rest-shared/base';
+import { ILocalized } from '@thefirstspine/types-rest';
 
 /**
  * Manages rooms for games inside the rooms service
@@ -24,7 +23,7 @@ export class ArenaRoomsService {
    */
   async createRoomForGame(game: IGameInstance): Promise<IRoomCreated> {
     const senders: ISender[] = game.users.map((user: IGameUser) => {
-      const wizzard: IWizzard = this.wizzardService.getWizzard(user.user);
+      const wizzard: IWizard = this.wizzardService.getWizzard(user.user);
       return {
         user: user.user,
         displayName: wizzard.name,

@@ -1,12 +1,10 @@
 import { Injectable, Inject, forwardRef } from '@nestjs/common';
-import { MessagingService } from '../../@shared/messaging-shared/messaging.service';
-import { LogService } from '../../@shared/log-shared/log.service';
 import { ArenaRoomsService } from '../../rooms/arena-rooms.service';
 import { RestService } from '../../rest/rest.service';
 import { WizzardService } from '../../wizzard/wizzard.service';
 import { BaseGameService } from '../base.game.service';
 import { IGameHook } from './game-hook.interface';
-import { IGameInstance } from '../../@shared/arena-shared/game';
+import { IGameInstance } from '@thefirstspine/types-arena';
 import { CardDamagedGameHook } from './card-damaged.game-hook';
 import { CardHealedGameHook } from './card-healed.game-hook';
 import { PlayerDamagedGameHook } from './player-damaged.game-hook';
@@ -27,6 +25,11 @@ import { CaduceusDestroyedGameHook } from './caduceus-destroyed.game-hook';
 import { CaduceusPlacesGameHook } from './caduceus-placed.game-hook';
 import { JellyfishDestroyedGameHook } from './jellyfish-destroyed.game-hook';
 import { PocketVolcanoDestroyedGameHook } from './pocket-volcano-destroyed.game-hook';
+import { ClassicCreatedGameHook } from './classic-created.game-hook';
+import { TorturerPlacesGameHook } from './torturer-placed.game-hook';
+import { ChimeraPlacesGameHook } from './chimera-placed.game-hook';
+import { LogsService } from '@thefirstspine/logs-nest';
+import { MessagingService } from '@thefirstspine/messaging-nest';
 
 /**
  * Main service that manages game hooks.
@@ -40,7 +43,7 @@ export class GameHookService extends BaseGameService<IGameHook> {
 
   constructor(
     private readonly messagingService: MessagingService,
-    private readonly logService: LogService,
+    private readonly logsService: LogsService,
     private readonly wizzardService: WizzardService,
     private readonly restService: RestService,
     private readonly arenaRoomsService: ArenaRoomsService,
@@ -58,7 +61,7 @@ export class GameHookService extends BaseGameService<IGameHook> {
 
     // Defer injections for game workers constructions
     this.deferInjection(this.messagingService);
-    this.deferInjection(this.logService);
+    this.deferInjection(this.logsService);
     this.deferInjection(this.wizzardService);
     this.deferInjection(this.restService);
     this.deferInjection(this.arenaRoomsService);
@@ -82,12 +85,15 @@ export class GameHookService extends BaseGameService<IGameHook> {
     this.subscribe('card:placed:soul-of-a-sacrified-hunter', this.createInjectable(SoulOfASacrifiedHunterPlacesGameHook, injectedProps));
     this.subscribe('game:created:tournament', this.createInjectable(TournamentCreatedGameHook, injectedProps));
     this.subscribe('game:created:fpe', this.createInjectable(FpeCreatedGameHook, injectedProps));
+    this.subscribe('game:created:classic', this.createInjectable(ClassicCreatedGameHook, injectedProps));
     this.subscribe('game:phaseChanged:actions', this.createInjectable(PhaseActionsGameHook, injectedProps));
     this.subscribe('card:destroyed:guardian', this.createInjectable(GuardianDestroyedGameHook, injectedProps));
     this.subscribe('card:destroyed:caduceus', this.createInjectable(CaduceusDestroyedGameHook, injectedProps));
     this.subscribe('card:placed:caduceus', this.createInjectable(CaduceusPlacesGameHook, injectedProps));
     this.subscribe('card:destroyed:jellyfish', this.createInjectable(JellyfishDestroyedGameHook, injectedProps));
     this.subscribe('card:destroyed:pocket-volcano', this.createInjectable(PocketVolcanoDestroyedGameHook, injectedProps));
+    this.subscribe('card:placed:torturer', this.createInjectable(TorturerPlacesGameHook, injectedProps));
+    this.subscribe('card:placed:chimera', this.createInjectable(ChimeraPlacesGameHook, injectedProps));
   }
 
   /**

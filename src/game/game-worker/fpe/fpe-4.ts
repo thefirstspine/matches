@@ -1,11 +1,11 @@
 import { IGameWorker } from '../game-worker.interface';
-import { IGameInstance, IGameAction, ISubActionPutCardOnBoard, IGameCard } from '../../../@shared/arena-shared/game';
-import { LogService } from '../../../@shared/log-shared/log.service';
+import { IGameInstance, IGameAction, IInteractionPutCardOnBoard, IGameCard } from '@thefirstspine/types-arena';
 import { Injectable } from '@nestjs/common';
 import { GameHookService } from '../../game-hook/game-hook.service';
 import { IHasGameHookService, IHasGameWorkerService } from '../../injections.interface';
 import { ArenaRoomsService } from '../../../rooms/arena-rooms.service';
 import { GameWorkerService } from '../game-worker.service';
+import { LogsService } from '@thefirstspine/logs-nest';
 
 /**
  * Worker for "thunder" spell.
@@ -19,14 +19,14 @@ export class Fpe4GameWorker implements IGameWorker, IHasGameHookService, IHasGam
   readonly type: string = 'fpe-4';
 
   constructor(
-    private readonly logService: LogService,
+    private readonly logsService: LogsService,
     private readonly arenaRoomsService: ArenaRoomsService,
   ) {}
 
   /**
    * @inheritdoc
    */
-  public async create(gameInstance: IGameInstance, data: {user: number}): Promise<IGameAction> {
+  public async create(gameInstance: IGameInstance, data: {user: number}): Promise<IGameAction<IInteractionPutCardOnBoard>> {
     return {
       createdAt: Date.now(),
       type: this.type,
@@ -40,57 +40,52 @@ export class Fpe4GameWorker implements IGameWorker, IHasGameHookService, IHasGam
       },
       user: data.user as number,
       priority: 1,
-      subactions: [
-        {
-          type: 'putCardOnBoard',
-          description: {
-            en: ``,
-            fr: `Jouer un sort sur une carte`,
-          },
-          params: {
-            handIndexes: this.getHandIndexes(gameInstance, data.user),
-            boardCoords: this.getBoardCoords(gameInstance, data.user),
-          },
+      interaction: {
+        type: 'putCardOnBoard',
+        description: {
+          en: ``,
+          fr: `Jouer un sort sur une carte`,
         },
-      ],
+        params: {
+          handIndexes: this.getHandIndexes(gameInstance, data.user),
+          boardCoords: this.getBoardCoords(gameInstance, data.user),
+        },
+      },
     };
   }
 
   /**
    * @inheritdoc
    */
-  public async refresh(gameInstance: IGameInstance, gameAction: IGameAction): Promise<void> {
-    (gameAction.subactions[0] as ISubActionPutCardOnBoard).params.handIndexes =
-      this.getHandIndexes(gameInstance, gameAction.user);
-    (gameAction.subactions[0] as ISubActionPutCardOnBoard).params.boardCoords =
-      this.getBoardCoords(gameInstance, gameAction.user);
+  public async refresh(gameInstance: IGameInstance, gameAction: IGameAction<IInteractionPutCardOnBoard>): Promise<void> {
+    gameAction.interaction.params.handIndexes = this.getHandIndexes(gameInstance, gameAction.user);
+    gameAction.interaction.params.boardCoords = this.getBoardCoords(gameInstance, gameAction.user);
   }
 
   /**
    * @inheritdoc
    */
-  public async execute(gameInstance: IGameInstance, gameAction: IGameAction): Promise<boolean> {
+  public async execute(gameInstance: IGameInstance, gameAction: IGameAction<IInteractionPutCardOnBoard>): Promise<boolean> {
     // Validate response form
     if (
-      !gameAction.responses[0] ||
-      gameAction.responses[0].handIndex === undefined ||
-      gameAction.responses[0].boardCoords === undefined
+      gameAction.response.handIndex === undefined ||
+      gameAction.response.boardCoords === undefined
     ) {
-      this.logService.warning('Response in a wrong format', gameAction);
+      this.logsService.warning('Response in a wrong format', gameAction);
       return false;
     }
 
     // Validate response inputs
-    const allowedHandIndexes: number[] = (gameAction.subactions[0] as ISubActionPutCardOnBoard).params.handIndexes;
-    const allowedCoordsOnBoard: string[] = (gameAction.subactions[0] as ISubActionPutCardOnBoard).params.boardCoords;
-    const responseHandIndex: number = gameAction.responses[0].handIndex;
-    const responseBoardCoords: string = gameAction.responses[0].boardCoords;
+    const allowedHandIndexes: number[] = gameAction.interaction.params.handIndexes;
+    const allowedCoordsOnBoard: string[] = gameAction.interaction.params.boardCoords;
+    const responseHandIndex: number = gameAction.response.handIndex;
+    const responseBoardCoords: string = gameAction.response.boardCoords;
     if (!allowedHandIndexes.includes(responseHandIndex)) {
-      this.logService.warning('Not allowed hand index', gameAction);
+      this.logsService.warning('Not allowed hand index', gameAction);
       return false;
     }
     if (!allowedCoordsOnBoard.includes(responseBoardCoords)) {
-      this.logService.warning('Not allowed board coords', gameAction);
+      this.logsService.warning('Not allowed board coords', gameAction);
       return false;
     }
 
@@ -103,7 +98,7 @@ export class Fpe4GameWorker implements IGameWorker, IHasGameHookService, IHasGam
       .filter((c: IGameCard) => c.location === 'hand' && c.user === gameAction.user)
       .find((c: IGameCard, index: number) => index === responseHandIndex);
     if (!cardUsed) {
-      this.logService.warning('Card not found', gameAction);
+      this.logsService.warning('Card not found', gameAction);
       return false;
     }
     cardUsed.location = 'discard';
@@ -112,7 +107,7 @@ export class Fpe4GameWorker implements IGameWorker, IHasGameHookService, IHasGam
     const cardDamaged: IGameCard|undefined = gameInstance.cards
       .find((c: IGameCard) => c.location === 'board' && c.coords && c.coords.x === x && c.coords.y === y);
     if (!cardDamaged) {
-      this.logService.warning('Target not found', gameAction);
+      this.logsService.warning('Target not found', gameAction);
       return false;
     }
     cardDamaged.currentStats.life -= 4;
@@ -132,7 +127,7 @@ export class Fpe4GameWorker implements IGameWorker, IHasGameHookService, IHasGam
       gameAction.user);
 
     // Add next the action
-    const action: IGameAction = await this.gameWorkerService.getWorker('fpe-6').create(gameInstance, {user: gameAction.user});
+    const action: IGameAction<any> = await this.gameWorkerService.getWorker('fpe-6').create(gameInstance, {user: gameAction.user});
     gameInstance.actions.current.push(action);
     return true;
   }
@@ -142,7 +137,7 @@ export class Fpe4GameWorker implements IGameWorker, IHasGameHookService, IHasGam
    * @param gameInstance
    * @param gameAction
    */
-  public async expires(gameInstance: IGameInstance, gameAction: IGameAction): Promise<boolean> {
+  public async expires(gameInstance: IGameInstance, gameAction: IGameAction<IInteractionPutCardOnBoard>): Promise<boolean> {
     return true;
   }
 
@@ -151,8 +146,8 @@ export class Fpe4GameWorker implements IGameWorker, IHasGameHookService, IHasGam
    * @param gameInstance
    * @param gameAction
    */
-  public async delete(gameInstance: IGameInstance, gameAction: IGameAction): Promise<void> {
-    gameInstance.actions.current = gameInstance.actions.current.filter((gameActionRef: IGameAction) => {
+  public async delete(gameInstance: IGameInstance, gameAction: IGameAction<IInteractionPutCardOnBoard>): Promise<void> {
+    gameInstance.actions.current = gameInstance.actions.current.filter((gameActionRef: IGameAction<any>) => {
       if (gameActionRef === gameAction) {
         gameInstance.actions.previous.push({
           ...gameAction,

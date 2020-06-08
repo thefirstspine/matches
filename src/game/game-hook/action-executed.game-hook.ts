@@ -1,12 +1,12 @@
 import { IGameHook } from './game-hook.interface';
 import { Injectable } from '@nestjs/common';
-import { IGameInstance, IGameCard, IGameAction } from '../../@shared/arena-shared/game';
-import { ICardCoords } from '../../@shared/rest-shared/card';
+import { IGameInstance, IGameCard, IGameAction } from '@thefirstspine/types-arena';
+import { ICardCoords } from '@thefirstspine/types-rest';
 
 @Injectable()
 export class ActionExecutedGameHook implements IGameHook {
 
-  async execute(gameInstance: IGameInstance, params: {user: number, action: IGameAction}): Promise<boolean> {
+  async execute(gameInstance: IGameInstance, params: {user: number, action: IGameAction<any>}): Promise<boolean> {
     // Get the cards on the board to decrease iterations
     const cardsOnBoard: IGameCard[] = gameInstance.cards.filter((c) => c.location === 'board');
 

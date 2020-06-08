@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import env from '../@shared/env-shared/env';
 import fetch, { Response } from 'node-fetch';
-import { LogService } from '../@shared/log-shared/log.service';
+import { LogsService } from '@thefirstspine/logs-nest';
 
 /**
  * Service to interact with the TFS' service Rooms. They are public chat
@@ -10,7 +9,7 @@ import { LogService } from '../@shared/log-shared/log.service';
 @Injectable()
 export class RoomsService {
 
-  constructor(private readonly logService: LogService) {}
+  constructor(private readonly logsService: LogsService) {}
 
   /**
    * Create a room for a subject.
@@ -38,22 +37,22 @@ export class RoomsService {
    * @param method
    */
   protected async sendRequest<T>(endpoint: string, data: any, method: 'get'|'post' = 'get'): Promise<T|null> {
-    this.logService.info('Send message to room service', {endpoint, data});
-    const url: string = `${env.config.ROOMS_URL}/api/${endpoint}`;
+    this.logsService.info('Send message to room service', {endpoint, data});
+    const url: string = `${process.env.ROOMS_URL}/api/${endpoint}`;
     const response: Response = await fetch(url, {
       body: JSON.stringify(data),
       method,
       headers: {
         'Content-Type': 'application/json',
-        'X-Client-Cert': Buffer.from(env.config.ROOMS_PUBLIC_KEY.replace(/\\n/gm, '\n')).toString('base64'),
+        'X-Client-Cert': Buffer.from(process.env.ROOMS_PUBLIC_KEY.replace(/\\n/gm, '\n')).toString('base64'),
       },
     });
     const jsonResponse: any = await response.json();
     if (response.status >= 400) {
-      this.logService.error('Error from rooms service', jsonResponse);
+      this.logsService.error('Error from rooms service', jsonResponse);
       return null;
     }
-    this.logService.info('Response from rooms service', jsonResponse);
+    this.logsService.info('Response from rooms service', jsonResponse);
     return jsonResponse as T;
   }
 

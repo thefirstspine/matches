@@ -1,10 +1,9 @@
-import { Controller, Post, Body, UseGuards, Req, Get, Param } from '@nestjs/common';
-import { ShopService, IShopPurchase, IPurchase } from './shop.service';
-import { AuthGuard } from '../@shared/auth-shared/auth.guard';
-import { IShopItem } from '../@shared/rest-shared/entities';
+import { Controller, Post, UseGuards, Req, Get, Param } from '@nestjs/common';
+import { ShopService, IShopPurchase } from './shop.service';
+import { IShopItem } from '@thefirstspine/types-rest';
 import { RestService } from '../rest/rest.service';
-import env from '../@shared/env-shared/env';
 import * as fs from 'fs';
+import { AuthGuard } from '@thefirstspine/auth-nest';
 
 /**
  * Main Shop API
@@ -77,7 +76,7 @@ export class ShopController {
         user: request.user,
         ...item,
       });
-      const url = `${env.config.ARENA_URL}/shop/v/go/${purchase.timestamp}`;
+      const url = `${process.env.ARENA_URL}/shop/v/go/${purchase.timestamp}`;
       return {
         status: true,
         html: purchase.data?.checkoutCode,
