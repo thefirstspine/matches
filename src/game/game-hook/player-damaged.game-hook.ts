@@ -48,6 +48,12 @@ export class PlayerDamagedGameHook implements IGameHook {
       if (losers.find((user: IGameUser) => user.user === 934)) {
         additionalTriumphs.push('predator');
       }
+      if (losers.find((user: IGameUser) => user.user === 935)) {
+        additionalTriumphs.push('constructor');
+      }
+      if (losers.find((user: IGameUser) => user.user === 1141)) {
+        additionalTriumphs.push('poacher');
+      }
 
       // Generate results & register history
       const result: IGameResult[] = [];
