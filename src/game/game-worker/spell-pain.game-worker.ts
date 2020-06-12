@@ -1,5 +1,5 @@
 import { IGameWorker } from './game-worker.interface';
-import { IGameInstance, IGameAction, IInteractionPutCardOnBoard, IGameCard } from '@thefirstspine/types-arena';
+import { IGameInstance, IGameAction, IGameCard, IInteractionPutCardOnBoard } from '@thefirstspine/types-arena';
 import { Injectable } from '@nestjs/common';
 import { GameHookService } from '../game-hook/game-hook.service';
 import { IHasGameHookService } from '../injections.interface';
@@ -7,19 +7,19 @@ import { ArenaRoomsService } from '../../rooms/arena-rooms.service';
 import { LogsService } from '@thefirstspine/logs-nest';
 
 /**
- * Worker for "fire" spell.
+ * Main worker for "pain" spell.
  */
 @Injectable() // Injectable required here for dependency injection
-export class SpellFireGameWorker implements IGameWorker, IHasGameHookService {
+export class SpellPainGameWorker implements IGameWorker, IHasGameHookService {
 
   public gameHookService: GameHookService;
-
-  readonly type: string = 'spell-fire';
 
   constructor(
     private readonly logsService: LogsService,
     private readonly arenaRoomsService: ArenaRoomsService,
   ) {}
+
+  readonly type: string = 'spell-pain';
 
   /**
    * @inheritdoc
@@ -30,11 +30,11 @@ export class SpellFireGameWorker implements IGameWorker, IHasGameHookService {
       type: this.type,
       name: {
         en: ``,
-        fr: `Jouer un embrasement`,
+        fr: `Jouer une Douleur`,
       },
       description: {
         en: ``,
-        fr: `Jouer un embrasement sur une carte`,
+        fr: `Jouer une Douleur sur un sorcier`,
       },
       user: data.user as number,
       priority: 1,
@@ -101,29 +101,27 @@ export class SpellFireGameWorker implements IGameWorker, IHasGameHookService {
     }
     cardUsed.location = 'discard';
 
-    // Add capacity & strength to the card
-    const cardTarget: IGameCard|undefined = gameInstance.cards
-      .find((c: IGameCard) => c.location === 'board' && c.coords && c.coords.x === x && c.coords.y === y);
-    if (!cardTarget) {
+    // Damage the wizards
+    const cardsDamaged: IGameCard[] = gameInstance.cards
+      .filter((c: IGameCard) => c.location === 'board' && c.card.type === 'player');
+    if (cardsDamaged.length === 0) {
       this.logsService.warning('Target not found', gameAction);
       return false;
     }
-    cardTarget.currentStats.bottom.strength += 2;
-    cardTarget.currentStats.top.strength += 2;
-    cardTarget.currentStats.left.strength += 2;
-    cardTarget.currentStats.right.strength += 2;
-    cardTarget.currentStats.capacities = cardTarget.currentStats.capacities ?
-      [...cardTarget.currentStats.capacities, 'burdenEarth'] :
-      ['burdenEarth'];
 
-    // Dispatch event
-    await this.gameHookService.dispatch(gameInstance, `card:spell:used:${cardUsed.card.id}`, {gameCard: cardUsed});
+    // Flatten events processing in one promise
+    const promises = cardsDamaged.map(async (cardDamaged: IGameCard) => {
+      cardDamaged.currentStats.life -= 1;
+      await this.gameHookService.dispatch(gameInstance, `card:spell:used:${cardUsed.card.id}`, {gameCard: cardUsed});
+      await this.gameHookService.dispatch(gameInstance, `card:lifeChanged:damaged:${cardDamaged.card.id}`, {gameCard: cardDamaged, lifeChanged: -1});
+    });
+    await Promise.all(promises);
 
     // Send message to rooms
     this.arenaRoomsService.sendMessageForGame(
       gameInstance,
       {
-        fr: `A joué un Embrasement`,
+        fr: `A joué une Douleur`,
         en: ``,
       },
       gameAction.user);
@@ -168,7 +166,7 @@ export class SpellFireGameWorker implements IGameWorker, IHasGameHookService {
     return gameInstance.cards.filter((card: IGameCard) => {
       return card.user === user && card.location === 'hand';
     }).map((card: IGameCard, index: number) => {
-      if (card.card.id === 'fire') {
+      if (card.card.id === 'pain') {
         return index;
       }
       return null;
@@ -182,8 +180,8 @@ export class SpellFireGameWorker implements IGameWorker, IHasGameHookService {
    */
   protected getBoardCoords(gameInstance: IGameInstance, user: number): string[] {
     // Get the coordinates where the user can place a card
-    return gameInstance.cards
-      .filter((card: IGameCard) => card.location === 'board' && ['creature', 'artifact'].includes(card.card.type) && card.coords)
+    return gameInstance.cards.filter((card: IGameCard) => card.location === 'board' && card.card.type === 'player' && card.coords)
       .map((card: IGameCard) => `${card.coords.x}-${card.coords.y}`);
   }
+
 }

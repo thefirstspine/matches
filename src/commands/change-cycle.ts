@@ -5,11 +5,10 @@ import clear = require('clear');
 import chalk = require('chalk');
 import program = require('commander');
 import { RestService } from '../rest/rest.service';
-import { ICycle, ILoot } from '../@shared/rest-shared/entities';
+import { ICycle } from '@thefirstspine/types-rest';
 import { GamesStorageService } from '../storage/games.storage.service';
-import { IGameInstance, IGameResult } from '../@shared/arena-shared/game';
+import { IGameInstance, IGameResult, IWizard } from '@thefirstspine/types-arena';
 import { WizzardsStorageService } from '../storage/wizzards.storage.service';
-import { IWizzard } from '../@shared/arena-shared/wizzard';
 import { mergeLootsInItems } from '../utils/game.utils';
 
 clear();
@@ -79,7 +78,7 @@ async function bootstrap() {
   // Reward the winner
   console.log(chalk.blue('Reward the winner'));
   console.log(chalk.white(JSON.stringify(cycle.rewardsForWinner)));
-  const winner: IWizzard = wizzardsStorageService.get(parseInt(sortedUsers[0], 10));
+  const winner: IWizard = wizzardsStorageService.get(parseInt(sortedUsers[0], 10));
   mergeLootsInItems(winner.items, cycle.rewardsForWinner);
   wizzardsStorageService.save(winner);
   console.log(chalk.green('Winner saved'));
@@ -88,7 +87,7 @@ async function bootstrap() {
   console.log(chalk.blue('Reward the participants'));
   console.log(chalk.white(JSON.stringify(cycle.rewardsForPlayers)));
   sortedUsers.forEach((id: string) => {
-    const participant: IWizzard = wizzardsStorageService.get(parseInt(id, 10));
+    const participant: IWizard = wizzardsStorageService.get(parseInt(id, 10));
     mergeLootsInItems(participant.items, cycle.rewardsForPlayers);
     wizzardsStorageService.save(participant);
     console.log(chalk.green(`Participant ${participant.id} saved`));

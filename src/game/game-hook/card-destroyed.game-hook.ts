@@ -1,11 +1,11 @@
 import { IGameHook } from './game-hook.interface';
 import { Injectable } from '@nestjs/common';
-import { IGameInstance, IGameUser, IGameCard } from '../../@shared/arena-shared/game';
-import { MessagingService } from '../../@shared/messaging-shared/messaging.service';
+import { IGameInstance, IGameCard } from '@thefirstspine/types-arena';
 import { GameHookService } from './game-hook.service';
-import { ICard } from '../../@shared/rest-shared/card';
+import { ICard } from '@thefirstspine/types-rest';
 import { RestService } from '../../rest/rest.service';
 import { randBetween } from '../../utils/maths.utils';
+import { MessagingService } from '@thefirstspine/messaging-nest';
 
 /**
  * This subscriber is executed once a 'game:card:destroyed' event is thrown. It will look for dead
@@ -17,7 +17,6 @@ import { randBetween } from '../../utils/maths.utils';
 export class CardDestroyedGameHook implements IGameHook {
 
   constructor(
-    private readonly messagingService: MessagingService,
     private readonly gameHookService: GameHookService,
     private readonly restService: RestService,
   ) {}

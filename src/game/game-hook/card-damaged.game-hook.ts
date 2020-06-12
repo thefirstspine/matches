@@ -1,11 +1,9 @@
 import { IGameHook } from './game-hook.interface';
 import { Injectable } from '@nestjs/common';
-import { IGameInstance, IGameUser, IGameCard } from '../..//@shared/arena-shared/game';
-import { MessagingService } from '../../@shared/messaging-shared/messaging.service';
+import { IGameInstance, IGameUser, IGameCard } from '@thefirstspine/types-arena';
 import { GameHookService } from './game-hook.service';
-import { ICard } from '../../@shared/rest-shared/card';
 import { RestService } from '../../rest/rest.service';
-import { randBetween } from '../../utils/maths.utils';
+import { MessagingService } from '@thefirstspine/messaging-nest';
 
 /**
  * This subscriber is executed once a 'card:lifeChanged:damaged' event is thrown. It will look for dead
@@ -19,7 +17,6 @@ export class CardDamagedGameHook implements IGameHook {
   constructor(
     private readonly messagingService: MessagingService,
     private readonly gameHookService: GameHookService,
-    private readonly restService: RestService,
   ) {}
 
   async execute(gameInstance: IGameInstance, params: {gameCard: IGameCard, source: IGameCard, lifeChanged: number}): Promise<boolean> {

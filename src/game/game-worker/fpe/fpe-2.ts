@@ -1,12 +1,11 @@
 import { IGameWorker } from '../game-worker.interface';
-import { IGameInstance, IGameAction, IGameCard, ISubActionMoveCardToDiscard } from '../../../@shared/arena-shared/game';
-import { LogService } from '../../../@shared/log-shared/log.service';
+import { IGameInstance, IGameAction, IGameCard, IInteractionMoveCardToDiscard } from '@thefirstspine/types-arena';
 import { Injectable } from '@nestjs/common';
 import { GameHookService } from '../../game-hook/game-hook.service';
 import { IHasGameHookService, IHasGameWorkerService } from '../../injections.interface';
 import { ArenaRoomsService } from '../../../rooms/arena-rooms.service';
 import { GameWorkerService } from '../game-worker.service';
-import { isArray } from 'util';
+import { LogsService } from '@thefirstspine/logs-nest';
 
 /**
  * At the beggining of his turn, the player can throw to the discard one or more cards.
@@ -20,14 +19,14 @@ export class Fpe2GameWorker implements IGameWorker, IHasGameHookService, IHasGam
   public readonly type: string = 'fpe-2';
 
   constructor(
-    private readonly logService: LogService,
+    private readonly logsService: LogsService,
     private readonly arenaRoomsService: ArenaRoomsService,
   ) {}
 
   /**
    * @inheritdoc
    */
-  public async create(gameInstance: IGameInstance, data: {user: number}): Promise<IGameAction> {
+  public async create(gameInstance: IGameInstance, data: {user: number}): Promise<IGameAction<IInteractionMoveCardToDiscard>> {
     return {
       type: 'fpe-2',
       createdAt: Date.now(),
@@ -40,20 +39,18 @@ export class Fpe2GameWorker implements IGameWorker, IHasGameHookService, IHasGam
         fr: `Vous pouvez défausser une ou plusieurs cartes.\nDéfaussez-vous du soin.`,
       },
       priority: 10,
-      subactions: [
-        {
-          type: 'moveCardsToDiscard',
-          description: {
-            en: ``,
-            fr: `Défausser une ou plusieurs cartes`,
-          },
-          params: {
-            handIndexes: [3],
-            max: 1,
-            min: 1,
-          },
+      interaction: {
+        type: 'moveCardsToDiscard',
+        description: {
+          en: ``,
+          fr: `Défausser une ou plusieurs cartes`,
         },
-      ],
+        params: {
+          handIndexes: [3],
+          max: 1,
+          min: 1,
+        },
+      },
       user: data.user,
     };
   }
@@ -61,19 +58,13 @@ export class Fpe2GameWorker implements IGameWorker, IHasGameHookService, IHasGam
   /**
    * @inheritdoc
    */
-  public async execute(gameInstance: IGameInstance, gameAction: IGameAction): Promise<boolean> {
-    // Validate response form
-    if (!isArray(gameAction.responses[0])) {
-      this.logService.warning('Response in a wrong format', gameAction);
-      return false;
-    }
-
+  public async execute(gameInstance: IGameInstance, gameAction: IGameAction<IInteractionMoveCardToDiscard>): Promise<boolean> {
     // Validate response inputs
-    const allowedHandIndexes: number[] = (gameAction.subactions[0] as ISubActionMoveCardToDiscard).params.handIndexes;
-    const responseHandIndexes: number[] = gameAction.responses[0];
+    const allowedHandIndexes: number[] = gameAction.interaction.params.handIndexes;
+    const responseHandIndexes: number[] = gameAction.response.handIndexes;
     const falseIndex: number[] = responseHandIndexes.filter((i: number) => !allowedHandIndexes.includes(i));
     if (falseIndex.length) {
-      this.logService.warning('Not allowed hand index', gameAction);
+      this.logsService.warning('Not allowed hand index', gameAction);
       return false;
     }
 
@@ -112,7 +103,7 @@ export class Fpe2GameWorker implements IGameWorker, IHasGameHookService, IHasGam
       gameAction.user);
 
     // Add next the action
-    const action: IGameAction = await this.gameWorkerService.getWorker('fpe-4').create(gameInstance, {user: gameAction.user});
+    const action: IGameAction<any> = await this.gameWorkerService.getWorker('fpe-4').create(gameInstance, {user: gameAction.user});
     gameInstance.actions.current.push(action);
 
     return true;
@@ -123,7 +114,7 @@ export class Fpe2GameWorker implements IGameWorker, IHasGameHookService, IHasGam
    * @param gameInstance
    * @param gameAction
    */
-  public async refresh(gameInstance: IGameInstance, gameAction: IGameAction): Promise<void> {
+  public async refresh(gameInstance: IGameInstance, gameAction: IGameAction<IInteractionMoveCardToDiscard>): Promise<void> {
     return;
   }
 
@@ -132,7 +123,7 @@ export class Fpe2GameWorker implements IGameWorker, IHasGameHookService, IHasGam
    * @param gameInstance
    * @param gameAction
    */
-  public async expires(gameInstance: IGameInstance, gameAction: IGameAction): Promise<boolean> {
+  public async expires(gameInstance: IGameInstance, gameAction: IGameAction<IInteractionMoveCardToDiscard>): Promise<boolean> {
     return true;
   }
 
@@ -141,8 +132,8 @@ export class Fpe2GameWorker implements IGameWorker, IHasGameHookService, IHasGam
    * @param gameInstance
    * @param gameAction
    */
-  public async delete(gameInstance: IGameInstance, gameAction: IGameAction): Promise<void> {
-    gameInstance.actions.current = gameInstance.actions.current.filter((gameActionRef: IGameAction) => {
+  public async delete(gameInstance: IGameInstance, gameAction: IGameAction<IInteractionMoveCardToDiscard>): Promise<void> {
+    gameInstance.actions.current = gameInstance.actions.current.filter((gameActionRef: IGameAction<IInteractionMoveCardToDiscard>) => {
       if (gameActionRef === gameAction) {
         gameInstance.actions.previous.push({
           ...gameAction,

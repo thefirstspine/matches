@@ -1,12 +1,12 @@
 import { StorageService } from './storage.service';
 import { Injectable } from '@nestjs/common';
-import { IWizzard } from '../@shared/arena-shared/wizzard';
+import { IWizard } from '@thefirstspine/types-arena';
 
 /**
- * The storage service for the "IWizzard" objects.
+ * The storage service for the "IWizard" objects.
  */
 @Injectable()
-export class WizzardsStorageService extends StorageService<IWizzard> {
+export class WizzardsStorageService extends StorageService<IWizard> {
 
   constructor() {
     super('wizzards');

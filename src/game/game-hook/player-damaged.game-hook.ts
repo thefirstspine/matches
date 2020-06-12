@@ -1,14 +1,13 @@
 import { IGameHook } from './game-hook.interface';
 import { Injectable } from '@nestjs/common';
-import { IGameInstance, IGameUser, IGameResult, IGameCard } from '../../@shared/arena-shared/game';
+import { IGameInstance, IGameUser, IGameResult, IGameCard, IWizard, IWizardHistoryItem } from '@thefirstspine/types-arena';
 import { WizzardsStorageService } from '../../storage/wizzards.storage.service';
 import { WizzardService } from '../../wizzard/wizzard.service';
-import { ILoot } from '../../@shared/rest-shared/entities';
-import { IWizzard, IHistoryItem } from '../../@shared/arena-shared/wizzard';
+import { ILoot, ICycle } from '@thefirstspine/types-rest';
 import { mergeLootsInItems } from '../../utils/game.utils';
 import { RestService } from '../../rest/rest.service';
-import { MessagingService } from '../../@shared/messaging-shared/messaging.service';
-import { LogService } from '../../@shared/log-shared/log.service';
+import { LogsService } from '@thefirstspine/logs-nest';
+import { MessagingService } from '@thefirstspine/messaging-nest';
 
 /**
  * This subscriber is executed once a 'card:lifeChanged:damaged:{player}' event is thrown and look for dead
@@ -24,7 +23,7 @@ export class PlayerDamagedGameHook implements IGameHook {
     private readonly wizzardsStorageService: WizzardsStorageService,
     private readonly restService: RestService,
     private readonly messagingService: MessagingService,
-    private readonly logsService: LogService,
+    private readonly logsService: LogsService,
   ) {}
 
   async execute(gameInstance: IGameInstance, params: {gameCard: IGameCard, source: IGameCard, lifeChanged: number}): Promise<boolean> {
@@ -38,6 +37,9 @@ export class PlayerDamagedGameHook implements IGameHook {
       // Get the game type
       const gameType = await this.restService.gameType(gameInstance.gameTypeId);
 
+      // Get the cycle
+      const cycle: ICycle = await this.restService.currentCycle();
+
       // Get aditionnal triumphs based on opponents
       const additionalTriumphs: string[] = [];
       if (losers.find((user: IGameUser) => user.user === 933)) {
@@ -46,25 +48,47 @@ export class PlayerDamagedGameHook implements IGameHook {
       if (losers.find((user: IGameUser) => user.user === 934)) {
         additionalTriumphs.push('predator');
       }
+      if (losers.find((user: IGameUser) => user.user === 935)) {
+        additionalTriumphs.push('constructor');
+      }
+      if (losers.find((user: IGameUser) => user.user === 1141)) {
+        additionalTriumphs.push('poacher');
+      }
 
       // Generate results & register history
       const result: IGameResult[] = [];
       losers.forEach((gameUser: IGameUser) => {
+        const loots: ILoot[] = [...gameType.loots.defeat];
+        if (cycle.id === 'treasure-2020') {
+          loots.push({
+            name: 'golden-galleon',
+            num: gameInstance.cards
+              .filter((c: IGameCard) => c.user === gameUser.user && c.location === 'hand' && c.card.id === 'golden-galleon').length,
+          });
+        }
         this.registerResult(
           false,
           gameUser,
           gameInstance,
-          gameType.loots.defeat,
+          loots,
           result,
           []);
       });
 
       winners.forEach((gameUser: IGameUser) => {
+        const loots: ILoot[] = [...gameType.loots.victory];
+        if (cycle.id === 'treasure-2020') {
+          loots.push({
+            name: 'golden-galleon',
+            num: gameInstance.cards
+              .filter((c: IGameCard) => c.user === gameUser.user && c.location === 'hand' && c.card.id === 'golden-galleon').length,
+          });
+        }
         this.registerResult(
           true,
           gameUser,
           gameInstance,
-          gameType.loots.victory,
+          loots,
           result,
           additionalTriumphs);
       });
@@ -97,10 +121,10 @@ export class PlayerDamagedGameHook implements IGameHook {
     additionalTriumphs: string[],
   ) {
     // Get wizard's account
-    const wizzard: IWizzard = this.wizzardService.getWizzard(gameUser.user);
+    const wizzard: IWizard = this.wizzardService.getWizzard(gameUser.user);
 
     // Register data in wizard's history
-    const historyItem: IHistoryItem = {
+    const historyItem: IWizardHistoryItem = {
       gameId: gameInstance.id,
       gameTypeId: gameInstance.gameTypeId,
       victory,

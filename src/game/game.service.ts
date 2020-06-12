@@ -3,17 +3,15 @@ import { shuffle } from '../utils/array.utils';
 import { randBetween } from '../utils/maths.utils';
 import { GamesStorageService } from '../storage/games.storage.service';
 import { WizzardService } from '../wizzard/wizzard.service';
-import { LogService } from '../@shared/log-shared/log.service';
-import { IGameInstance, IGameUser, IGameCard, IGameAction } from '../@shared/arena-shared/game';
-import { IWizzardItem } from '../@shared/arena-shared/wizzard';
+import { IGameInstance, IGameUser, IGameCard, IGameAction, IWizardItem, IGameInteraction } from '@thefirstspine/types-arena';
 import { RestService } from '../rest/rest.service';
-import { ICard } from '../@shared/rest-shared/card';
-import { IGameType, IDeck } from '../@shared/rest-shared/entities';
+import { ICard } from '@thefirstspine/types-rest';
+import { IGameType, IDeck } from '@thefirstspine/types-rest';
 import { ArenaRoomsService } from '../rooms/arena-rooms.service';
-import { MessagingService } from '../@shared/messaging-shared/messaging.service';
 import { GameWorkerService } from './game-worker/game-worker.service';
 import { GameHookService } from './game-hook/game-hook.service';
-import { destiny, origin } from '../@shared/rest-shared/base';
+import { LogsService } from '@thefirstspine/logs-nest';
+import { MessagingService } from '@thefirstspine/messaging-nest';
 
 /**
  * Service to manage game instances
@@ -37,7 +35,7 @@ export class GameService {
   constructor(
     private readonly gamesStorageService: GamesStorageService,
     private readonly messagingService: MessagingService,
-    private readonly logService: LogService,
+    private readonly logsService: LogsService,
     private readonly wizzardService: WizzardService,
     private readonly restService: RestService,
     private readonly arenaRoomsService: ArenaRoomsService,
@@ -65,7 +63,7 @@ export class GameService {
     const gameType: IGameType = await this.restService.gameType(gameTypeId);
     const cards: IGameCard[] = [];
     users.forEach((gameUser: IGameUser, index: number) => {
-      const decksToMix: Array<destiny|origin> = [gameUser.destiny];
+      const decksToMix: string[] = [gameUser.destiny];
       if (gameUser.origin) {
         decksToMix.push(gameUser.origin);
       }
@@ -95,7 +93,7 @@ export class GameService {
     users.forEach((gameUser: IGameUser, index: number) => {
       // Add the cursed cards
       const wizzard = this.wizzardService.getWizzard(gameUser.user);
-      const curseItem: IWizzardItem|undefined = wizzard.items.find((item: IWizzardItem) => item.name === 'curse');
+      const curseItem: IWizardItem|undefined = wizzard.items.find((item: IWizardItem) => item.name === 'curse');
       if (curseItem) {
         for (let i = 0; i < curseItem.num; i ++) {
           const randomId: number = randBetween(0, Number.MAX_SAFE_INTEGER);
@@ -135,7 +133,7 @@ export class GameService {
     };
 
     // Create the first action
-    const action: IGameAction = await this.gameWorkerService.getWorker('throw-cards')
+    const action: IGameAction<IGameInteraction> = await this.gameWorkerService.getWorker('throw-cards')
       .create(gameInstance, {user: users[firstUserToPlay].user});
     gameInstance.actions.current.push(action);
 
@@ -153,7 +151,7 @@ export class GameService {
     this.nextId ++;
 
     // Log
-    this.logService.info(`Game ${gameInstance.id} created`, gameInstance);
+    this.logsService.info(`Game ${gameInstance.id} created`, gameInstance);
 
     // Return created instance
     return gameInstance;
@@ -233,7 +231,7 @@ export class GameService {
     // A game instance SHOULD have at least one current action
     // Close a game without any action and throw an error, because this is not a normal behavior
     if (gameInstance.actions.current.length === 0) {
-      this.logService.error('Game opened without action', gameInstance);
+      this.logsService.error('Game opened without action', gameInstance);
       gameInstance.status = 'closed';
       this.purgeFromMemory(gameInstance);
       return;
@@ -243,13 +241,14 @@ export class GameService {
     const jsonHash: string = JSON.stringify(gameInstance);
 
     // Get the max priority of the pending actions
-    const maxPriority = gameInstance.actions.current.reduce((acc: number, action: IGameAction) => {
+    const maxPriority = gameInstance.actions.current.reduce((acc: number, action: IGameAction<IGameInteraction>) => {
       return action.priority > acc ? action.priority : acc;
     }, 0);
 
     // Treat only max priority action with a response (only one reponse will be treated in an instance per tick)
-    const pendingGameAction: IGameAction|undefined
-      = gameInstance.actions.current.find((action: IGameAction) => action.priority === maxPriority && action.responses !== undefined);
+    const pendingGameAction: IGameAction<IGameInteraction>|undefined =
+      gameInstance.actions.current
+        .find((action: IGameAction<IGameInteraction>) => action.priority === maxPriority && action.response !== undefined);
 
     // Executes the game actions when exists
     if (pendingGameAction) {
@@ -269,7 +268,7 @@ export class GameService {
           // Dispatch event after each action
           this.gameHookService.dispatch(gameInstance, `action:deleted:${pendingGameAction.type}`, {user: pendingGameAction.user});
           // Refresh the other ones
-          const refreshPromises: Array<Promise<void>> = gameInstance.actions.current.map(async (action: IGameAction) => {
+          const refreshPromises: Array<Promise<void>> = gameInstance.actions.current.map(async (action: IGameAction<IGameInteraction>) => {
               this.gameWorkerService.getWorker(action.type).refresh(gameInstance, action);
               // Dispatch event after each action
               this.gameHookService.dispatch(gameInstance, `action:refreshed:${action.type}`, {user: action.user, action});
@@ -278,16 +277,16 @@ export class GameService {
           await Promise.all(refreshPromises);
         } else {
           // Something's wrong, delete the response
-          pendingGameAction.responses = undefined;
+          pendingGameAction.response = undefined;
         }
       } catch (e) {
         // tslint:disable-next-line:no-console
-        this.logService.error(`Error in process action`, {name: e.name, message: e.message, stack: e.stack});
+        this.logsService.error(`Error in process action`, {name: e.name, message: e.message, stack: e.stack});
       }
     }
 
     // Get the pending game actions with expiration
-    const promises: Array<Promise<any>> = gameInstance.actions.current.map(async (gameAction: IGameAction) => {
+    const promises: Array<Promise<any>> = gameInstance.actions.current.map(async (gameAction: IGameAction<IGameInteraction>) => {
       try {
         if (gameAction.expiresAt && gameAction.expiresAt < Date.now() && gameAction.priority === maxPriority) {
           await this.gameWorkerService.getWorker(gameAction.type).expires(gameInstance, gameAction);
@@ -296,7 +295,7 @@ export class GameService {
         }
       } catch (e) {
         // tslint:disable-next-line:no-console
-        this.logService.error(`Error in expire action`, e);
+        this.logsService.error(`Error in expire action`, e);
       }
     });
     await Promise.all(promises);

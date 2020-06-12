@@ -1,11 +1,11 @@
 import { IGameWorker } from './game-worker.interface';
-import { IGameInstance, IGameAction, IGameCard, ISubActionMoveCardToDiscard } from '../../@shared/arena-shared/game';
+import { IGameInstance, IGameAction, IGameCard, IInteractionMoveCardToDiscard } from '@thefirstspine/types-arena';
 import { isArray } from 'util';
-import { LogService } from '../../@shared/log-shared/log.service';
 import { Injectable } from '@nestjs/common';
 import { GameHookService } from '../game-hook/game-hook.service';
 import { IHasGameHookService } from '../injections.interface';
 import { ArenaRoomsService } from '../../rooms/arena-rooms.service';
+import { LogsService } from '@thefirstspine/logs-nest';
 
 /**
  * At the beggining of his turn, the player can throw to the discard one or more cards.
@@ -18,14 +18,14 @@ export class ThrowCardsGameWorker implements IGameWorker, IHasGameHookService {
   public readonly type: string = 'throw-cards';
 
   constructor(
-    private readonly logService: LogService,
+    private readonly logsService: LogsService,
     private readonly arenaRoomsService: ArenaRoomsService,
   ) {}
 
   /**
    * @inheritdoc
    */
-  public async create(gameInstance: IGameInstance, data: {user: number}): Promise<IGameAction> {
+  public async create(gameInstance: IGameInstance, data: {user: number}): Promise<IGameAction<IInteractionMoveCardToDiscard>> {
     return {
       createdAt: Date.now(),
       type: this.type,
@@ -40,39 +40,37 @@ export class ThrowCardsGameWorker implements IGameWorker, IHasGameHookService {
       user: data.user as number,
       priority: 1,
       expiresAt: Date.now() + (30 * 1000), // expires in 30 seconds
-      subactions: [
-        {
-          type: 'moveCardsToDiscard',
-          description: {
-            en: ``,
-            fr: `Défausser une ou plusieurs cartes`,
-          },
-          params: {
-            handIndexes: this.getHandIndexes(gameInstance, data.user),
-            max: 6,
-            min: 0,
-          },
+      interaction: {
+        type: 'moveCardsToDiscard',
+        description: {
+          en: ``,
+          fr: `Défausser une ou plusieurs cartes`,
         },
-      ],
+        params: {
+          handIndexes: this.getHandIndexes(gameInstance, data.user),
+          max: 6,
+          min: 0,
+        },
+      },
     };
   }
 
   /**
    * @inheritdoc
    */
-  public async execute(gameInstance: IGameInstance, gameAction: IGameAction): Promise<boolean> {
+  public async execute(gameInstance: IGameInstance, gameAction: IGameAction<IInteractionMoveCardToDiscard>): Promise<boolean> {
     // Validate response form
-    if (!isArray(gameAction.responses[0])) {
-      this.logService.warning('Response in a wrong format', gameAction);
+    if (!isArray(gameAction.response.handIndexes)) {
+      this.logsService.warning('Response in a wrong format', gameAction);
       return false;
     }
 
     // Validate response inputs
-    const allowedHandIndexes: number[] = (gameAction.subactions[0] as ISubActionMoveCardToDiscard).params.handIndexes;
-    const responseHandIndexes: number[] = gameAction.responses[0];
+    const allowedHandIndexes: number[] = gameAction.interaction.params.handIndexes;
+    const responseHandIndexes: number[] = gameAction.response.handIndexes;
     const falseIndex: number[] = responseHandIndexes.filter((i: number) => !allowedHandIndexes.includes(i));
     if (falseIndex.length) {
-      this.logService.warning('Not allowed hand index', gameAction);
+      this.logsService.warning('Not allowed hand index', gameAction);
       return false;
     }
 
@@ -142,7 +140,7 @@ export class ThrowCardsGameWorker implements IGameWorker, IHasGameHookService {
    * @param gameInstance
    * @param gameAction
    */
-  public async refresh(gameInstance: IGameInstance, gameAction: IGameAction): Promise<void> {
+  public async refresh(gameInstance: IGameInstance, gameAction: IGameAction<IInteractionMoveCardToDiscard>): Promise<void> {
     return;
   }
 
@@ -151,8 +149,8 @@ export class ThrowCardsGameWorker implements IGameWorker, IHasGameHookService {
    * @param gameInstance
    * @param gameAction
    */
-  public async expires(gameInstance: IGameInstance, gameAction: IGameAction): Promise<boolean> {
-    gameAction.responses = [[]];
+  public async expires(gameInstance: IGameInstance, gameAction: IGameAction<IInteractionMoveCardToDiscard>): Promise<boolean> {
+    gameAction.response = [];
     return true;
   }
 
@@ -161,8 +159,8 @@ export class ThrowCardsGameWorker implements IGameWorker, IHasGameHookService {
    * @param gameInstance
    * @param gameAction
    */
-  public async delete(gameInstance: IGameInstance, gameAction: IGameAction): Promise<void> {
-    gameInstance.actions.current = gameInstance.actions.current.filter((gameActionRef: IGameAction) => {
+  public async delete(gameInstance: IGameInstance, gameAction: IGameAction<IInteractionMoveCardToDiscard>): Promise<void> {
+    gameInstance.actions.current = gameInstance.actions.current.filter((gameActionRef: IGameAction<IInteractionMoveCardToDiscard>) => {
       if (gameActionRef === gameAction) {
         gameInstance.actions.previous.push({
           ...gameAction,

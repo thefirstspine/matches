@@ -1,13 +1,16 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ErrorFilter } from './error.filter';
-import env from './@shared/env-shared/env';
-import { LogService } from './@shared/log-shared/log.service';
+import { LogsService } from '@thefirstspine/logs-nest';
 
 async function bootstrap() {
+  // Load dotev config
+  require('dotenv').config();
+
+  // Launch app
   const app = await NestFactory.create(AppModule);
   app.enableCors();
-  app.useGlobalFilters(new ErrorFilter(new LogService('arena')));
-  await app.listen(env.dist ? env.config.PORT : 2105);
+  app.useGlobalFilters(new ErrorFilter(new LogsService()));
+  await app.listen(process.env.PORT);
 }
 bootstrap();

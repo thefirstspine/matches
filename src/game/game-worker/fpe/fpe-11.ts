@@ -1,18 +1,18 @@
 import { IGameWorker } from './../game-worker.interface';
 import { IGameInstance,
   IGameAction,
-  ISubActionMoveCardOnBoardPossibility,
-  ISubActionSelectCoupleOnBoard,
-  IGameCard } from '../../../@shared/arena-shared/game';
-import { LogService } from '../../../@shared/log-shared/log.service';
+  IInteractionMoveCardOnBoardPossibility,
+  IInteractionSelectCoupleOnBoard,
+  IGameCard,
+  IGameActionPassed} from '@thefirstspine/types-arena';
 import { Injectable } from '@nestjs/common';
-import { cardSide } from '../../../@shared/rest-shared/base';
 import { GameWorkerService } from './../game-worker.service';
-import { ICardCoords, ICard } from '../../../@shared/rest-shared/card';
+import { cardSide, ICardCoords, ICard } from '@thefirstspine/types-rest';
 import { GameHookService } from '../../game-hook/game-hook.service';
 import { IHasGameHookService, IHasGameWorkerService } from '../../injections.interface';
 import { ArenaRoomsService } from '../../../rooms/arena-rooms.service';
 import { RestService } from '../../../rest/rest.service';
+import { LogsService } from '@thefirstspine/logs-nest';
 
 /**
  * The main confrontation game worker. Normally a confrontation is closing the turn of the player. This worker
@@ -27,7 +27,7 @@ export class Fpe11GameWorker implements IGameWorker, IHasGameHookService, IHasGa
   readonly type: string = 'fpe-11';
 
   constructor(
-    private readonly logService: LogService,
+    private readonly logsService: LogsService,
     private readonly arenaRoomsService: ArenaRoomsService,
     private readonly restService: RestService,
   ) {}
@@ -35,7 +35,7 @@ export class Fpe11GameWorker implements IGameWorker, IHasGameHookService, IHasGa
   /**
    * @inheritdoc
    */
-  public async create(gameInstance: IGameInstance, data: {user: number}): Promise<IGameAction> {
+  public async create(gameInstance: IGameInstance, data: {user: number}): Promise<IGameAction<IInteractionSelectCoupleOnBoard>> {
     return {
       createdAt: Date.now(),
       type: this.type,
@@ -49,44 +49,41 @@ export class Fpe11GameWorker implements IGameWorker, IHasGameHookService, IHasGa
       },
       user: data.user as number,
       priority: 1,
-      subactions: [
-        {
-          type: 'selectCoupleOnBoard',
-          description: {
-            en: ``,
-            fr: `Résoudre une confrontation.`,
-          },
-          params: {
-            possibilities: this.getPossibilities(gameInstance, data.user),
-          },
+      interaction: {
+        type: 'selectCoupleOnBoard',
+        description: {
+          en: ``,
+          fr: `Résoudre une confrontation.`,
         },
-      ],
+        params: {
+          possibilities: this.getPossibilities(gameInstance, data.user),
+        },
+      },
     };
   }
 
   /**
    * @inheritdoc
    */
-  public async execute(gameInstance: IGameInstance, gameAction: IGameAction): Promise<boolean> {
+  public async execute(gameInstance: IGameInstance, gameAction: IGameAction<IInteractionSelectCoupleOnBoard>): Promise<boolean> {
     // Validate response form
     if (
-      !gameAction.responses[0] ||
-      gameAction.responses[0].boardCoordsFrom === undefined ||
-      gameAction.responses[0].boardCoordsTo === undefined
+      gameAction.response.boardCoordsFrom === undefined ||
+      gameAction.response.boardCoordsTo === undefined
     ) {
-      this.logService.warning('Response in a wrong format', gameAction);
+      this.logsService.warning('Response in a wrong format', gameAction);
       return false;
     }
 
     // Validate response input
-    const boardCoordsFrom: string = gameAction.responses[0].boardCoordsFrom;
-    const boardCoordsTo: string = gameAction.responses[0].boardCoordsTo;
-    const possibilities: ISubActionMoveCardOnBoardPossibility[] = (gameAction.subactions[0] as ISubActionSelectCoupleOnBoard).params.possibilities;
-    const possibility: ISubActionMoveCardOnBoardPossibility|undefined = possibilities.find((p: ISubActionMoveCardOnBoardPossibility) => {
+    const boardCoordsFrom: string = gameAction.response.boardCoordsFrom;
+    const boardCoordsTo: string = gameAction.response.boardCoordsTo;
+    const possibilities: IInteractionMoveCardOnBoardPossibility[] = gameAction.interaction.params.possibilities;
+    const possibility: IInteractionMoveCardOnBoardPossibility|undefined = possibilities.find((p: IInteractionMoveCardOnBoardPossibility) => {
       return p.boardCoordsFrom === boardCoordsFrom && p.boardCoordsTo.includes(boardCoordsTo);
     });
     if (!possibility) {
-      this.logService.warning('Possibility not found', gameAction);
+      this.logsService.warning('Possibility not found', gameAction);
       return false;
     }
 
@@ -159,16 +156,17 @@ export class Fpe11GameWorker implements IGameWorker, IHasGameHookService, IHasGa
     const alreadyConfront: string[] = [boardCoordsFrom];
     let isInConfront = true;
     for (let i = 0; i < 50 && i < gameInstance.actions.previous.length; i ++) {
-      const prevAction = gameInstance.actions.previous[gameInstance.actions.previous.length - (i + 1)];
+      const prevAction: IGameActionPassed<IInteractionSelectCoupleOnBoard|any> =
+        gameInstance.actions.previous[gameInstance.actions.previous.length - (i + 1)];
       if (prevAction.type === this.type && isInConfront) {
-        alreadyConfront.push(prevAction.responses[0].boardCoordsFrom);
+        alreadyConfront.push(prevAction.interaction.boardCoordsFrom);
       } else {
         isInConfront = false;
       }
     }
 
     // End turn
-    const endTurnAction: IGameAction = await this.gameWorkerService.getWorker('fpe-15').create(gameInstance, {user: gameAction.user});
+    const endTurnAction: IGameAction<any> = await this.gameWorkerService.getWorker('fpe-15').create(gameInstance, {user: gameAction.user});
     gameInstance.actions.current.push(endTurnAction);
 
     // Send message to rooms
@@ -201,8 +199,8 @@ export class Fpe11GameWorker implements IGameWorker, IHasGameHookService, IHasGa
    * @param gameInstance
    * @param user
    */
-  protected getPossibilities(gameInstance: IGameInstance, user: number): ISubActionMoveCardOnBoardPossibility[] {
-    const ret: ISubActionMoveCardOnBoardPossibility[] = [];
+  protected getPossibilities(gameInstance: IGameInstance, user: number): IInteractionMoveCardOnBoardPossibility[] {
+    const ret: IInteractionMoveCardOnBoardPossibility[] = [];
     gameInstance.cards.forEach((card: IGameCard) => {
       // Cards that does not have stats can confront
       if (!card.currentStats) {
@@ -304,7 +302,7 @@ export class Fpe11GameWorker implements IGameWorker, IHasGameHookService, IHasGa
    * @param gameInstance
    * @param gameAction
    */
-  public async refresh(gameInstance: IGameInstance, gameAction: IGameAction): Promise<void> {
+  public async refresh(gameInstance: IGameInstance, gameAction: IGameAction<IInteractionSelectCoupleOnBoard>): Promise<void> {
     return;
   }
 
@@ -313,14 +311,14 @@ export class Fpe11GameWorker implements IGameWorker, IHasGameHookService, IHasGa
    * @param gameInstance
    * @param gameAction
    */
-  public async expires(gameInstance: IGameInstance, gameAction: IGameAction): Promise<boolean> {
-    const possibilities: ISubActionMoveCardOnBoardPossibility[] = (gameAction.subactions[0] as ISubActionSelectCoupleOnBoard).params.possibilities;
-    const possibility: ISubActionMoveCardOnBoardPossibility = possibilities[Math.floor(Math.random() * possibilities.length)];
+  public async expires(gameInstance: IGameInstance, gameAction: IGameAction<IInteractionSelectCoupleOnBoard>): Promise<boolean> {
+    const possibilities: IInteractionMoveCardOnBoardPossibility[] = gameAction.interaction.params.possibilities;
+    const possibility: IInteractionMoveCardOnBoardPossibility = possibilities[Math.floor(Math.random() * possibilities.length)];
     const boardCoordsTo: string = possibility.boardCoordsTo[Math.floor(Math.random() * possibility.boardCoordsTo.length)];
-    gameAction.responses = [{
+    gameAction.response = {
       boardCoordsFrom: possibility.boardCoordsFrom,
       boardCoordsTo,
-    }];
+    };
     return true;
   }
 
@@ -329,8 +327,8 @@ export class Fpe11GameWorker implements IGameWorker, IHasGameHookService, IHasGa
    * @param gameInstance
    * @param gameAction
    */
-  public async delete(gameInstance: IGameInstance, gameAction: IGameAction): Promise<void> {
-    gameInstance.actions.current = gameInstance.actions.current.filter((gameActionRef: IGameAction) => {
+  public async delete(gameInstance: IGameInstance, gameAction: IGameAction<IInteractionSelectCoupleOnBoard>): Promise<void> {
+    gameInstance.actions.current = gameInstance.actions.current.filter((gameActionRef: IGameAction<any>) => {
       if (gameActionRef === gameAction) {
         gameInstance.actions.previous.push({
           ...gameAction,

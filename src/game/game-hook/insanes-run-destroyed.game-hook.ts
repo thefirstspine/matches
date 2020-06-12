@@ -1,6 +1,6 @@
 import { IGameHook } from './game-hook.interface';
 import { Injectable } from '@nestjs/common';
-import { IGameInstance, IGameCard, IGameAction, ISubActionChoseCardOnBoard } from '../../@shared/arena-shared/game';
+import { IGameInstance, IGameCard, IGameAction } from '@thefirstspine/types-arena';
 import { IHasGameWorkerService } from '../injections.interface';
 import { GameWorkerService } from '../game-worker/game-worker.service';
 
@@ -17,10 +17,10 @@ export class InsanesRunDestroyedGameHook implements IGameHook, IHasGameWorkerSer
 
   async execute(gameInstance: IGameInstance, params: {gameCard: IGameCard}): Promise<boolean> {
     // Create a new action
-    const action: IGameAction = await this.gameWorkerService.getWorker('insanes-run-effect')
+    const action: IGameAction<any> = await this.gameWorkerService.getWorker('insanes-run-effect')
       .create(gameInstance, {user: params.gameCard.user});
     // Add it to the current actions
-    if ((action.subactions[0] as ISubActionChoseCardOnBoard).params.boardCoords.length > 0) {
+    if (action.interaction.params.boardCoords.length > 0) {
       gameInstance.actions.current.push(action);
     }
     return true;

@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import env from '../@shared/env-shared/env';
 import fetch, { Response } from 'node-fetch';
 
 /**
@@ -11,7 +10,7 @@ export class BotsService {
   public async askForABot(gameType: string): Promise<IApiResponse> {
     // Call the bots service
     const ret: Response = await fetch(
-      `${env.config.BOTS_URL}/api/spawn`,
+      `${process.env.BOTS_URL}/api/spawn`,
       {
         method: 'post',
         body: JSON.stringify({
@@ -21,7 +20,7 @@ export class BotsService {
           },
         }),
         headers: {
-          'X-Client-Cert': Buffer.from(env.config.BOTS_PUBLIC_KEY.replace(/\\n/gm, '\n')).toString('base64'),
+          'X-Client-Cert': Buffer.from(process.env.BOTS_PUBLIC_KEY.replace(/\\n/gm, '\n')).toString('base64'),
           'Content-Type': 'application/json',
         },
       },
