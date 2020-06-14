@@ -68,6 +68,11 @@ export class Fpe15GameWorker implements IGameWorker, IHasGameHookService, IHasGa
       return false;
     }
 
+    if (responseHandIndexes.length !== 1) {
+      this.logsService.warning('Should discard one card', gameAction);
+      return false;
+    }
+
     // Discard the cards
     const cards: IGameCard[] = [];
     gameInstance.cards.filter((c: IGameCard) => c.location === 'hand' && c.user === gameAction.user)
