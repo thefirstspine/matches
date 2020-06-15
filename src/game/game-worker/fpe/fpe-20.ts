@@ -172,13 +172,6 @@ export class Fpe20GameWorker implements IGameWorker, IHasGameHookService, IHasGa
 
     // End the game
     gameInstance.status = 'ended';
-    gameInstance.result = [
-      {
-        user: gameAction.user,
-        loot: [{name: 'shard', num: 30}],
-        result: 'win',
-      },
-    ];
 
     return true;
   }
