@@ -150,7 +150,7 @@ export class ThrowCardsGameWorker implements IGameWorker, IHasGameHookService {
    * @param gameAction
    */
   public async expires(gameInstance: IGameInstance, gameAction: IGameAction<IInteractionMoveCardToDiscard>): Promise<boolean> {
-    gameAction.response = [];
+    gameAction.response = {handIndexes: []};
     return true;
   }
 
