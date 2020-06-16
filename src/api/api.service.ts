@@ -279,7 +279,10 @@ export class ApiService {
     }
 
     // Store the response in the instance
-    const action: IGameAction<any>|undefined = gameInstance.actions.current.find(a => a.type === request.params.actionType);
+    const action: IGameAction<any>|undefined = gameInstance.actions.current.find((a: IGameAction<any>) => {
+      return a.type === request.params.actionType &&
+        a.user === request.user;
+    });
     if (action) {
       action.response = request.params.response;
       return {
