@@ -368,6 +368,12 @@ export class GameService {
         lifeChanged: -lifeLeft,
       });
 
+    // Set the status of the game when closed
+    const instanceAfterConcede: IGameInstance = this.gameInstances[id];
+    if (instanceAfterConcede.status === 'ended') {
+      instanceAfterConcede.status = 'conceded';
+    }
+
   }
 
 }
