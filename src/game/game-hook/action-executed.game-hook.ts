@@ -2,6 +2,7 @@ import { IGameHook } from './game-hook.interface';
 import { Injectable } from '@nestjs/common';
 import { IGameInstance, IGameCard, IGameAction } from '@thefirstspine/types-arena';
 import { ICardCoords } from '@thefirstspine/types-rest';
+import { rotateCard } from '../../utils/game.utils';
 
 @Injectable()
 export class ActionExecutedGameHook implements IGameHook {
@@ -32,32 +33,35 @@ export class ActionExecutedGameHook implements IGameHook {
     const jesters: number = cardsOnBoard.filter((c) => c.card.id === 'jester').length;
 
     // Main loop for cards on board
-    cardsOnBoard.forEach((c: IGameCard) => {
+    cardsOnBoard.forEach((gameCard: IGameCard) => {
       // Increase jester's strength
-      if (c.card.id === 'jester') {
-        c.currentStats.bottom.strength += jesters * 2;
-        c.currentStats.left.strength += jesters * 2;
-        c.currentStats.right.strength += jesters * 2;
-        c.currentStats.top.strength += jesters * 2;
-        c.metadata.jesterstrength = jesters * 2;
+      if (gameCard.card.id === 'jester') {
+        gameCard.currentStats.bottom.strength += jesters * 2;
+        gameCard.currentStats.left.strength += jesters * 2;
+        gameCard.currentStats.right.strength += jesters * 2;
+        gameCard.currentStats.top.strength += jesters * 2;
+        gameCard.metadata.jesterstrength = jesters * 2;
       }
+
+      // From now, we need rotated card
+      const rotatedCard: IGameCard = rotateCard(gameCard, gameInstance);
 
       // Increase aura
       const sides = [
-        {x: c.coords.x + 1, y: c.coords.y},
-        {x: c.coords.x - 1, y: c.coords.y},
-        {x: c.coords.x, y: c.coords.y + 1},
-        {x: c.coords.x, y: c.coords.y - 1},
+        {x: rotatedCard.coords.x + 1, y: rotatedCard.coords.y},
+        {x: rotatedCard.coords.x - 1, y: rotatedCard.coords.y},
+        {x: rotatedCard.coords.x, y: rotatedCard.coords.y + 1},
+        {x: rotatedCard.coords.x, y: rotatedCard.coords.y - 1},
       ];
       ['right', 'left', 'bottom', 'top'].forEach((side: string, sideIndex: number) => {
-        if (c?.currentStats?.[side]?.capacity === 'aura') {
-          const position: ICardCoords = sides[sideIndex];
+        if (rotatedCard?.currentStats?.[side]?.capacity === 'aura') {
           // Find a card on the board, with the same user to the position
+          const position: ICardCoords = sides[sideIndex];
           const cardTarget: IGameCard|undefined = cardsOnBoard.find((cardTargetPotential: IGameCard) => {
-            return ['artifact', 'creature'].includes(c.card.type) &&
-              c.user === cardTargetPotential.user &&
-              c.coords.x === position.x &&
-              c.coords.y === position.y;
+            return ['artifact', 'creature', 'player'].includes(cardTargetPotential.card.type) &&
+              rotatedCard.user === cardTargetPotential.user &&
+              position.x === cardTargetPotential.coords.x &&
+              position.y === cardTargetPotential.coords.y;
           });
           if (cardTarget !== undefined) {
             cardTarget.currentStats.bottom.strength += 2;
