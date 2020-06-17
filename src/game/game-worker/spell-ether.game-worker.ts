@@ -91,6 +91,11 @@ export class SpellEtherGameWorker implements IGameWorker, IHasGameHookService {
     }
     cardUsed.location = 'discard';
 
+    // Edit metadata of the player for ether used
+    const playerCard: IGameCard = gameInstance.cards.find((c: IGameCard) => c.user === gameAction.user && c.card.type === 'player' );
+    playerCard.metadata = playerCard.metadata ? playerCard.metadata : {};
+    playerCard.metadata.remainedSpells = playerCard.metadata.remainedSpells ? playerCard.metadata.remainedSpells + 3 : 3;
+
     // Dispatch event
     await this.gameHookService.dispatch(gameInstance, `card:spell:used:${cardUsed.card.id}`, {gameCard: cardUsed});
 
