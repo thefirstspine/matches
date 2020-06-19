@@ -32,11 +32,11 @@ export class EndTurnGameWorker implements IGameWorker, IHasGameHookService, IHas
       createdAt: Date.now(),
       type: this.type,
       name: {
-        en: ``,
+        en: `End the turn`,
         fr: `Terminer le tour`,
       },
       description: {
-        en: ``,
+        en: `End the turn`,
         fr: `Terminer le tour`,
       },
       user: data.user as number,
@@ -45,7 +45,7 @@ export class EndTurnGameWorker implements IGameWorker, IHasGameHookService, IHas
       interaction: {
         type: 'pass',
         description: {
-          en: ``,
+          en: `End the turn`,
           fr: `Terminer le tour`,
         },
         params: {},
@@ -63,7 +63,7 @@ export class EndTurnGameWorker implements IGameWorker, IHasGameHookService, IHas
       gameInstance,
       {
         fr: `Termine son tour`,
-        en: ``,
+        en: `Ends his turn`,
       },
       gameAction.user);
 
@@ -77,7 +77,7 @@ export class EndTurnGameWorker implements IGameWorker, IHasGameHookService, IHas
       gameInstance,
       {
         fr: `Commence son tour`,
-        en: ``,
+        en: `Starts his turn`,
       },
       nextUser);
 
