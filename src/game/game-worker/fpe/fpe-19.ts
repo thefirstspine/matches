@@ -29,11 +29,11 @@ export class Fpe19GameWorker implements IGameWorker, IHasGameHookService {
       createdAt: Date.now(),
       type: this.type,
       name: {
-        en: ``,
+        en: `Pass to the confrontations`,
         fr: `Passer aux confrontations`,
       },
       description: {
-        en: ``,
+        en: `Pass to the confrontations`,
         fr: `Passer aux confrontations`,
       },
       user: data.user as number,
@@ -41,7 +41,7 @@ export class Fpe19GameWorker implements IGameWorker, IHasGameHookService {
       interaction: {
         type: 'pass',
         description: {
-          en: ``,
+          en: `Pass to the confrontations`,
           fr: `Passer aux confrontations`,
         },
         params: {
@@ -73,7 +73,7 @@ export class Fpe19GameWorker implements IGameWorker, IHasGameHookService {
       gameInstance,
       {
         fr: `Passe aux confrontations`,
-        en: ``,
+        en: `Pass to the confrontations`,
       },
       gameAction.user);
 

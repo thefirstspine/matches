@@ -36,11 +36,11 @@ export class Fpe8GameWorker implements IGameWorker, IHasGameHookService, IHasGam
       createdAt: Date.now(),
       type: this.type,
       name: {
-        en: ``,
+        en: `Move a creature`,
         fr: `Déplacer une créature`,
       },
       description: {
-        en: ``,
+        en: `Move a creature of one square`,
         fr: `Déplacer une créature d'une case sur le plateau de jeu.`,
       },
       user: data.user as number,
@@ -48,7 +48,7 @@ export class Fpe8GameWorker implements IGameWorker, IHasGameHookService, IHasGam
       interaction: {
         type: 'moveCardOnBoard',
         description: {
-          en: ``,
+          en: `Move a creature of one square`,
           fr: `Déplacer une créature d'une case.`,
         },
         params: {
@@ -125,7 +125,7 @@ export class Fpe8GameWorker implements IGameWorker, IHasGameHookService, IHasGam
       gameInstance,
       {
         fr: `A déplacé une créature`,
-        en: ``,
+        en: `Moved a creature`,
       },
       gameAction.user);
 

@@ -31,11 +31,11 @@ export class Fpe18GameWorker implements IGameWorker, IHasGameHookService, IHasGa
       createdAt: Date.now(),
       type: this.type,
       name: {
-        en: ``,
+        en: `Put a card on the board`,
         fr: `Placer une carte`,
       },
       description: {
-        en: ``,
+        en: `You can put a card on the board`,
         fr: `Vous pouvez placer une carte sur le plateau de jeu.`,
       },
       user: data.user as number,
@@ -43,7 +43,7 @@ export class Fpe18GameWorker implements IGameWorker, IHasGameHookService, IHasGa
       interaction: {
         type: 'putCardOnBoard',
         description: {
-          en: ``,
+          en: `Put a card near a controlled place`,
           fr: `Placer une carte à côté d'une case déjà contrôlée`,
         },
         params: {
@@ -112,7 +112,7 @@ export class Fpe18GameWorker implements IGameWorker, IHasGameHookService, IHasGa
       gameInstance,
       {
         fr: `A placé une carte`,
-        en: ``,
+        en: `Put a card on the board`,
       },
       gameAction.user);
 

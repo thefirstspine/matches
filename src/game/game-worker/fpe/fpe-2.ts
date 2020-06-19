@@ -31,18 +31,18 @@ export class Fpe2GameWorker implements IGameWorker, IHasGameHookService, IHasGam
       type: 'fpe-2',
       createdAt: Date.now(),
       name: {
-        en: ``,
+        en: `Discard`,
         fr: `Défausser`,
       },
       description: {
-        en: '',
+        en: `You can discard one or more cards.\nDiscard the Heal.`,
         fr: `Vous pouvez défausser une ou plusieurs cartes.\nDéfaussez-vous du soin.`,
       },
       priority: 10,
       interaction: {
         type: 'moveCardsToDiscard',
         description: {
-          en: ``,
+          en: `Discard one or more cards.`,
           fr: `Défausser une ou plusieurs cartes`,
         },
         params: {
@@ -103,7 +103,7 @@ export class Fpe2GameWorker implements IGameWorker, IHasGameHookService, IHasGam
       gameInstance,
       {
         fr: `Défausse ${numCards} carte${(numCards > 1 ? 's' : '')}`,
-        en: ``,
+        en: `Discard ${numCards} card${(numCards > 1 ? 's' : '')}`,
       },
       gameAction.user);
 

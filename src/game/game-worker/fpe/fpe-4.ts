@@ -31,11 +31,11 @@ export class Fpe4GameWorker implements IGameWorker, IHasGameHookService, IHasGam
       createdAt: Date.now(),
       type: this.type,
       name: {
-        en: ``,
+        en: `Play a Thunder`,
         fr: `Jouer une foudre`,
       },
       description: {
-        en: ``,
+        en: `Play a Thunder on a card`,
         fr: `Jouer une foudre sur une carte`,
       },
       user: data.user as number,
@@ -43,7 +43,7 @@ export class Fpe4GameWorker implements IGameWorker, IHasGameHookService, IHasGam
       interaction: {
         type: 'putCardOnBoard',
         description: {
-          en: ``,
+          en: `Play a spell on a card`,
           fr: `Jouer un sort sur une carte`,
         },
         params: {
@@ -122,7 +122,7 @@ export class Fpe4GameWorker implements IGameWorker, IHasGameHookService, IHasGam
       gameInstance,
       {
         fr: `A joué une Foudre`,
-        en: ``,
+        en: `Played a spell`,
       },
       gameAction.user);
 
