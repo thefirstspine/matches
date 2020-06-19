@@ -31,11 +31,11 @@ export class SkipRunGameWorker implements IGameWorker, IHasGameHookService, IHas
       createdAt: Date.now(),
       type: this.type,
       name: {
-        en: ``,
+        en: `Skip run`,
         fr: `Passer la course`,
       },
       description: {
-        en: ``,
+        en: `You can skip the run`,
         fr: `Vous pouvez passer la course.`,
       },
       user: data.user as number,
@@ -44,7 +44,7 @@ export class SkipRunGameWorker implements IGameWorker, IHasGameHookService, IHas
       interaction: {
         type: 'pass',
         description: {
-          en: ``,
+          en: `Skip the run`,
           fr: `Passer la course`,
         },
         params: {},

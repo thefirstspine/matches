@@ -29,11 +29,11 @@ export class SpellAlterTheFateGameWorker implements IGameWorker, IHasGameHookSer
       createdAt: Date.now(),
       type: this.type,
       name: {
-        en: ``,
+        en: `Play Alter the Fate`,
         fr: `Jouer un Altérer le Destin`,
       },
       description: {
-        en: ``,
+        en: `Play Alter the Fate on a card`,
         fr: `Jouer un Altérer le Destin sur une carte`,
       },
       user: data.user as number,
@@ -41,7 +41,7 @@ export class SpellAlterTheFateGameWorker implements IGameWorker, IHasGameHookSer
       interaction: {
         type: 'putCardOnBoard',
         description: {
-          en: ``,
+          en: `Play a spell on a card`,
           fr: `Jouer un sort sur une carte`,
         },
         params: {
@@ -120,7 +120,7 @@ export class SpellAlterTheFateGameWorker implements IGameWorker, IHasGameHookSer
       gameInstance,
       {
         fr: `A altérer un destin`,
-        en: ``,
+        en: `Altered a Fate`,
       },
       gameAction.user);
 

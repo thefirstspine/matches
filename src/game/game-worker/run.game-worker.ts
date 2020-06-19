@@ -37,11 +37,11 @@ export class RunGameWorker implements IGameWorker, IHasGameHookService, IHasGame
       createdAt: Date.now(),
       type: this.type,
       name: {
-        en: ``,
+        en: `Play a run`,
         fr: `Jouer la course`,
       },
       description: {
-        en: ``,
+        en: `Move a card which has the run on the board`,
         fr: `Déplacer une carte qui a la course sur le plateau de jeu.`,
       },
       user: data.user as number,
@@ -49,7 +49,7 @@ export class RunGameWorker implements IGameWorker, IHasGameHookService, IHasGame
       interaction: {
         type: 'moveCardOnBoard',
         description: {
-          en: ``,
+          en: `Move a card which as the run of one square`,
           fr: `Déplacer une carte qui a la course d'une case.`,
         },
         params: {

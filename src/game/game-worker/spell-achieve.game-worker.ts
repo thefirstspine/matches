@@ -29,19 +29,19 @@ export class SpellAchieveGameWorker implements IGameWorker, IHasGameHookService 
       createdAt: Date.now(),
       type: this.type,
       name: {
-        en: ``,
-        fr: `Jouer un achèvement`,
+        en: `Play Achieve`,
+        fr: `Jouer un Achèvement`,
       },
       description: {
-        en: ``,
-        fr: `Jouer un achèvement sur une carte déjà blessée`,
+        en: `Play Achieve on a damaged cards`,
+        fr: `Jouer un Achèvement sur une carte déjà blessée`,
       },
       user: data.user as number,
       priority: 1,
       interaction: {
         type: 'putCardOnBoard',
         description: {
-          en: ``,
+          en: `Play a spell on a card`,
           fr: `Jouer un sort sur une carte`,
         },
         params: {
@@ -120,7 +120,7 @@ export class SpellAchieveGameWorker implements IGameWorker, IHasGameHookService 
       gameInstance,
       {
         fr: `A joué un Achèvement`,
-        en: ``,
+        en: `Played Achieve`,
       },
       gameAction.user);
 

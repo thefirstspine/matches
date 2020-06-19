@@ -31,11 +31,11 @@ export class ReplaceCardGameWorker implements IGameWorker, IHasGameHookService {
       createdAt: Date.now(),
       type: this.type,
       name: {
-        en: ``,
+        en: `Place a card`,
         fr: `Placer une carte`,
       },
       description: {
-        en: ``,
+        en: `You can place a card on the board`,
         fr: `Vous pouvez placer une carte sur le plateau de jeu.`,
       },
       expiresAt: Date.now() + (30 * 1000), // expires in 30 seconds
@@ -44,7 +44,7 @@ export class ReplaceCardGameWorker implements IGameWorker, IHasGameHookService {
       interaction: {
         type: 'putCardOnBoard',
         description: {
-          en: ``,
+          en: `Place a card instead`,
           fr: `Placer une carte à la place`,
         },
         params: {
@@ -112,7 +112,7 @@ export class ReplaceCardGameWorker implements IGameWorker, IHasGameHookService {
       gameInstance,
       {
         fr: `A placé une carte`,
-        en: ``,
+        en: `Placed a card`,
       },
       gameAction.user);
 

@@ -41,7 +41,7 @@ export class SpellPainGameWorker implements IGameWorker, IHasGameHookService {
       interaction: {
         type: 'putCardOnBoard',
         description: {
-          en: ``,
+          en: `Play a spell on a card`,
           fr: `Jouer un sort sur une carte`,
         },
         params: {

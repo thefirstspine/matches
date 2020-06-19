@@ -41,7 +41,7 @@ export class SpellReconstructGameWorker implements IGameWorker, IHasGameHookServ
       interaction: {
         type: 'putCardOnBoard',
         description: {
-          en: ``,
+          en: `Play a spell on a card`,
           fr: `Jouer un sort sur une carte`,
         },
         params: {

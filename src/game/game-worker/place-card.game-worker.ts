@@ -30,11 +30,11 @@ export class PlaceCardGameWorker implements IGameWorker, IHasGameHookService {
       createdAt: Date.now(),
       type: this.type,
       name: {
-        en: ``,
+        en: `Place a card`,
         fr: `Placer une carte`,
       },
       description: {
-        en: ``,
+        en: `Place a card on the board`,
         fr: `Vous pouvez placer une carte sur le plateau de jeu.`,
       },
       user: data.user as number,
@@ -42,7 +42,7 @@ export class PlaceCardGameWorker implements IGameWorker, IHasGameHookService {
       interaction: {
         type: 'putCardOnBoard',
         description: {
-          en: ``,
+          en: `Place a card near a controlled place`,
           fr: `Placer une carte à côté d'une case déjà contrôlée`,
         },
         params: {
@@ -111,7 +111,7 @@ export class PlaceCardGameWorker implements IGameWorker, IHasGameHookService {
       gameInstance,
       {
         fr: `A placé une carte`,
-        en: ``,
+        en: `Placed a card`,
       },
       gameAction.user);
 
