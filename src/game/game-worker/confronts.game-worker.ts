@@ -11,6 +11,7 @@ import { GameHookService } from '../game-hook/game-hook.service';
 import { IHasGameHookService, IHasGameWorkerService } from '../injections.interface';
 import { ArenaRoomsService } from '../../rooms/arena-rooms.service';
 import { LogsService } from '@thefirstspine/logs-nest';
+import { rotateCard } from '../../utils/game.utils';
 
 /**
  * The main confrontation game worker. Normally a confrontation is closing the turn of the player. This worker
@@ -98,8 +99,8 @@ export class ConfrontsGameWorker implements IGameWorker, IHasGameHookService, IH
     });
 
     // Ensure that manipulations will not fuck everything
-    const cardFromRotated: IGameCard = this.rotate(cardFrom, gameInstance);
-    const cardToRotated: IGameCard = this.rotate(cardTo, gameInstance);
+    const cardFromRotated: IGameCard = rotateCard(cardFrom, gameInstance);
+    const cardToRotated: IGameCard = rotateCard(cardTo, gameInstance);
 
     // Rotate the cards according to the user
     let direction: cardSide|undefined;
@@ -206,7 +207,7 @@ export class ConfrontsGameWorker implements IGameWorker, IHasGameHookService, IH
 
       const attacksOn: cardSide[] = [];
       const allSides: cardSide[] = ['top', 'right', 'bottom', 'left'];
-      const cardRotated: IGameCard = this.rotate(card, gameInstance);
+      const cardRotated: IGameCard = rotateCard(card, gameInstance);
 
       if (
         cardRotated.location === 'board' &&
@@ -266,36 +267,6 @@ export class ConfrontsGameWorker implements IGameWorker, IHasGameHookService, IH
       }
     });
     return ret;
-  }
-
-  /**
-   * Get the player index according his place in the instance
-   * @param user
-   * @param gameInstance
-   */
-  protected getPlayerIndex(user: number, gameInstance: IGameInstance): number {
-    return gameInstance.users.findIndex((w) => w.user === user);
-  }
-
-  /**
-   * Rotate a card, changing its stats
-   * @param card
-   * @param gameInstance
-   */
-  protected rotate(card: IGameCard, gameInstance: IGameInstance): IGameCard {
-    // Get the current user index
-    const currentIndex = this.getPlayerIndex(card.user, gameInstance);
-
-    // Copy card to not fuck everything
-    const copy: IGameCard = JSON.parse(JSON.stringify(card));
-
-    // 180 degrees rotation
-    if (currentIndex === 0) {
-      copy.currentStats.bottom = JSON.parse(JSON.stringify(card.currentStats.top));
-      copy.currentStats.top = JSON.parse(JSON.stringify(card.currentStats.bottom));
-    }
-
-    return copy;
   }
 
   /**

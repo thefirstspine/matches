@@ -329,4 +329,51 @@ export class GameService {
     }
   }
 
+  /**
+   * Surrend a game.
+   * @param id The ID of the game
+   * @param user The user who abandon the game
+   */
+  async concedeGame(id: number, user: number) {
+    // Find the instance
+    const instance: IGameInstance|undefined = this.gameInstances[id];
+    if (!instance || instance.status !== 'active') {
+      return false;
+    }
+
+    // Find the user's card
+    const userCard = instance.cards.find((card: IGameCard) => {
+      return card.card.type === 'player' && card.user === user;
+    });
+    if (!userCard) {
+      return false;
+    }
+
+    // Find the opponent's card
+    const enemyCard = instance.cards.find((card: IGameCard) => {
+      return card.card.type === 'player' && card.user !== user;
+    });
+    if (!enemyCard) {
+      return false;
+    }
+
+    const lifeLeft: number = userCard.currentStats.life;
+    userCard.currentStats.life = 0;
+    await this.gameHookService.dispatch(
+      instance,
+      `card:lifeChanged:damaged:${userCard.card.id}`,
+      {
+        gameCard: userCard,
+        source: enemyCard,
+        lifeChanged: -lifeLeft,
+      });
+
+    // Set the status of the game when closed
+    const instanceAfterConcede: IGameInstance = this.gameInstances[id];
+    if (instanceAfterConcede.status === 'ended') {
+      instanceAfterConcede.status = 'conceded';
+    }
+
+  }
+
 }

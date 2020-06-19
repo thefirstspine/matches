@@ -279,7 +279,10 @@ export class ApiService {
     }
 
     // Store the response in the instance
-    const action: IGameAction<any>|undefined = gameInstance.actions.current.find(a => a.type === request.params.actionType);
+    const action: IGameAction<any>|undefined = gameInstance.actions.current.find((a: IGameAction<any>) => {
+      return a.type === request.params.actionType &&
+        a.user === request.user;
+    });
     if (action) {
       action.response = request.params.response;
       return {
@@ -291,6 +294,33 @@ export class ApiService {
     return {
       sent: false,
     };
+  }
+
+  /**
+   * Get cards
+   * @param request
+   */
+  async concede(request: IApiRequest<undefined>): Promise<IApiGetGameResponse> {
+    // Get the ID of the game
+    const id: number|undefined = request.id;
+    if (!id) {
+      throw new ApiError('Required ID.', ApiError.CODE_INVALID_REQUEST);
+    }
+
+    // Get the game instance
+    const gameInstance: IGameInstance|null = this.gameService.getGameInstance(id);
+    if (!gameInstance) {
+      throw new ApiError('Unknown game instance.', ApiError.CODE_METHOD_NOT_FOUND);
+    }
+
+    // Is the user part of this instance?
+    if (gameInstance.users.find((u) => u.user === request.user) === undefined) {
+      throw new ApiError('Not in a game instance.', ApiError.CODE_INVALID_REQUEST);
+    }
+
+    await this.gameService.concedeGame(id, request.user);
+
+    return this.getGame(request);
   }
 
 }

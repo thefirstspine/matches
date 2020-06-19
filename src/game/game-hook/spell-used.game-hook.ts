@@ -26,49 +26,32 @@ export class SpellUsedGameHook implements IGameHook, IHasGameWorkerService {
         card.currentStats.top.strength += 2;
       });
 
-    // Get the spells in the hand & delete the associated actions
-    gameInstance.cards
-      .filter((card: IGameCard) => card.location === 'hand' && card.user === params.gameCard.user && card.card.type === 'spell')
-      .forEach((card: IGameCard) => {
-        const actions: Array<IGameAction<any>> = gameInstance.actions.current.filter((a: IGameAction<any>) => a.type === `spell-${card.card.id}`);
-        actions.forEach((action: IGameAction<any>) => {
-          if (action.type === `spell-${params.gameCard.id}`) {
-            // Skip to delete that spell
-            return;
-          }
-          gameInstance.actions.current = gameInstance.actions.current.filter((a: IGameAction<any>) => a !== action);
-          gameInstance.actions.previous.push({
-            ...action,
-            passedAt: Date.now(),
+    // Get the remained spells & remove one
+    const playerCard: IGameCard = gameInstance.cards.find((c: IGameCard) => c.user === params.gameCard.user && c.card.type === 'player' );
+    if (playerCard?.metadata?.remainedSpells) {
+      // Remove one remaining spell
+      playerCard.metadata.remainedSpells --;
+    }
+
+    // No spell remaining
+    if (!playerCard?.metadata?.remainedSpells) {
+      // Get the spells in the hand & delete the associated actions
+      gameInstance.cards
+        .filter((card: IGameCard) => card.location === 'hand' && card.user === params.gameCard.user && card.card.type === 'spell')
+        .forEach((card: IGameCard) => {
+          const actions: Array<IGameAction<any>> = gameInstance.actions.current.filter((a: IGameAction<any>) => a.type === `spell-${card.card.id}`);
+          actions.forEach((action: IGameAction<any>) => {
+            if (action.type === `spell-${params.gameCard.id}`) {
+              // Skip to delete that spell
+              return;
+            }
+            gameInstance.actions.current = gameInstance.actions.current.filter((a: IGameAction<any>) => a !== action);
+            gameInstance.actions.previous.push({
+              ...action,
+              passedAt: Date.now(),
+            });
           });
         });
-      });
-
-    // Count ether used in that turn
-    const actionsAfterThrowIndex: number = gameInstance.actions.previous.reverse().findIndex((a: IGameActionPassed<any>) => a.type === 'throw-cards');
-    const actionsAfterThrow: Array<IGameActionPassed<any>> =
-      gameInstance.actions.previous.reverse().slice(gameInstance.actions.previous.length - actionsAfterThrowIndex);
-    const etherUsed: number = actionsAfterThrow
-      .filter((a) => a.type === 'spell-ether' && a.response)
-      .length + (params.gameCard.card.id === 'ether' ? 1 : 0); // +1 for an ether used now, since the action is not passed yet
-
-    // Count spell used in that turn
-    const spellUsed: number = actionsAfterThrow
-      .filter((a) => /^spell-/.test(a.type) && a.response)
-      .length;
-
-    // Generate actions based ether used
-    if ((etherUsed * 2) - spellUsed > 0) {
-      const promises: Array<Promise<IGameAction<any>>> = [];
-      gameInstance.cards.filter((card: IGameCard) => card.location === 'hand' && card.user === params.gameCard.user && card.card.type === 'spell')
-        .forEach((card: IGameCard) => {
-          const worker: IGameWorker|undefined = this.gameWorkerService.getWorker(`spell-${card.card.id}`);
-          if (worker) {
-            promises.push(worker.create(gameInstance, {user: params.gameCard.user}));
-          }
-        });
-      const actions: Array<IGameAction<any>> = await Promise.all(promises);
-      gameInstance.actions.current.push(...actions);
     }
 
     return true;

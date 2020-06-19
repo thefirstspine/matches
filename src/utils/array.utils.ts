@@ -1,3 +1,7 @@
+/**
+ * Utility to shuffle an array
+ * @param array
+ */
 export function shuffle(array: any[]) {
   let j: number;
   let x: any;
