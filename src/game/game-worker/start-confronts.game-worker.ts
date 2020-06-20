@@ -29,11 +29,11 @@ export class StartConfrontsGameWorker implements IGameWorker, IHasGameHookServic
       createdAt: Date.now(),
       type: this.type,
       name: {
-        en: ``,
+        en: `Pass to confrontations`,
         fr: `Passer aux confrontations`,
       },
       description: {
-        en: ``,
+        en: `Pass to confrontations`,
         fr: `Passer aux confrontations`,
       },
       user: data.user as number,
@@ -42,7 +42,7 @@ export class StartConfrontsGameWorker implements IGameWorker, IHasGameHookServic
       interaction: {
         type: 'pass',
         description: {
-          en: ``,
+          en: `Pass to confrontations`,
           fr: `Passer aux confrontations`,
         },
         params: {

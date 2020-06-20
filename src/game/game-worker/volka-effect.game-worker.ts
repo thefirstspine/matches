@@ -33,12 +33,12 @@ export class VolkaEffectGameWorker implements IGameWorker, IHasGameHookService, 
       createdAt: Date.now(),
       type: this.type,
       name: {
-        en: ``,
+        en: `Place Volk'ha`,
         fr: `Placer Volk'ha`,
       },
       description: {
-        en: ``,
-        fr: `Placer Volk'ha autour de vous.`,
+        en: `Place Volk'ha around you`,
+        fr: `Placer Volk'ha autour de vous`,
       },
       user: data.user as number,
       priority: 3,
@@ -46,7 +46,7 @@ export class VolkaEffectGameWorker implements IGameWorker, IHasGameHookService, 
       interaction: {
         type: 'choseSquareOnBoard',
         description: {
-          en: ``,
+          en: `Place Volk'ha around you`,
           fr: `Placer Volk'ha autour de vous`,
         },
         params: {

@@ -31,11 +31,11 @@ export class SpellReplacementGameWorker implements IGameWorker, IHasGameHookServ
       createdAt: Date.now(),
       type: this.type,
       name: {
-        en: ``,
-        fr: `Jouer un remplacement`,
+        en: `Play Replacement`,
+        fr: `Jouer un Remplacement`,
       },
       description: {
-        en: ``,
+        en: `Play Replacement on a card`,
         fr: `Jouer un replacement sur une carte`,
       },
       user: data.user as number,
@@ -134,7 +134,7 @@ export class SpellReplacementGameWorker implements IGameWorker, IHasGameHookServ
       gameInstance,
       {
         fr: `A joué un Remplacement`,
-        en: ``,
+        en: `Played Replacement`,
       },
       gameAction.user);
 

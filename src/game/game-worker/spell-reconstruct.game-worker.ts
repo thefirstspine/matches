@@ -29,12 +29,12 @@ export class SpellReconstructGameWorker implements IGameWorker, IHasGameHookServ
       createdAt: Date.now(),
       type: this.type,
       name: {
-        en: ``,
-        fr: `Jouer une reconstruction`,
+        en: `Play Reconstruct`,
+        fr: `Jouer une Reconstruction`,
       },
       description: {
-        en: ``,
-        fr: `Jouer une reconstruction sur un artefact`,
+        en: `Play Reconstruct on an artifact`,
+        fr: `Jouer une Reconstruction sur un artefact`,
       },
       user: data.user as number,
       priority: 1,
@@ -119,7 +119,7 @@ export class SpellReconstructGameWorker implements IGameWorker, IHasGameHookServ
       gameInstance,
       {
         fr: `A joué une Reconstruction`,
-        en: ``,
+        en: `Played Reconstruct`,
       },
       gameAction.user);
 

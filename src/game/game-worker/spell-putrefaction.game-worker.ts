@@ -29,11 +29,11 @@ export class SpellPutrefactionGameWorker implements IGameWorker, IHasGameHookSer
       createdAt: Date.now(),
       type: this.type,
       name: {
-        en: ``,
-        fr: `Jouer une putréfaction`,
+        en: `Play Putrefaction`,
+        fr: `Jouer une Putréfaction`,
       },
       description: {
-        en: ``,
+        en: `Play Putrefaction on a creature`,
         fr: `Jouer une putréfaction sur une créature`,
       },
       user: data.user as number,
@@ -120,7 +120,7 @@ export class SpellPutrefactionGameWorker implements IGameWorker, IHasGameHookSer
       gameInstance,
       {
         fr: `A joué une Putréfaction`,
-        en: ``,
+        en: `Played Putrefaction`,
       },
       gameAction.user);
 

@@ -33,11 +33,11 @@ export class SpellTheVoidGameWorker implements IGameWorker, IHasGameHookService 
       createdAt: Date.now(),
       type: this.type,
       name: {
-        en: ``,
+        en: `Play The Void`,
         fr: `Jouer Le Vide`,
       },
       description: {
-        en: ``,
+        en: `Play The Void on a card`,
         fr: `Jouer Le Vide sur une carte`,
       },
       user: data.user as number,
@@ -145,7 +145,7 @@ export class SpellTheVoidGameWorker implements IGameWorker, IHasGameHookService 
       gameInstance,
       {
         fr: `A joué Le Vide`,
-        en: ``,
+        en: `Played The Void`,
       },
       gameAction.user);
 
