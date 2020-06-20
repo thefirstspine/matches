@@ -29,19 +29,19 @@ export class SpellEtherGameWorker implements IGameWorker, IHasGameHookService {
       createdAt: Date.now(),
       type: this.type,
       name: {
-        en: ``,
-        fr: `Jouer un ether`,
+        en: `Play Ether`,
+        fr: `Jouer un Ether`,
       },
       description: {
-        en: ``,
-        fr: `Jouer un ether sur vous-même`,
+        en: `Play Ether on yourself`,
+        fr: `Jouer un Ether sur vous-même`,
       },
       user: data.user as number,
       priority: 1,
       interaction: {
         type: 'putCardOnBoard',
         description: {
-          en: ``,
+          en: `Play a spell`,
           fr: `Jouer un sort`,
         },
         params: {
@@ -104,7 +104,7 @@ export class SpellEtherGameWorker implements IGameWorker, IHasGameHookService {
       gameInstance,
       {
         fr: `A joué un Ether`,
-        en: ``,
+        en: `Played Ether`,
       },
       gameAction.user);
 

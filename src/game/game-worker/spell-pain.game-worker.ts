@@ -29,11 +29,11 @@ export class SpellPainGameWorker implements IGameWorker, IHasGameHookService {
       createdAt: Date.now(),
       type: this.type,
       name: {
-        en: ``,
+        en: `Play Pain`,
         fr: `Jouer une Douleur`,
       },
       description: {
-        en: ``,
+        en: `Play Pain a wizard`,
         fr: `Jouer une Douleur sur un sorcier`,
       },
       user: data.user as number,
@@ -122,7 +122,7 @@ export class SpellPainGameWorker implements IGameWorker, IHasGameHookService {
       gameInstance,
       {
         fr: `A joué une Douleur`,
-        en: ``,
+        en: `Played Pain`,
       },
       gameAction.user);
 
