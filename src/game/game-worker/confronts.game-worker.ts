@@ -38,11 +38,11 @@ export class ConfrontsGameWorker implements IGameWorker, IHasGameHookService, IH
       createdAt: Date.now(),
       type: this.type,
       name: {
-        en: ``,
+        en: `Confront`,
         fr: `Confronter`,
       },
       description: {
-        en: ``,
+        en: `Confront two cards`,
         fr: `Confronter deux cartes`,
       },
       user: data.user as number,
@@ -51,7 +51,7 @@ export class ConfrontsGameWorker implements IGameWorker, IHasGameHookService, IH
       interaction: {
         type: 'selectCoupleOnBoard',
         description: {
-          en: ``,
+          en: `Resolve a confrontation`,
           fr: `Résoudre une confrontation.`,
         },
         params: {
@@ -185,7 +185,7 @@ export class ConfrontsGameWorker implements IGameWorker, IHasGameHookService, IH
       gameInstance,
       {
         fr: `Joue une confrontation`,
-        en: ``,
+        en: `Play a confrontation`,
       },
       gameAction.user);
 

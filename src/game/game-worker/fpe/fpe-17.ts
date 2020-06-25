@@ -31,19 +31,19 @@ export class Fpe17GameWorker implements IGameWorker, IHasGameHookService, IHasGa
       createdAt: Date.now(),
       type: this.type,
       name: {
-        en: ``,
+        en: `Play a Ruin`,
         fr: `Jouer une ruine`,
       },
       description: {
-        en: ``,
-        fr: `Jouer une ruine sur un artefact`,
+        en: `Play a Ruin on an artifact`,
+        fr: `Jouer une Ruine sur un artefact`,
       },
       user: data.user as number,
       priority: 1,
       interaction: {
         type: 'putCardOnBoard',
         description: {
-          en: ``,
+          en: `Play a spell on a card`,
           fr: `Jouer un sort sur une carte`,
         },
         params: {
@@ -122,7 +122,7 @@ export class Fpe17GameWorker implements IGameWorker, IHasGameHookService, IHasGa
       gameInstance,
       {
         fr: `A joué une Ruine`,
-        en: ``,
+        en: `Played a Ruin`,
       },
       gameAction.user);
 

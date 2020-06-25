@@ -29,11 +29,11 @@ export class SpellThunderGameWorker implements IGameWorker, IHasGameHookService 
       createdAt: Date.now(),
       type: this.type,
       name: {
-        en: ``,
-        fr: `Jouer une foudre`,
+        en: `Play Thunder`,
+        fr: `Jouer une Foudre`,
       },
       description: {
-        en: ``,
+        en: `Play Thunder on a card`,
         fr: `Jouer une foudre sur une carte`,
       },
       user: data.user as number,
@@ -41,7 +41,7 @@ export class SpellThunderGameWorker implements IGameWorker, IHasGameHookService 
       interaction: {
         type: 'putCardOnBoard',
         description: {
-          en: ``,
+          en: `Play a spell on a card`,
           fr: `Jouer un sort sur une carte`,
         },
         params: {
@@ -120,7 +120,7 @@ export class SpellThunderGameWorker implements IGameWorker, IHasGameHookService 
       gameInstance,
       {
         fr: `A joué une Foudre`,
-        en: ``,
+        en: `Play Thunder`,
       },
       gameAction.user);
 

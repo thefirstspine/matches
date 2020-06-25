@@ -32,11 +32,11 @@ export class InsanesRunEffectGameWorker implements IGameWorker, IHasGameHookServ
       createdAt: Date.now(),
       type: this.type,
       name: {
-        en: ``,
+        en: `Destroye a card`,
         fr: `Détruire une carte`,
       },
       description: {
-        en: ``,
+        en: `Destroye a card`,
         fr: `Détruire une carte`,
       },
       user: data.user as number,
@@ -45,7 +45,7 @@ export class InsanesRunEffectGameWorker implements IGameWorker, IHasGameHookServ
       interaction: {
         type: 'choseCardOnBoard',
         description: {
-          en: ``,
+          en: `Destroye a card`,
           fr: `Détruire une carte`,
         },
         params: {
@@ -109,7 +109,7 @@ export class InsanesRunEffectGameWorker implements IGameWorker, IHasGameHookServ
       gameInstance,
       {
         fr: `A détruit une carte`,
-        en: ``,
+        en: `Destroyed a card`,
       },
       gameAction.user);
 

@@ -29,19 +29,19 @@ export class SpellCureGameWorker implements IGameWorker, IHasGameHookService {
       createdAt: Date.now(),
       type: this.type,
       name: {
-        en: ``,
-        fr: `Jouer un remède`,
+        en: `Play a Cure`,
+        fr: `Jouer un Remède`,
       },
       description: {
-        en: ``,
-        fr: `Jouer un remède sur un sorcier`,
+        en: `Play a Cure on a wizard`,
+        fr: `Jouer un Remède sur un sorcier`,
       },
       user: data.user as number,
       priority: 1,
       interaction: {
         type: 'putCardOnBoard',
         description: {
-          en: ``,
+          en: `Play a spell on a card`,
           fr: `Jouer un sort sur une carte`,
         },
         params: {
@@ -119,7 +119,7 @@ export class SpellCureGameWorker implements IGameWorker, IHasGameHookService {
       gameInstance,
       {
         fr: `A joué un Remède`,
-        en: ``,
+        en: `Played a Cure`,
       },
       gameAction.user);
 

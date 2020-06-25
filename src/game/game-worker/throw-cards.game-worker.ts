@@ -30,11 +30,11 @@ export class ThrowCardsGameWorker implements IGameWorker, IHasGameHookService {
       createdAt: Date.now(),
       type: this.type,
       name: {
-        en: ``,
+        en: `Discard`,
         fr: `Défausser`,
       },
       description: {
-        en: ``,
+        en: `You can discard one or more cards`,
         fr: `Vous pouvez défausser une ou plusieurs cartes.`,
       },
       user: data.user as number,
@@ -43,7 +43,7 @@ export class ThrowCardsGameWorker implements IGameWorker, IHasGameHookService {
       interaction: {
         type: 'moveCardsToDiscard',
         description: {
-          en: ``,
+          en: `Discard one or more cards`,
           fr: `Défausser une ou plusieurs cartes`,
         },
         params: {
@@ -128,7 +128,7 @@ export class ThrowCardsGameWorker implements IGameWorker, IHasGameHookService {
       gameInstance,
       {
         fr: `Défausse ${numCards} carte${(numCards > 1 ? 's' : '')}`,
-        en: ``,
+        en: `Discard ${numCards} card${(numCards > 1 ? 's' : '')}`,
       },
       gameAction.user);
 

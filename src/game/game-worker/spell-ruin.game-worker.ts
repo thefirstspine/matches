@@ -29,19 +29,19 @@ export class SpellRuinGameWorker implements IGameWorker, IHasGameHookService {
       createdAt: Date.now(),
       type: this.type,
       name: {
-        en: ``,
-        fr: `Jouer une ruine`,
+        en: `Play Ruin`,
+        fr: `Jouer une Ruine`,
       },
       description: {
-        en: ``,
-        fr: `Jouer une ruine sur un artefact`,
+        en: `Play Ruin on an artifact`,
+        fr: `Jouer une Ruine sur un artefact`,
       },
       user: data.user as number,
       priority: 1,
       interaction: {
         type: 'putCardOnBoard',
         description: {
-          en: ``,
+          en: `Play a spell on a card`,
           fr: `Jouer un sort sur une carte`,
         },
         params: {
@@ -120,7 +120,7 @@ export class SpellRuinGameWorker implements IGameWorker, IHasGameHookService {
       gameInstance,
       {
         fr: `A joué une Ruine`,
-        en: ``,
+        en: `Played Ruin`,
       },
       gameAction.user);
 

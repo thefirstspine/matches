@@ -8,6 +8,20 @@ The `arena` service is the service that will manage all the games & wizzards acc
 npm install
 ```
 
+## Configuring
+
+The service needs a dotenv file to run. This dotenv file will be loaded in the environment variables. Here’s what the app needs:
+
+| Environement key | Summary | Required by |
+|-|-|
+ARENA_URL | Arena net service URL | App
+AUTH_URL | Auth net service URL | `@thefirstspine/auth-nest`
+MESSAGING_URL | Messaging net service URL | `@thefirstspine/messaging-nest`
+SHOP_URL | Shop net service URL | App
+BOTS_URL | Bots net service URL | App
+REST_URL | Rest net service URL | App
+ROOMS_URL | Rooms net service URL | App
+
 ## Running the app
 
 ```bash

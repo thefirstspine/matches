@@ -29,19 +29,19 @@ export class SpellFireGameWorker implements IGameWorker, IHasGameHookService {
       createdAt: Date.now(),
       type: this.type,
       name: {
-        en: ``,
-        fr: `Jouer un embrasement`,
+        en: `Play Fire`,
+        fr: `Jouer un Embrasement`,
       },
       description: {
-        en: ``,
-        fr: `Jouer un embrasement sur une carte`,
+        en: `Play Fire on a card`,
+        fr: `Jouer un Embrasement sur une carte`,
       },
       user: data.user as number,
       priority: 1,
       interaction: {
         type: 'putCardOnBoard',
         description: {
-          en: ``,
+          en: `Play a spell on a card`,
           fr: `Jouer un sort sur une carte`,
         },
         params: {
@@ -124,7 +124,7 @@ export class SpellFireGameWorker implements IGameWorker, IHasGameHookService {
       gameInstance,
       {
         fr: `A joué un Embrasement`,
-        en: ``,
+        en: `Played Fire`,
       },
       gameAction.user);
 
