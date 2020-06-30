@@ -1,8 +1,8 @@
 import { IGameHook } from './game-hook.interface';
 import { Injectable } from '@nestjs/common';
 import { IGameInstance, IGameCard, IWizard } from '@thefirstspine/types-arena';
-import { WizzardService } from 'src/wizzard/wizzard.service';
-import { WizzardsStorageService } from 'src/storage/wizzards.storage.service';
+import { WizzardService } from '../../wizzard/wizzard.service';
+import { WizzardsStorageService } from '../../storage/wizzards.storage.service';
 
 /**
  * This subscriber is executed once a 'card:lifeChanged:damaged' event is thrown. It will look for dead
