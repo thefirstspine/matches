@@ -201,7 +201,7 @@ export class ConfrontsGameWorker implements IGameWorker, IHasGameHookService, IH
     const ret: IInteractionMoveCardOnBoardPossibility[] = [];
     gameInstance.cards.forEach((card: IGameCard) => {
       // Cards that does not have stats can confront
-      if (!card.currentStats) {
+      if (!card.currentStats || card.location !== 'board') {
         return;
       }
 
@@ -209,10 +209,7 @@ export class ConfrontsGameWorker implements IGameWorker, IHasGameHookService, IH
       const allSides: cardSide[] = ['top', 'right', 'bottom', 'left'];
       const cardRotated: IGameCard = rotateCard(card, gameInstance);
 
-      if (
-        cardRotated.location === 'board' &&
-        cardRotated.user === user
-      ) {
+      if (cardRotated.user === user) {
         if (cardRotated.card.type === 'creature') {
           // The creatures can attack on all sides
           attacksOn.push('top', 'right', 'bottom', 'left');
