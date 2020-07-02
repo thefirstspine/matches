@@ -45,7 +45,7 @@ export class RunGameWorker implements IGameWorker, IHasGameHookService, IHasGame
         fr: `Déplacer une carte qui a la course sur le plateau de jeu.`,
       },
       user: data.user as number,
-      priority: 2,
+      priority: 3,
       interaction: {
         type: 'moveCardOnBoard',
         description: {
