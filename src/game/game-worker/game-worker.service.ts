@@ -44,6 +44,7 @@ import { SpellTheVoidGameWorker } from './spell-the-void.game-worker';
 import { SpellPainGameWorker } from './spell-pain.game-worker';
 import { LogsService } from '@thefirstspine/logs-nest';
 import { MessagingService } from '@thefirstspine/messaging-nest';
+import { SpellReinforcementGameWorker } from './spell-reinforcement.game-worker';
 
 /**
  * Main service that manages game workers. Each game worker is responsible of a game action type. This service
@@ -120,6 +121,7 @@ export class GameWorkerService extends BaseGameService<IGameWorker> {
     this.createInjectable(SpellCureGameWorker, injectedProps);
     this.createInjectable(SpellTheVoidGameWorker, injectedProps);
     this.createInjectable(SpellPainGameWorker, injectedProps);
+    this.createInjectable(SpellReinforcementGameWorker, injectedProps);
   }
 
   /**
