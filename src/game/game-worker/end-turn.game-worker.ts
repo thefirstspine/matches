@@ -98,13 +98,13 @@ export class EndTurnGameWorker implements IGameWorker, IHasGameHookService, IHas
       return c.location === 'board' && c.card.type === 'square';
     });
 
-    const promises: Array<Promise<any>> = [];
+    const promisesCapacities: Array<Promise<any>> = [];
     gameInstance.cards.forEach((c: IGameCard) => {
       // Remove the "burden-earth" cards of the next user
       if (c.user === nextUser && c.location === 'board' && c.card.id === 'burden-earth') {
         c.location = 'discard';
         const promise = this.gameHookService.dispatch(gameInstance, `card:discarded:${c.card.id}`, {gameCard: c});
-        promises.push(promise);
+        promisesCapacities.push(promise);
       }
 
       // Add strength to "growth" capacity
@@ -118,12 +118,17 @@ export class EndTurnGameWorker implements IGameWorker, IHasGameHookService, IHas
           c.currentStats.top.strength += 2;
         }
       }
+    });
 
+    await Promise.all(promisesCapacities);
+
+    const promisesEffects: Array<Promise<any>> = [];
+    gameInstance.cards.forEach((c: IGameCard) => {
       // Damages the cards of the next player on lava squares
       const square: IGameCard|undefined = squares.find((s: IGameCard) => c.coords && s.coords.x === c.coords.x && s.coords.y === s.coords.y);
       if (square && square.card.id === 'lava' && c.user === nextUser && c.card.type !== 'square') {
         c.currentStats.life --;
-        promises.push(
+        promisesEffects.push(
           this.gameHookService
           .dispatch(
             gameInstance,
@@ -137,7 +142,7 @@ export class EndTurnGameWorker implements IGameWorker, IHasGameHookService, IHas
           c.card = replacement;
           c.currentStats = replacement.stats;
         });
-        promises.push(juvenilegreatAncientPromise);
+        promisesEffects.push(juvenilegreatAncientPromise);
       }
       if (c.location === 'board' && c.user === nextUser && c.card.id === 'juvenile-great-ancient') {
         const greatAncientPromise: Promise<ICard> = this.restService.card('great-ancient');
@@ -145,11 +150,36 @@ export class EndTurnGameWorker implements IGameWorker, IHasGameHookService, IHas
           c.card = replacement;
           c.currentStats = replacement.stats;
         });
-        promises.push(greatAncientPromise);
+        promisesEffects.push(greatAncientPromise);
+      }
+
+      // Add 1 Hp to Anvil of Xiarm'ha
+      if (c.location === 'board' && c.user === nextUser && c.card.id === 'anvil-of-xiarmha') {
+        c.currentStats.life ++;
+        promisesEffects.push(
+          this.gameHookService
+          .dispatch(
+            gameInstance,
+            `card:lifeChanged:healed:${c.card.id}`, {gameCard: c, source: null, lifeChanged: 1}));
       }
     });
 
-    await Promise.all(promises);
+    // Generate Flesh Hammer sacrifice action in when the required cards are on the board
+    const fleshHammerCards: IGameCard[] =
+      gameInstance.cards.filter((c) => c.card.id === 'flesh-hammer' && c.location === 'board' && c.user === nextUser);
+    const anvilCards: IGameCard[] =
+      gameInstance.cards.filter((c) => c.card.id === 'anvil-of-xiarmha' && c.location === 'board' && c.user === nextUser);
+    if (fleshHammerCards.length > 0 && anvilCards.length > 0) {
+      promisesEffects.push(
+        this.gameWorkerService.getWorker('sacrifice-flesh-hammer').create(gameInstance, {user: nextUser}).then((a) => {
+          gameInstance.actions.current.push(a);
+        }),
+        this.gameWorkerService.getWorker('skip-sacrifice').create(gameInstance, {user: nextUser}).then((a) => {
+          gameInstance.actions.current.push(a);
+        }));
+    }
+
+    await Promise.all(promisesEffects);
 
     // Generate the actions of the user
     const action: IGameAction<any> = await this.gameWorkerService.getWorker('throw-cards')

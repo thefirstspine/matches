@@ -1,6 +1,8 @@
 import { IGameHook } from './game-hook.interface';
 import { Injectable } from '@nestjs/common';
-import { IGameInstance, IGameCard } from '@thefirstspine/types-arena';
+import { IGameInstance, IGameCard, IWizard } from '@thefirstspine/types-arena';
+import { WizzardService } from '../../wizzard/wizzard.service';
+import { WizzardsStorageService } from '../../storage/wizzards.storage.service';
 
 /**
  * This subscriber is executed once a 'card:lifeChanged:damaged' event is thrown. It will look for dead
@@ -10,6 +12,11 @@ import { IGameInstance, IGameCard } from '@thefirstspine/types-arena';
  */
 @Injectable()
 export class SoulOfASacrifiedHunterPlacesGameHook implements IGameHook {
+
+  constructor(
+    private readonly wizardService: WizzardService,
+    private readonly wizzardsStorageService: WizzardsStorageService,
+  ) {}
 
   async execute(gameInstance: IGameInstance, params: {gameCard: IGameCard}): Promise<boolean> {
     let life: number = 0;
@@ -26,6 +33,15 @@ export class SoulOfASacrifiedHunterPlacesGameHook implements IGameHook {
         }
       }
     });
+
+    // Unlock title "sacrificer"
+    if (str >= 10) {
+      const wizard: IWizard = this.wizardService.getWizzard(params.gameCard.user);
+      if (wizard && !wizard.triumphs.includes('sacrificer')) {
+        wizard.triumphs.push('sacrificer');
+        this.wizzardsStorageService.save(wizard);
+      }
+    }
 
     // Set card current stats
     params.gameCard.currentStats.life += life;

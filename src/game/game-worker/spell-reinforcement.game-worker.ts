@@ -1,5 +1,5 @@
 import { IGameWorker } from './game-worker.interface';
-import { IGameInstance, IGameAction, IInteractionPutCardOnBoard, IGameCard } from '@thefirstspine/types-arena';
+import { IGameInstance, IGameAction, IGameCard, IInteractionPutCardOnBoard } from '@thefirstspine/types-arena';
 import { Injectable } from '@nestjs/common';
 import { GameHookService } from '../game-hook/game-hook.service';
 import { IHasGameHookService } from '../injections.interface';
@@ -7,19 +7,19 @@ import { ArenaRoomsService } from '../../rooms/arena-rooms.service';
 import { LogsService } from '@thefirstspine/logs-nest';
 
 /**
- * Game worker for "reconstruct" spell.
+ * Main worker for "Reinforcement" spell.
  */
 @Injectable() // Injectable required here for dependency injection
-export class SpellReconstructGameWorker implements IGameWorker, IHasGameHookService {
+export class SpellReinforcementGameWorker implements IGameWorker, IHasGameHookService {
 
   public gameHookService: GameHookService;
-
-  readonly type: string = 'spell-reconstruct';
 
   constructor(
     private readonly logsService: LogsService,
     private readonly arenaRoomsService: ArenaRoomsService,
   ) {}
+
+  readonly type: string = 'spell-reinforcement';
 
   /**
    * @inheritdoc
@@ -29,12 +29,12 @@ export class SpellReconstructGameWorker implements IGameWorker, IHasGameHookServ
       createdAt: Date.now(),
       type: this.type,
       name: {
-        en: `Play Reconstruct`,
-        fr: `Jouer une Reconstruction`,
+        en: `Play Reinforcement`,
+        fr: `Jouer un Renforcement`,
       },
       description: {
-        en: `Play Reconstruct on an artifact`,
-        fr: `Jouer une Reconstruction sur un artefact`,
+        en: `Play Reinforcement on a creature`,
+        fr: `Jouer un Renforcement sur une créature`,
       },
       user: data.user as number,
       priority: 1,
@@ -121,8 +121,8 @@ export class SpellReconstructGameWorker implements IGameWorker, IHasGameHookServ
     this.arenaRoomsService.sendMessageForGame(
       gameInstance,
       {
-        fr: `A joué une Reconstruction`,
-        en: `Played Reconstruct`,
+        fr: `A joué un Renforcement`,
+        en: `Played Reinforcement`,
       },
       gameAction.user);
 
@@ -166,7 +166,7 @@ export class SpellReconstructGameWorker implements IGameWorker, IHasGameHookServ
     return gameInstance.cards.filter((card: IGameCard) => {
       return card.user === user && card.location === 'hand';
     }).map((card: IGameCard, index: number) => {
-      if (card.card.id === 'reconstruct') {
+      if (card.card.id === 'reinforcement') {
         return index;
       }
       return null;
@@ -180,7 +180,8 @@ export class SpellReconstructGameWorker implements IGameWorker, IHasGameHookServ
    */
   protected getBoardCoords(gameInstance: IGameInstance, user: number): string[] {
     // Get the coordinates where the user can place a card
-    return gameInstance.cards.filter((card: IGameCard) => card.location === 'board' && card.card.type === 'artifact' && card.coords)
+    return gameInstance.cards.filter((card: IGameCard) => card.location === 'board' && card.card.id === 'anvil-of-xiarmha' && card.coords)
       .map((card: IGameCard) => `${card.coords.x}-${card.coords.y}`);
   }
+
 }

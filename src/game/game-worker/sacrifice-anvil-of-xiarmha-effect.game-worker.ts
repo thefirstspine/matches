@@ -1,5 +1,5 @@
 import { IGameWorker } from './game-worker.interface';
-import { IGameInstance, IGameAction, IInteractionPutCardOnBoard, IGameCard } from '@thefirstspine/types-arena';
+import { IGameInstance, IGameAction, IGameCard, IInteractionPutCardOnBoard, IInteractionChoseCardOnBoard } from '@thefirstspine/types-arena';
 import { Injectable } from '@nestjs/common';
 import { GameHookService } from '../game-hook/game-hook.service';
 import { IHasGameHookService } from '../injections.interface';
@@ -7,45 +7,44 @@ import { ArenaRoomsService } from '../../rooms/arena-rooms.service';
 import { LogsService } from '@thefirstspine/logs-nest';
 
 /**
- * Game worker for "reconstruct" spell.
+ * Main worker for "sacrifice-anvil-of-xiarmha-effect" action.
  */
 @Injectable() // Injectable required here for dependency injection
-export class SpellReconstructGameWorker implements IGameWorker, IHasGameHookService {
+export class SacrificeAnvilOfXiarmhaEffectGameWorker implements IGameWorker, IHasGameHookService {
 
   public gameHookService: GameHookService;
-
-  readonly type: string = 'spell-reconstruct';
 
   constructor(
     private readonly logsService: LogsService,
     private readonly arenaRoomsService: ArenaRoomsService,
   ) {}
 
+  readonly type: string = 'sacrifice-anvil-of-xiarmha-effect';
+
   /**
    * @inheritdoc
    */
-  public async create(gameInstance: IGameInstance, data: {user: number}): Promise<IGameAction<IInteractionPutCardOnBoard>> {
+  public async create(gameInstance: IGameInstance, data: {user: number}): Promise<IGameAction<IInteractionChoseCardOnBoard>> {
     return {
       createdAt: Date.now(),
       type: this.type,
       name: {
-        en: `Play Reconstruct`,
-        fr: `Jouer une Reconstruction`,
+        en: `Increase defense`,
+        fr: `Augmenter la défense`,
       },
       description: {
-        en: `Play Reconstruct on an artifact`,
-        fr: `Jouer une Reconstruction sur un artefact`,
+        en: `Increase defense`,
+        fr: `Augmenter la défense`,
       },
       user: data.user as number,
       priority: 1,
       interaction: {
-        type: 'putCardOnBoard',
+        type: 'choseCardOnBoard',
         description: {
-          en: `Play a spell on a card`,
-          fr: `Jouer un sort sur une carte`,
+          en: `Increase defense`,
+          fr: `Augmenter la défense`,
         },
         params: {
-          handIndexes: this.getHandIndexes(gameInstance, data.user),
           boardCoords: this.getBoardCoords(gameInstance, data.user),
         },
       },
@@ -56,7 +55,6 @@ export class SpellReconstructGameWorker implements IGameWorker, IHasGameHookServ
    * @inheritdoc
    */
   public async refresh(gameInstance: IGameInstance, gameAction: IGameAction<IInteractionPutCardOnBoard>): Promise<void> {
-    gameAction.interaction.params.handIndexes = this.getHandIndexes(gameInstance, gameAction.user);
     gameAction.interaction.params.boardCoords = this.getBoardCoords(gameInstance, gameAction.user);
   }
 
@@ -66,7 +64,6 @@ export class SpellReconstructGameWorker implements IGameWorker, IHasGameHookServ
   public async execute(gameInstance: IGameInstance, gameAction: IGameAction<IInteractionPutCardOnBoard>): Promise<boolean> {
     // Validate response form
     if (
-      gameAction.response.handIndex === undefined ||
       gameAction.response.boardCoords === undefined
     ) {
       this.logsService.warning('Response in a wrong format', gameAction);
@@ -74,32 +71,22 @@ export class SpellReconstructGameWorker implements IGameWorker, IHasGameHookServ
     }
 
     // Validate response inputs
-    const allowedHandIndexes: number[] = gameAction.interaction.params.handIndexes;
     const allowedCoordsOnBoard: string[] = gameAction.interaction.params.boardCoords;
-    const responseHandIndex: number = gameAction.response.handIndex;
     const responseBoardCoords: string = gameAction.response.boardCoords;
-    if (!allowedHandIndexes.includes(responseHandIndex)) {
-      this.logsService.warning('Not allowed hand index', gameAction);
-      return false;
-    }
     if (!allowedCoordsOnBoard.includes(responseBoardCoords)) {
       this.logsService.warning('Not allowed board coords', gameAction);
       return false;
     }
 
+    // Get the defense to increase
+    const playerCard: IGameCard = gameInstance.cards.find((c) => {
+      return c.card.type === 'player' && c.user === gameAction.user;
+    });
+    const defense = playerCard.metadata.defenseToIncrease;
+
     // Transform coords
     const x: number = parseInt(responseBoardCoords.split('-')[0], 10);
     const y: number = parseInt(responseBoardCoords.split('-')[1], 10);
-
-    // Discard the spell
-    const cardUsed: IGameCard|undefined = gameInstance.cards
-      .filter((c: IGameCard) => c.location === 'hand' && c.user === gameAction.user)
-      .find((c: IGameCard, index: number) => index === responseHandIndex);
-    if (!cardUsed) {
-      this.logsService.warning('Card not found', gameAction);
-      return false;
-    }
-    cardUsed.location = 'discard';
 
     // Damage the card
     const cardDamaged: IGameCard|undefined = gameInstance.cards
@@ -108,21 +95,17 @@ export class SpellReconstructGameWorker implements IGameWorker, IHasGameHookServ
       this.logsService.warning('Target not found', gameAction);
       return false;
     }
-    cardDamaged.currentStats.life += 2;
-
-    // Dispatch event
-    await this.gameHookService.dispatch(gameInstance, `card:spell:used:${cardUsed.card.id}`, {gameCard: cardUsed});
-    await this.gameHookService.dispatch(
-      gameInstance,
-      `card:lifeChanged:healed:${cardDamaged.card.id}`,
-      {gameCard: cardDamaged, source: cardUsed, lifeChanged: 2});
+    cardDamaged.currentStats.bottom.defense += defense;
+    cardDamaged.currentStats.top.defense += defense;
+    cardDamaged.currentStats.left.defense += defense;
+    cardDamaged.currentStats.right.defense += defense;
 
     // Send message to rooms
     this.arenaRoomsService.sendMessageForGame(
       gameInstance,
       {
-        fr: `A joué une Reconstruction`,
-        en: `Played Reconstruct`,
+        fr: `A augmenter une défense`,
+        en: `Increased defense`,
       },
       gameAction.user);
 
@@ -157,30 +140,15 @@ export class SpellReconstructGameWorker implements IGameWorker, IHasGameHookServ
   }
 
   /**
-   * Get the hand indexes of the spell
-   * @param gameInstance
-   * @param user
-   */
-  protected getHandIndexes(gameInstance: IGameInstance, user: number): number[] {
-    // Get the hand indexes of the creatures & artifacts
-    return gameInstance.cards.filter((card: IGameCard) => {
-      return card.user === user && card.location === 'hand';
-    }).map((card: IGameCard, index: number) => {
-      if (card.card.id === 'reconstruct') {
-        return index;
-      }
-      return null;
-    }).filter((i: number) => i !== null);
-  }
-
-  /**
    * Get the board coordinates where the spell can be played
    * @param gameInstance
    * @param user
    */
   protected getBoardCoords(gameInstance: IGameInstance, user: number): string[] {
     // Get the coordinates where the user can place a card
-    return gameInstance.cards.filter((card: IGameCard) => card.location === 'board' && card.card.type === 'artifact' && card.coords)
+    return gameInstance.cards
+      .filter((card: IGameCard) => card.location === 'board' && card.coords && ['creature', 'artifact'].includes(card.card.type))
       .map((card: IGameCard) => `${card.coords.x}-${card.coords.y}`);
   }
+
 }

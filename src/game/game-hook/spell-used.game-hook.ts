@@ -1,9 +1,10 @@
 import { IGameHook } from './game-hook.interface';
 import { Injectable } from '@nestjs/common';
-import { IGameInstance, IGameCard, IGameAction, IGameActionPassed } from '@thefirstspine/types-arena';
+import { IGameInstance, IGameCard, IGameAction, IGameActionPassed, IWizard } from '@thefirstspine/types-arena';
 import { IHasGameWorkerService } from '../injections.interface';
 import { GameWorkerService } from '../game-worker/game-worker.service';
-import { IGameWorker } from '../game-worker/game-worker.interface';
+import { WizzardService } from '../../wizzard/wizzard.service';
+import { WizzardsStorageService } from '../../storage/wizzards.storage.service';
 
 /**
  * This subscriber is executed once a 'card:spell:used' event is thrown. It wil delete old spells actions.
@@ -12,6 +13,11 @@ import { IGameWorker } from '../game-worker/game-worker.interface';
  */
 @Injectable()
 export class SpellUsedGameHook implements IGameHook, IHasGameWorkerService {
+
+  constructor(
+    private readonly wizardService: WizzardService,
+    private readonly wizzardsStorageService: WizzardsStorageService,
+  ) {}
 
   public gameWorkerService: GameWorkerService;
 
@@ -31,6 +37,15 @@ export class SpellUsedGameHook implements IGameHook, IHasGameWorkerService {
     if (playerCard?.metadata?.remainedSpells) {
       // Remove one remaining spell
       playerCard.metadata.remainedSpells --;
+    }
+
+    if (playerCard?.metadata?.remainedSpells >= 3) {
+      // Unlock title "repeater"
+      const wizard: IWizard = this.wizardService.getWizzard(params.gameCard.user);
+      if (wizard && !wizard.triumphs.includes('repeater')) {
+        wizard.triumphs.push('repeater');
+        this.wizzardsStorageService.save(wizard);
+      }
     }
 
     // No spell remaining

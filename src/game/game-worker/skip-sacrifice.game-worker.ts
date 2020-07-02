@@ -11,12 +11,12 @@ import { LogsService } from '@thefirstspine/logs-nest';
  * At the beggining of his turn, the player can throw to the discard one or more cards.
  */
 @Injectable() // Injectable required here for dependency injection
-export class SkipRunGameWorker implements IGameWorker, IHasGameHookService, IHasGameWorkerService {
+export class SkipSacrificeGameWorker implements IGameWorker, IHasGameHookService, IHasGameWorkerService {
 
   public gameHookService: GameHookService;
   public gameWorkerService: GameWorkerService;
 
-  public readonly type: string = 'skip-run';
+  public readonly type: string = 'skip-sacrifice';
 
   constructor(
     private readonly logsService: LogsService,
@@ -31,21 +31,21 @@ export class SkipRunGameWorker implements IGameWorker, IHasGameHookService, IHas
       createdAt: Date.now(),
       type: this.type,
       name: {
-        en: `Skip run`,
-        fr: `Passer la course`,
+        en: `Skip sacrifice`,
+        fr: `Passer le sacrifice`,
       },
       description: {
-        en: `You can skip the run`,
-        fr: `Vous pouvez passer la course.`,
+        en: `You can skip the sacrifice`,
+        fr: `Vous pouvez passer le sacrifice.`,
       },
       user: data.user as number,
-      priority: 3,
+      priority: 2,
       expiresAt: Date.now() + (30 * 1000), // expires in 30 seconds
       interaction: {
         type: 'pass',
         description: {
-          en: `Skip the run`,
-          fr: `Passer la course`,
+          en: `Skip the sacrifice`,
+          fr: `Passer le sacrifice`,
         },
         params: {},
       },
@@ -56,9 +56,9 @@ export class SkipRunGameWorker implements IGameWorker, IHasGameHookService, IHas
    * @inheritdoc
    */
   public async execute(gameInstance: IGameInstance, gameAction: IGameAction<IInteractionPass>): Promise<boolean> {
-    // Deletes the action "run"
+    // Deletes the action "sacrifice"
     gameInstance.actions.current.forEach((currentGameAction: IGameAction<any>) => {
-      if (currentGameAction.type === 'run') {
+      if (currentGameAction.type === 'sacrifice-flesh-hammer') {
         this.gameWorkerService.getWorker(currentGameAction.type).delete(gameInstance, currentGameAction);
       }
     });
