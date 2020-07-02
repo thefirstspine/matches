@@ -112,7 +112,10 @@ export class SpellReconstructGameWorker implements IGameWorker, IHasGameHookServ
 
     // Dispatch event
     await this.gameHookService.dispatch(gameInstance, `card:spell:used:${cardUsed.card.id}`, {gameCard: cardUsed});
-    await this.gameHookService.dispatch(gameInstance, `card:lifeChanged:healed:${cardDamaged.card.id}`, {gameCard: cardDamaged, lifeChanged: 2});
+    await this.gameHookService.dispatch(
+      gameInstance,
+      `card:lifeChanged:healed:${cardDamaged.card.id}`,
+      {gameCard: cardDamaged, source: cardUsed, lifeChanged: 2});
 
     // Send message to rooms
     this.arenaRoomsService.sendMessageForGame(

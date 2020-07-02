@@ -28,7 +28,10 @@ export class GuardianDestroyedGameHook implements IGameHook, IHasGameHookService
 
     // Add life to the wizard
     wizardCard.currentStats.life += 2;
-    await this.gameHookService.dispatch(gameInstance, `card:lifeChanged:healed:${wizardCard.card.id}`, {gameCard: wizardCard, lifeChanged: 2});
+    await this.gameHookService.dispatch(
+      gameInstance,
+      `card:lifeChanged:healed:${wizardCard.card.id}`,
+      {gameCard: wizardCard, source: params.gameCard, lifeChanged: 2});
 
     return true;
   }
