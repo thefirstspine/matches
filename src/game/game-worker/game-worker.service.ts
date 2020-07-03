@@ -1,7 +1,7 @@
 import { Injectable, forwardRef, Inject } from '@nestjs/common';
 import { ArenaRoomsService } from '../../rooms/arena-rooms.service';
 import { RestService } from '../../rest/rest.service';
-import { WizzardService } from '../../wizzard/wizzard.service';
+import { WizzardService } from '../../wizard/wizard.service';
 import { IGameWorker } from './game-worker.interface';
 import { ThrowCardsGameWorker } from './throw-cards.game-worker';
 import { MoveCreatureGameWorker } from './move-creature.game-worker';

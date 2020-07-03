@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { GameService } from '../game/game.service';
-import { WizzardService } from '../wizzard/wizzard.service';
+import { WizzardService } from '../wizard/wizard.service';
 import { IGameUser, IGameInstance, IWizardItem, IWizard, IWizardHistoryItem } from '@thefirstspine/types-arena';
 import { IGameType } from '@thefirstspine/types-rest';
 import { RestService } from '../rest/rest.service';

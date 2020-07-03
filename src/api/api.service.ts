@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { ApiError } from './api.error';
 import { QueueService } from './../queue/queue.service';
 import { GameService } from '../game/game.service';
-import { WizzardService } from '../wizzard/wizzard.service';
+import { WizzardService } from '../wizard/wizard.service';
 import { IGameUser,
          IGameInstance,
          IGameCard,

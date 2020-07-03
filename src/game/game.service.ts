@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { shuffle } from '../utils/array.utils';
 import { randBetween } from '../utils/maths.utils';
 import { GamesStorageService } from '../storage/games.storage.service';
-import { WizzardService } from '../wizzard/wizzard.service';
+import { WizzardService } from '../wizard/wizard.service';
 import { IGameInstance, IGameUser, IGameCard, IGameAction, IWizardItem, IGameInteraction } from '@thefirstspine/types-arena';
 import { RestService } from '../rest/rest.service';
 import { ICard } from '@thefirstspine/types-rest';

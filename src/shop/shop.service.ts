@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { WizzardService } from '../wizzard/wizzard.service';
+import { WizzardService } from '../wizard/wizard.service';
 import { WizzardsStorageService } from '../storage/wizzards.storage.service';
 import fetch, { Response } from 'node-fetch';
 import { IWizard, IWizardItem } from '@thefirstspine/types-arena';

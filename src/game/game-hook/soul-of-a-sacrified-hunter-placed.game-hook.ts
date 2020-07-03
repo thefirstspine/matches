@@ -1,7 +1,7 @@
 import { IGameHook } from './game-hook.interface';
 import { Injectable } from '@nestjs/common';
 import { IGameInstance, IGameCard, IWizard } from '@thefirstspine/types-arena';
-import { WizzardService } from '../../wizzard/wizzard.service';
+import { WizzardService } from '../../wizard/wizard.service';
 import { WizzardsStorageService } from '../../storage/wizzards.storage.service';
 
 /**

@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { IWizard, IGameInstance, IGameUser } from '@thefirstspine/types-arena';
 import { RoomsService, IRoom, IRoomCreated, ISender } from './rooms.service';
-import { WizzardService } from '../wizzard/wizzard.service';
+import { WizzardService } from '../wizard/wizard.service';
 import { ILocalized } from '@thefirstspine/types-rest';
 
 /**

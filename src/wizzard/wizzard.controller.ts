@@ -1,5 +1,5 @@
 import { Controller, Get, UseGuards, Req, Post, Param, HttpException } from '@nestjs/common';
-import { WizzardService } from './wizzard.service';
+import { WizzardService } from '../wizard/wizard.service';
 import { WizzardsStorageService } from '../storage/wizzards.storage.service';
 import { IWizard } from '@thefirstspine/types-arena';
 import { IAvatar } from '@thefirstspine/types-rest';
