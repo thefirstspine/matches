@@ -2,6 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ErrorFilter } from './error.filter';
 import { LogsService } from '@thefirstspine/logs-nest';
+import { ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
   // Load dotev config
@@ -11,6 +12,7 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.enableCors();
   app.useGlobalFilters(new ErrorFilter(new LogsService()));
+  app.useGlobalPipes(new ValidationPipe());
   await app.listen(process.env.PORT);
 }
 bootstrap();

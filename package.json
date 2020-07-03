@@ -33,6 +33,8 @@
     "@types/node-fetch": "^2.5.5",
     "@types/winston": "^2.4.4",
     "chalk": "^3.0.0",
+    "class-transformer": "^0.2.3",
+    "class-validator": "^0.12.2",
     "clear": "^0.1.0",
     "description": "0.0.4",
     "dotenv": "^8.2.0",

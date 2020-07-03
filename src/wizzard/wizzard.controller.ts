@@ -11,6 +11,7 @@ import { MessagingService } from '@thefirstspine/messaging-nest';
 
 /**
  * Main wizard endpoint
+ * @deprecated
  */
 @Controller('wizzard')
 export class WizzardController {
