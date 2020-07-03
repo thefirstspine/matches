@@ -40,7 +40,7 @@ export class ActionExecutedGameHook implements IGameHook {
     const jesters: number = cardsOnBoard.filter((c) => c.card.id === 'jester').length;
     if (jesters >= 5) {
       // Unlock the "comic" title
-      const wizard: IWizard = this.wizardService.getWizzard(params.user);
+      const wizard: IWizard = this.wizardService.getOrCreateWizzard(params.user);
       if (wizard && !wizard.triumphs.includes('comic')) {
         wizard.triumphs.push('comic');
         this.wizzardsStorageService.save(wizard);

@@ -36,7 +36,7 @@ export class SoulOfASacrifiedHunterPlacesGameHook implements IGameHook {
 
     // Unlock title "sacrificer"
     if (str >= 10) {
-      const wizard: IWizard = this.wizardService.getWizzard(params.gameCard.user);
+      const wizard: IWizard = this.wizardService.getOrCreateWizzard(params.gameCard.user);
       if (wizard && !wizard.triumphs.includes('sacrificer')) {
         wizard.triumphs.push('sacrificer');
         this.wizzardsStorageService.save(wizard);

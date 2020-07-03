@@ -41,7 +41,7 @@ export class SpellUsedGameHook implements IGameHook, IHasGameWorkerService {
 
     if (playerCard?.metadata?.remainedSpells >= 3) {
       // Unlock title "repeater"
-      const wizard: IWizard = this.wizardService.getWizzard(params.gameCard.user);
+      const wizard: IWizard = this.wizardService.getOrCreateWizzard(params.gameCard.user);
       if (wizard && !wizard.triumphs.includes('repeater')) {
         wizard.triumphs.push('repeater');
         this.wizzardsStorageService.save(wizard);

@@ -23,7 +23,7 @@ export class ArenaRoomsService {
    */
   async createRoomForGame(game: IGameInstance): Promise<IRoomCreated> {
     const senders: ISender[] = game.users.map((user: IGameUser) => {
-      const wizzard: IWizard = this.wizzardService.getWizzard(user.user);
+      const wizzard: IWizard = this.wizzardService.getOrCreateWizzard(user.user);
       return {
         user: user.user,
         displayName: wizzard.name,

@@ -11,7 +11,36 @@ export class WizzardService {
     private readonly messagingService: MessagingService,
   ) {}
 
-  getWizzard(user: number): IWizard {
+  getWizard(user: number): IWizard|null {
+    // The user "0" is a default wizard
+    if (user === 0) {
+      return this.getDefaultWizzardData(0);
+    }
+
+    const wizard: IWizard|null = this.wizzardsStorageService.get(user);
+    if (!wizard) {
+      return null;
+    }
+
+    if (this.migrate(wizard)) {
+      this.wizzardsStorageService.save(wizard);
+    }
+
+    return wizard;
+  }
+
+  createWizard(user: number): IWizard {
+    const wizard = this.getDefaultWizzardData(user);
+    this.messagingService.sendMessage([wizard.id], 'TheFirstSpine:account', wizard);
+    this.wizzardsStorageService.save(wizard);
+
+    return wizard;
+  }
+
+  /**
+   * @deprecated
+   */
+  getOrCreateWizzard(user: number): IWizard {
     // The user "0" is a default wizzard
     if (user === 0) {
       return this.getDefaultWizzardData(0);

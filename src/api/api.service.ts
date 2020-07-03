@@ -245,7 +245,7 @@ export class ApiService {
     return {
       users: gameInstance.users.map((u: IGameUser) => {
         return {
-          account: this.wizzardService.getWizzard(u.user),
+          account: this.wizzardService.getOrCreateWizzard(u.user),
           game: u,
         };
       }),

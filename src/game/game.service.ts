@@ -92,7 +92,7 @@ export class GameService {
 
     users.forEach((gameUser: IGameUser, index: number) => {
       // Add the cursed cards
-      const wizzard = this.wizzardService.getWizzard(gameUser.user);
+      const wizzard = this.wizzardService.getOrCreateWizzard(gameUser.user);
       const curseItem: IWizardItem|undefined = wizzard.items.find((item: IWizardItem) => item.name === 'curse');
       if (curseItem) {
         for (let i = 0; i < curseItem.num; i ++) {

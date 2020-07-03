@@ -29,7 +29,7 @@ export class WizzardController {
   @Get()
   @UseGuards(AuthGuard)
   async main(@Req() request: any) {
-    return this.wizzardService.getWizzard(request.user);
+    return this.wizzardService.getOrCreateWizzard(request.user);
   }
 
   /**
@@ -40,7 +40,7 @@ export class WizzardController {
   @UseGuards(AuthGuard)
   async editAvatar(@Req() request: any) {
     // Get account
-    const wizzard: IWizard = this.wizzardService.getWizzard(request.user);
+    const wizzard: IWizard = this.wizzardService.getOrCreateWizzard(request.user);
 
     // Get avatar
     const avatar: IAvatar|null = request.body.avatar
@@ -84,7 +84,7 @@ export class WizzardController {
     }
 
     // Load the wizzard
-    const wizard = this.wizzardService.getWizzard(id);
+    const wizard = this.wizzardService.getOrCreateWizzard(id);
 
     // Add the loots & save the wizard
     mergeLootsInItems(wizard.items, [{name, num}]);

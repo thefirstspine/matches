@@ -121,7 +121,7 @@ export class PlayerDamagedGameHook implements IGameHook {
     additionalTriumphs: string[],
   ) {
     // Get wizard's account
-    const wizzard: IWizard = this.wizzardService.getWizzard(gameUser.user);
+    const wizzard: IWizard = this.wizzardService.getOrCreateWizzard(gameUser.user);
 
     // Register data in wizard's history
     const historyItem: IWizardHistoryItem = {

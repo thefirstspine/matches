@@ -26,7 +26,7 @@ export class MonstrousPortalDamagedGameHook implements IGameHook, IHasGameWorker
 
       // Unlock title "transporter"
       if (params.source.user === params.gameCard.user) {
-        const wizard: IWizard = this.wizardService.getWizzard(params.gameCard.user);
+        const wizard: IWizard = this.wizardService.getOrCreateWizzard(params.gameCard.user);
         if (wizard && !wizard.triumphs.includes('transporter')) {
           wizard.triumphs.push('transporter');
           this.wizzardsStorageService.save(wizard);
