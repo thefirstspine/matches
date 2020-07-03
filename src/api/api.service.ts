@@ -227,6 +227,7 @@ export class ApiService {
   /**
    * Get users
    * @param request
+   * @deprecated
    */
   async getUsers(request: IApiRequest<undefined>): Promise<IApiGetUsersResponse> {
     // Get the ID of the game
