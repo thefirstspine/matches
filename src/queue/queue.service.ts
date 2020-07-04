@@ -99,7 +99,6 @@ export class QueueService {
     this.queue[gameTypeId] = this.queue[gameTypeId] ? this.queue[gameTypeId] : [];
     this.queue[gameTypeId].push({
       user,
-      name: wizard.name,
       destiny,
       origin,
       style,
