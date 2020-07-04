@@ -82,7 +82,7 @@ export class StartConfrontsGameWorker implements IGameWorker, IHasGameHookServic
       gameInstance,
       {
         fr: `Passe aux confrontations`,
-        en: ``,
+        en: `Pass to the confrontations`,
       },
       gameAction.user);
 
