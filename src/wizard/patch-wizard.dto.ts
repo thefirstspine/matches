@@ -1,4 +1,4 @@
-import {Length, IsOptional} from 'class-validator';
+import {Length, IsOptional, IsNumber} from 'class-validator';
 
 export class PatchWizardDto {
 
@@ -11,4 +11,8 @@ export class PatchWizardDto {
 
   @IsOptional()
   title?: string;
+
+  @IsOptional()
+  @IsNumber({}, {each: true})
+  friends?: number[];
 }

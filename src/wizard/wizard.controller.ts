@@ -72,6 +72,11 @@ export class WizardController {
       wizard.title = body.title;
     }
 
+    // Friends field
+    if (body.friends) {
+      wizard.friends = body.friends;
+    }
+
     // Save the wizard on storage
     this.wizardStorageService.save(wizard);
 

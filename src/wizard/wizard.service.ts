@@ -66,13 +66,14 @@ export class WizzardService {
     return {
       id: user,
       name: '',
-      version: 0.6,
+      version: 0.7,
       items: [],
       history: [],
       triumphs: ['wizzard'],
       purchases: [],
       avatar: 'applicant',
       title: 'wizzard',
+      friends: [],
     };
   }
 
@@ -122,6 +123,13 @@ export class WizzardService {
       wizzard.version = 0.6;
       migrated = true;
       wizzard.name = '';
+    }
+
+    // Migrate from 0.6 to 0.7 => added "friends" property
+    if (wizzard.version === 0.6) {
+      wizzard.version = 0.7;
+      migrated = true;
+      wizzard.friends = [];
     }
 
     return migrated;
