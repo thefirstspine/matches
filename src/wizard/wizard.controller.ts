@@ -1,4 +1,4 @@
-import { Controller, Param, Get, NotFoundException, UseGuards, Req, Patch, Body, BadRequestException } from '@nestjs/common';
+import { Controller, Param, Get, NotFoundException, UseGuards, Req, Patch, Body, BadRequestException, Post, HttpException } from '@nestjs/common';
 import { WizzardService } from './wizard.service';
 import { PatchWizardDto } from './patch-wizard.dto';
 import { IWizard } from '@thefirstspine/types-arena';
@@ -6,6 +6,8 @@ import { AuthGuard } from '@thefirstspine/auth-nest';
 import { IAvatar } from '@thefirstspine/types-rest';
 import { RestService } from '../rest/rest.service';
 import { WizzardsStorageService } from '../storage/wizzards.storage.service';
+import { CertificateGuard } from '@thefirstspine/certificate-nest';
+import { mergeLootsInItems } from '../utils/game.utils';
 
 /**
  * Main wizard API to get & edit wizard data.
@@ -97,6 +99,31 @@ export class WizardController {
     }
 
     return wizard;
+  }
+
+  /**
+   * Add some rewards to a wizard. This endpoint is private.
+   * @param request
+   * @param id
+   */
+  @Post(':id/reward')
+  @UseGuards(CertificateGuard)
+  async reward(@Req() request: any, @Param('id') id) {
+    // Get the parameters
+    const name = request.body.name;
+    const num = parseInt(request.body.num, 10);
+
+    // Validate parameterts
+    if (!name || !num) {
+      throw new HttpException('`name` and `num` are required. `num` must be an integer.', 400);
+    }
+
+    // Load the wizzard
+    const wizard = this.wizardService.getOrCreateWizzard(id);
+
+    // Add the loots & save the wizard
+    mergeLootsInItems(wizard.items, [{name, num}]);
+    this.wizardStorageService.save(wizard);
   }
 
 }
