@@ -2,7 +2,7 @@ import { IGameHook } from './game-hook.interface';
 import { Injectable } from '@nestjs/common';
 import { IGameInstance, IGameUser, IGameResult, IGameCard, IWizard, IWizardHistoryItem } from '@thefirstspine/types-arena';
 import { WizzardsStorageService } from '../../storage/wizzards.storage.service';
-import { WizzardService } from '../../wizzard/wizzard.service';
+import { WizzardService } from '../../wizard/wizard.service';
 import { ILoot, ICycle } from '@thefirstspine/types-rest';
 import { mergeLootsInItems } from '../../utils/game.utils';
 import { RestService } from '../../rest/rest.service';
@@ -121,7 +121,7 @@ export class PlayerDamagedGameHook implements IGameHook {
     additionalTriumphs: string[],
   ) {
     // Get wizard's account
-    const wizzard: IWizard = this.wizzardService.getWizzard(gameUser.user);
+    const wizzard: IWizard = this.wizzardService.getOrCreateWizzard(gameUser.user);
 
     // Register data in wizard's history
     const historyItem: IWizardHistoryItem = {

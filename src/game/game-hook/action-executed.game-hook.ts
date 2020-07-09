@@ -3,7 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { IGameInstance, IGameCard, IGameAction, IWizard } from '@thefirstspine/types-arena';
 import { ICardCoords } from '@thefirstspine/types-rest';
 import { rotateCard } from '../../utils/game.utils';
-import { WizzardService } from '../../wizzard/wizzard.service';
+import { WizzardService } from '../../wizard/wizard.service';
 import { WizzardsStorageService } from '../../storage/wizzards.storage.service';
 
 @Injectable()
@@ -40,7 +40,7 @@ export class ActionExecutedGameHook implements IGameHook {
     const jesters: number = cardsOnBoard.filter((c) => c.card.id === 'jester').length;
     if (jesters >= 5) {
       // Unlock the "comic" title
-      const wizard: IWizard = this.wizardService.getWizzard(params.user);
+      const wizard: IWizard = this.wizardService.getOrCreateWizzard(params.user);
       if (wizard && !wizard.triumphs.includes('comic')) {
         wizard.triumphs.push('comic');
         this.wizzardsStorageService.save(wizard);

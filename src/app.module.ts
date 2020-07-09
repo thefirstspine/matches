@@ -6,7 +6,7 @@ import { QueueService } from './queue/queue.service';
 import { TickerController } from './ticker/ticker.controller';
 import { TickerService } from './ticker/ticker.service';
 import { GamesStorageService } from './storage/games.storage.service';
-import { WizzardService } from './wizzard/wizzard.service';
+import { WizzardService } from './wizard/wizard.service';
 import { WizzardsStorageService } from './storage/wizzards.storage.service';
 import { WizzardController } from './wizzard/wizzard.controller';
 import { ShopController } from './shop/shop.controller';
@@ -23,6 +23,7 @@ import { FileSocketMethodsService } from './file-socket-methods/file-socket-meth
 import { AuthService } from '@thefirstspine/auth-nest';
 import { LogsService } from '@thefirstspine/logs-nest';
 import { MessagingService } from '@thefirstspine/messaging-nest';
+import { WizardController } from './wizard/wizard.controller';
 
 @Module({
   imports: [
@@ -31,7 +32,7 @@ import { MessagingService } from '@thefirstspine/messaging-nest';
       socketFile: __dirname + '/../socket',
     }),
   ],
-  controllers: [ApiController, TickerController, WizzardController, ShopController, IndexController],
+  controllers: [ApiController, TickerController, WizzardController, ShopController, IndexController, WizardController],
   providers: [
     ApiService,
     GameService,

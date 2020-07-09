@@ -133,7 +133,7 @@ export class RunGameWorker implements IGameWorker, IHasGameHookService, IHasGame
       gameInstance,
       {
         fr: `A joué une course`,
-        en: ``,
+        en: `Played a run`,
       },
       gameAction.user);
 

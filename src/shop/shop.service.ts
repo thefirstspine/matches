@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { WizzardService } from '../wizzard/wizzard.service';
+import { WizzardService } from '../wizard/wizard.service';
 import { WizzardsStorageService } from '../storage/wizzards.storage.service';
 import fetch, { Response } from 'node-fetch';
 import { IWizard, IWizardItem } from '@thefirstspine/types-arena';
@@ -27,7 +27,7 @@ export class ShopService {
     }
 
     // Get the wizzard
-    const wizzard: IWizard = this.wizzardService.getWizzard(purchase.user);
+    const wizzard: IWizard = this.wizzardService.getOrCreateWizzard(purchase.user);
     if (purchase.oneTimePurchase && wizzard.purchases.includes(purchase.id)) {
       throw new Error('Already purchased');
     }
@@ -172,7 +172,7 @@ export class ShopService {
       // The payment succeeded
       if (responseJson.status === 'succeeded') {
         // Add the loot
-        const wizzard: IWizard = this.wizzardService.getWizzard(purchase.user);
+        const wizzard: IWizard = this.wizzardService.getOrCreateWizzard(purchase.user);
         mergeLootsInItems(wizzard.items, purchase.loots);
         this.wizzardStorageService.save(wizzard);
         this.messagingService.sendMessage([wizzard.id], 'TheFirstSpine:account', wizzard);

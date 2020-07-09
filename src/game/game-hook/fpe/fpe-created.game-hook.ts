@@ -33,7 +33,6 @@ export class FpeCreatedGameHook implements IGameHook, IHasGameWorkerService {
 
     // Add an opponent
     gameInstance.users.push({
-      name: 'Démence',
       destiny: 'summoner',
       origin: null,
       user: 0,

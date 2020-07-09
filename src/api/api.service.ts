@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { ApiError } from './api.error';
 import { QueueService } from './../queue/queue.service';
 import { GameService } from '../game/game.service';
-import { WizzardService } from '../wizzard/wizzard.service';
+import { WizzardService } from '../wizard/wizard.service';
 import { IGameUser,
          IGameInstance,
          IGameCard,
@@ -227,6 +227,7 @@ export class ApiService {
   /**
    * Get users
    * @param request
+   * @deprecated
    */
   async getUsers(request: IApiRequest<undefined>): Promise<IApiGetUsersResponse> {
     // Get the ID of the game
@@ -245,7 +246,7 @@ export class ApiService {
     return {
       users: gameInstance.users.map((u: IGameUser) => {
         return {
-          account: this.wizzardService.getWizzard(u.user),
+          account: this.wizzardService.getOrCreateWizzard(u.user),
           game: u,
         };
       }),

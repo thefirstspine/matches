@@ -3,7 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { IGameInstance, IGameCard, IGameAction, IWizard } from '@thefirstspine/types-arena';
 import { IHasGameWorkerService } from '../injections.interface';
 import { GameWorkerService } from '../game-worker/game-worker.service';
-import { WizzardService } from '../../wizzard/wizzard.service';
+import { WizzardService } from '../../wizard/wizard.service';
 import { WizzardsStorageService } from '../../storage/wizzards.storage.service';
 
 /**
@@ -26,7 +26,7 @@ export class MonstrousPortalDamagedGameHook implements IGameHook, IHasGameWorker
 
       // Unlock title "transporter"
       if (params.source.user === params.gameCard.user) {
-        const wizard: IWizard = this.wizardService.getWizzard(params.gameCard.user);
+        const wizard: IWizard = this.wizardService.getOrCreateWizzard(params.gameCard.user);
         if (wizard && !wizard.triumphs.includes('transporter')) {
           wizard.triumphs.push('transporter');
           this.wizzardsStorageService.save(wizard);

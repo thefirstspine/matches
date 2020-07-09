@@ -5,7 +5,7 @@ import { GameService } from '../game.service';
 import { QueueService } from '../../queue/queue.service';
 import { GamesStorageService } from '../../storage/games.storage.service';
 import { TickerService } from '../../ticker/ticker.service';
-import { WizzardService } from '../../wizzard/wizzard.service';
+import { WizzardService } from '../../wizard/wizard.service';
 import { WizzardsStorageService } from '../../storage/wizzards.storage.service';
 import { ShopService } from '../../shop/shop.service';
 import { RestService } from '../../rest/rest.service';
@@ -345,8 +345,8 @@ function getDefaultGameInstance(): IGameInstance {
       previous: [],
     },
     users: [
-      {destiny: 'hunter', user: Number.MAX_SAFE_INTEGER - 1, origin: null, style: '', name: ''},
-      {destiny: 'hunter', user: Number.MAX_SAFE_INTEGER - 2, origin: null, style: '', name: ''},
+      {destiny: 'hunter', user: Number.MAX_SAFE_INTEGER - 1, origin: null, style: ''},
+      {destiny: 'hunter', user: Number.MAX_SAFE_INTEGER - 1, origin: null},
     ],
   };
 }
