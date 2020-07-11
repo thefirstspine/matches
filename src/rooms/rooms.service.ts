@@ -23,6 +23,20 @@ export class RoomsService {
       'post');
   }
 
+  async joinRoom(subject: string, room: string, sender: ISender): Promise<IRoomCreated> {
+    return this.sendRequest<IRoomCreated>(
+      `subjects/${subject}/rooms/${room}/senders`,
+      sender,
+      'post');
+  }
+
+  async leaveRoom(subject: string, room: string, user: number): Promise<IRoomCreated> {
+    return this.sendRequest<IRoomCreated>(
+      `subjects/${subject}/rooms/${room}/senders/${user}`,
+      null,
+      'delete');
+  }
+
   async sendMessageToRoom(subject: string, room: string, message: IMessage): Promise<IMessageCreated> {
     return this.sendRequest<IMessageCreated>(
       `subjects/${subject}/rooms/${room}/messages/secure`,
@@ -36,11 +50,11 @@ export class RoomsService {
    * @param data
    * @param method
    */
-  protected async sendRequest<T>(endpoint: string, data: any, method: 'get'|'post' = 'get'): Promise<T|null> {
+  protected async sendRequest<T>(endpoint: string, data: any, method: 'get'|'post'|'delete' = 'get'): Promise<T|null> {
     this.logsService.info('Send message to room service', {endpoint, data});
     const url: string = `${process.env.ROOMS_URL}/api/${endpoint}`;
     const response: Response = await fetch(url, {
-      body: JSON.stringify(data),
+      body: data ? JSON.stringify(data) : undefined,
       method,
       headers: {
         'Content-Type': 'application/json',

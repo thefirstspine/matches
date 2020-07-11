@@ -8,6 +8,7 @@ import { RestService } from '../rest/rest.service';
 import { WizzardsStorageService } from '../storage/wizzards.storage.service';
 import { CertificateGuard } from '@thefirstspine/certificate-nest';
 import { mergeLootsInItems } from '../utils/game.utils';
+import { ArenaRoomsService } from '../rooms/arena-rooms.service';
 
 /**
  * Main wizard API to get & edit wizard data.
@@ -19,6 +20,7 @@ export class WizardController {
     private readonly wizardService: WizzardService,
     private readonly wizardStorageService: WizzardsStorageService,
     private readonly restService: RestService,
+    private readonly roomsService: ArenaRoomsService,
   ) {}
 
   /**
@@ -77,6 +79,15 @@ export class WizardController {
     // Friends field
     if (body.friends) {
       wizard.friends = body.friends;
+    }
+
+    // publicRoom field
+    if (body.publicRoom) {
+      if (wizard.publicRoom) {
+        this.roomsService.leavePublicRoom(wizard.id, wizard.publicRoom);
+      }
+      wizard.publicRoom = body.publicRoom;
+      this.roomsService.joinPublicRoom(wizard.id, body.publicRoom);
     }
 
     // Save the wizard on storage

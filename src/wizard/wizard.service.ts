@@ -66,7 +66,7 @@ export class WizzardService {
     return {
       id: user,
       name: '',
-      version: 0.7,
+      version: 0.8,
       items: [],
       history: [],
       triumphs: ['wizzard'],
@@ -74,6 +74,7 @@ export class WizzardService {
       avatar: 'applicant',
       title: 'wizzard',
       friends: [],
+      publicRoom: null,
     };
   }
 
@@ -130,6 +131,13 @@ export class WizzardService {
       wizzard.version = 0.7;
       migrated = true;
       wizzard.friends = [];
+    }
+
+    // Migrate from 0.7 to 0.8 => added "publicRoom" property
+    if (wizzard.version === 0.7) {
+      wizzard.version = 0.8;
+      migrated = true;
+      wizzard.publicRoom = null;
     }
 
     return migrated;
