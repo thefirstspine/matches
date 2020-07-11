@@ -15,7 +15,20 @@ export class ArenaRoomsService {
   constructor(
       private readonly roomsService: RoomsService,
       private readonly wizzardService: WizzardService,
-  ) {}
+  ) {
+    this.roomsService.createRoom(
+      ArenaRoomsService.SUBJECT,
+      {
+        name: 'general-fr',
+        senders: [],
+      });
+    this.roomsService.createRoom(
+      ArenaRoomsService.SUBJECT,
+      {
+        name: 'general-en',
+        senders: [],
+      });
+  }
 
   /**
    * Creates a room for a given game instance
