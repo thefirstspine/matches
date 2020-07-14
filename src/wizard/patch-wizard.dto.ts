@@ -2,7 +2,7 @@ import {Length, IsOptional, IsNumber, IsIn} from 'class-validator';
 
 export class PatchWizardDto {
 
-  @Length(3, 10)
+  @Length(3, 100)
   @IsOptional()
   name?: string;
 
