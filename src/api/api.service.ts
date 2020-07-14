@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { ApiError } from './api.error';
-import { QueueService } from './../queue/queue.service';
+import { QueueService, IQueueInstance } from './../queue/queue.service';
 import { GameService } from '../game/game.service';
 import { WizzardService } from '../wizard/wizard.service';
 import { IGameUser,
@@ -22,7 +22,9 @@ import { IGameUser,
          isJoinQueueParams,
          IGameInteraction,
          isCreateQueueParams,
-         IApiCreateQueueParams} from '@thefirstspine/types-arena';
+         IApiCreateQueueParams,
+         IApiGetQueueParams,
+         isGetQueueParams} from '@thefirstspine/types-arena';
 import { randBetween } from 'src/utils/maths.utils';
 
 /**
@@ -42,7 +44,7 @@ export class ApiService {
    * Create a queue in the queue service
    * @param request
    */
-  async createQueue(request: IApiRequest<IApiCreateQueueParams>): Promise<IApiQueueResponse> {
+  async createQueue(request: IApiRequest<IApiCreateQueueParams>): Promise<IQueueInstance & {queue: any[]}> {
     // Validate input
     if (!isCreateQueueParams(request.params)) {
       throw new ApiError('Invalid method parameter(s).', ApiError.CODE_INVALID_PARAMS);
@@ -57,15 +59,38 @@ export class ApiService {
     const key: string = randBetween(1111, 9999).toString(10);
 
     // Create the the instance
-    const queue: IGameUser[] = await this.queueService.create(
+    const queue: IQueueInstance = await this.queueService.create(
       key,
       request.params.gameTypeId,
     );
 
     // Return response
     return {
-      key,
-      queue,
+      ...queue,
+      queue: queue.users, // Ensure retrocompatibility
+    };
+  }
+
+  /**
+   * Get a queue in the queue service
+   * @param request
+   */
+  async getQueue(request: IApiRequest<IApiGetQueueParams>): Promise<IQueueInstance & {queue: any[]}> {
+    // Validate input
+    if (!isGetQueueParams(request.params)) {
+      throw new ApiError('Invalid method parameter(s).', ApiError.CODE_INVALID_PARAMS);
+    }
+
+    // Create the the instance
+    const queue: IQueueInstance = this.queueService.getQueueInstance(request.params.key);
+    if (!queue) {
+      throw new ApiError('Unknown queue', ApiError.CODE_INVALID_PARAMS);
+    }
+
+    // Return response
+    return {
+      ...queue,
+      queue: queue.users, // Ensure retrocompatibility
     };
   }
 
@@ -73,7 +98,7 @@ export class ApiService {
    * Join a queue in the queue service
    * @param request
    */
-  async joinQueue(request: IApiRequest<IApiJoinQueueParams>): Promise<IApiQueueResponse> {
+  async joinQueue(request: IApiRequest<IApiJoinQueueParams>): Promise<IQueueInstance & {queue: any[]}> {
     // Ensure retrocompatibility (use of gameType instead of key)
     if ((request.params as any).gameType) {
       request.params.key = (request.params as any).gameType;
@@ -83,7 +108,7 @@ export class ApiService {
       throw new ApiError('Invalid method parameter(s).', ApiError.CODE_INVALID_PARAMS);
     }
 
-    const queue: IGameUser[] = await this.queueService.join(
+    const queue: IQueueInstance = await this.queueService.join(
       request.params.key,
       request.user,
       request.params.destiny,
@@ -93,8 +118,8 @@ export class ApiService {
     );
 
     return {
-      key: request.params.key,
-      queue,
+      ...queue,
+      queue: queue.users, // Ensure retrocompatibility
     };
   }
 
@@ -102,7 +127,7 @@ export class ApiService {
    * Join a queue in the queue service
    * @param request
    */
-  async refreshQueueAsk(request: IApiRequest<IApiRefreshQueueAskParams>): Promise<IApiQueueResponse> {
+  async refreshQueueAsk(request: IApiRequest<IApiRefreshQueueAskParams>): Promise<IQueueInstance & {queue: any[]}> {
     // Ensure retrocompatibility (use of gameType instead of key)
     if ((request.params as any).gameType) {
       request.params.key = (request.params as any).gameType;
@@ -112,14 +137,14 @@ export class ApiService {
       throw new ApiError('Invalid method parameter(s).', ApiError.CODE_INVALID_PARAMS);
     }
 
-    const queue: IGameUser[] = await this.queueService.refreshAsk(
+    const queue: IQueueInstance = await this.queueService.refreshAsk(
       request.params.key,
       request.user,
     );
 
     return {
-      key: request.params.key,
-      queue,
+      ...queue,
+      queue: queue.users, // Ensure retrocompatibility
     };
   }
 
@@ -127,7 +152,7 @@ export class ApiService {
    * Quit a queue in the queue service
    * @param request
    */
-  async quitQueue(request: IApiRequest<IApiQuitQueueParams>): Promise<IApiQueueResponse> {
+  async quitQueue(request: IApiRequest<IApiQuitQueueParams>): Promise<IQueueInstance & {queue: any[]}> {
     // Ensure retrocompatibility (use of gameType instead of key)
     if ((request.params as any).gameType) {
       request.params.key = (request.params as any).gameType;
@@ -137,11 +162,11 @@ export class ApiService {
       throw new ApiError('Invalid method parameter(s).', ApiError.CODE_INVALID_PARAMS);
     }
 
-    const queue: IGameUser[] = this.queueService.quit(request.params.key, request.user);
+    const queue: IQueueInstance = this.queueService.quit(request.params.key, request.user);
 
     return {
-      key: request.params.key,
-      queue,
+      ...queue,
+      queue: queue.users, // Ensure retrocompatibility
     };
   }
 

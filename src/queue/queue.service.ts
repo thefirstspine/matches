@@ -65,21 +65,31 @@ export class QueueService {
   async create(
     key: string,
     gameTypeId: string,
-  ): Promise<IGameUser[]> {
+  ): Promise<IQueueInstance> {
     const gameType: IGameType = await this.restService.gameType(gameTypeId);
     if (!gameType) {
       throw new Error('Cannot find user ID');
     }
 
-    this.queueInstances.push({
+    const instance: IQueueInstance = {
       key,
       gameTypeId,
       users: [],
       createdAt: Date.now(),
       expiresAt: Date.now() + (60 * 30 * 1000),
-    });
+    };
 
-    return [];
+    this.queueInstances.push(instance);
+
+    return instance;
+  }
+
+  /**
+   * Get a queue instance.
+   * @param key
+   */
+  getQueueInstance(key: string): IQueueInstance|undefined {
+    return this.queueInstances.find((q) => q.key === key);
   }
 
   /**
@@ -98,7 +108,7 @@ export class QueueService {
     origin?: string,
     style?: string,
     cover?: string,
-  ): Promise<IGameUser[]> {
+  ): Promise<IQueueInstance> {
     // Exit method if user is in a queue
     if (this.isUserInAllQueues(user)) {
       throw new Error('User already in a queue.');
@@ -170,7 +180,7 @@ export class QueueService {
       },
     );
 
-    return queue.users;
+    return queue;
   }
 
   /**
@@ -181,7 +191,7 @@ export class QueueService {
   async refreshAsk(
     key: string,
     user: number,
-  ): Promise<IGameUser[]> {
+  ): Promise<IQueueInstance> {
     // Exit method if user is not in the queue
     if (!this.isUserInQueue(key, user)) {
       throw new Error('User not in the queue.');
@@ -205,19 +215,19 @@ export class QueueService {
       }
     });
 
-    return queue.users;
+    return queue;
   }
 
   /**
    * Quit a queue
    * @param key
    * @param user
-   * @returns {IGameUser[]}
+   * @returns {IQueueInstance}
    */
   quit(
     key: string,
     user: number,
-  ): IGameUser[] {
+  ): IQueueInstance {
     // Check queue availability
     const queue: IQueueInstance|undefined = this.queueInstances.find((q) => q.key === key);
     if (!queue) {
@@ -226,7 +236,7 @@ export class QueueService {
 
     // Remove the user from the queue
     queue.users = queue.users.filter(u => u.user !== user);
-    return queue.users;
+    return queue;
   }
 
   /**
