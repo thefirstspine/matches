@@ -27,7 +27,7 @@
     "@thefirstspine/certificate-nest": "0.0.4",
     "@thefirstspine/logs-nest": "1.0.0",
     "@thefirstspine/messaging-nest": "1.0.0",
-    "@thefirstspine/types-arena": "^1.6.0",
+    "@thefirstspine/types-arena": "^1.7.0",
     "@thefirstspine/types-rest": "1.0.0",
     "@types/dotenv": "^6.1.1",
     "@types/node-fetch": "^2.5.5",

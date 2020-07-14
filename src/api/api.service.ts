@@ -20,7 +20,10 @@ import { IGameUser,
          isQuitQueueParams,
          isRefreshAskQueueParams,
          isJoinQueueParams,
-         IGameInteraction } from '@thefirstspine/types-arena';
+         IGameInteraction,
+         isCreateQueueParams,
+         IApiCreateQueueParams} from '@thefirstspine/types-arena';
+import { randBetween } from 'src/utils/maths.utils';
 
 /**
  * All the methods of the API are mapped here. The controller will call that
@@ -34,6 +37,37 @@ export class ApiService {
     private readonly gameService: GameService,
     private readonly wizzardService: WizzardService,
   ) {}
+
+  /**
+   * Create a queue in the queue service
+   * @param request
+   */
+  async createQueue(request: IApiRequest<IApiCreateQueueParams>): Promise<IApiQueueResponse> {
+    // Validate input
+    if (!isCreateQueueParams(request.params)) {
+      throw new ApiError('Invalid method parameter(s).', ApiError.CODE_INVALID_PARAMS);
+    }
+
+    // Validate allowed game types
+    if (!['classic'].includes(request.params.gameTypeId)) {
+      throw new ApiError('Disalowed game type ID.', ApiError.CODE_INVALID_PARAMS);
+    }
+
+    // Generate key
+    const key: string = randBetween(1111, 9999).toString(10);
+
+    // Create the the instance
+    const queue: IGameUser[] = await this.queueService.create(
+      key,
+      request.params.gameTypeId,
+    );
+
+    // Return response
+    return {
+      key,
+      queue,
+    };
+  }
 
   /**
    * Join a queue in the queue service

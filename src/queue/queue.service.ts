@@ -58,6 +58,31 @@ export class QueueService {
   }
 
   /**
+   * Create a queue instance. The created instance will expire in 30 minutes.
+   * @param key
+   * @param gameTypeId
+   */
+  async create(
+    key: string,
+    gameTypeId: string,
+  ): Promise<IGameUser[]> {
+    const gameType: IGameType = await this.restService.gameType(gameTypeId);
+    if (!gameType) {
+      throw new Error('Cannot find user ID');
+    }
+
+    this.queueInstances.push({
+      key,
+      gameTypeId,
+      users: [],
+      createdAt: Date.now(),
+      expiresAt: Date.now() + (60 * 30 * 1000),
+    });
+
+    return [];
+  }
+
+  /**
    * Join a queue
    * @param key
    * @param user
