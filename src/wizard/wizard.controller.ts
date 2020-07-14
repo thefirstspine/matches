@@ -83,11 +83,10 @@ export class WizardController {
 
     // publicRoom field
     if (body.publicRoom) {
-      if (wizard.publicRoom) {
-        this.roomsService.leavePublicRoom(wizard.id, wizard.publicRoom);
-      }
+      await this.roomsService.leavePublicRoom(wizard.id, 'fr');
+      await this.roomsService.leavePublicRoom(wizard.id, 'en');
       wizard.publicRoom = body.publicRoom;
-      this.roomsService.joinPublicRoom(wizard.id, body.publicRoom);
+      await this.roomsService.joinPublicRoom(wizard.id, body.publicRoom);
     }
 
     // Save the wizard on storage
