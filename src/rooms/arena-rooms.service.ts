@@ -62,13 +62,12 @@ export class ArenaRoomsService {
   }
 
   async joinPublicRoom(user: number, language: 'fr'|'en') {
-    const wizzard: IWizard = this.wizzardService.getOrCreateWizzard(user);
     return this.roomsService.joinRoom(
       ArenaRoomsService.SUBJECT,
       this.getRoomNameForGeneral(language),
       {
         user,
-        displayName: wizzard.name,
+        displayName: '---',
       });
   }
 
