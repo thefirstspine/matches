@@ -22,7 +22,7 @@ export class QueueService {
   /**
    * The games queues
    */
-  private queue: IQueue = {};
+  private queueInstances: IQueueInstance[] = [];
 
   /**
    * Construtor. Initialize the queue property.
@@ -34,16 +34,40 @@ export class QueueService {
     private readonly restService: RestService,
     private readonly botsService: BotsService,
   ) {
+    // Create base queues instances
+    this.queueInstances.push(
+      {
+        key: 'fpe',
+        gameTypeId: 'fpe',
+        users: [],
+        createdAt: Date.now(),
+      },
+      {
+        key: 'tournament',
+        gameTypeId: 'tournament',
+        users: [],
+        createdAt: Date.now(),
+      },
+      {
+        key: 'classic',
+        gameTypeId: 'classic',
+        users: [],
+        createdAt: Date.now(),
+      },
+    );
   }
 
   /**
    * Join a queue
-   * @param gameTypeId
+   * @param key
    * @param user
-   * @returns {IGameUser[]}
+   * @param destiny
+   * @param origin
+   * @param style
+   * @param cover
    */
   async join(
-    gameTypeId: string,
+    key: string,
     user: number,
     destiny: string,
     origin?: string,
@@ -75,12 +99,16 @@ export class QueueService {
       throw new Error('User does not own the cover.');
     }
 
-    // Load game type
-    const gameType: IGameType = await this.restService.gameType(gameTypeId);
+    // Check queue availability
+    const queue: IQueueInstance|undefined = this.queueInstances.find((q) => q.key === key);
+    if (!queue) {
+      throw new Error('Queue instance not available. Check the key or retry in a few minutes.');
+    }
 
-    // Check game type availability
+    // Get the game type
+    const gameType: IGameType = await this.restService.gameType(queue.gameTypeId);
     if (!gameType) {
-      throw new Error('Queue not available. Check the game type ID or retry in a few minutes.');
+      throw new Error('Cannot load game type associated withthe queue.');
     }
 
     // Check destiny
@@ -93,11 +121,10 @@ export class QueueService {
       throw new Error('Origin not allowed in that game type.');
     }
 
-    // TODO: guard here to check for max games & shields
+    // TODO: guard here to check for max games & shields => will be deleted in a next update
 
     // Add the user in the queue
-    this.queue[gameTypeId] = this.queue[gameTypeId] ? this.queue[gameTypeId] : [];
-    this.queue[gameTypeId].push({
+    queue.users.push({
       user,
       destiny,
       origin,
@@ -114,79 +141,86 @@ export class QueueService {
       {
         event: 'joined',
         gameType,
-        queue: this.queue[gameTypeId].length,
+        queue: queue.users.length,
       },
     );
 
-    return this.queue[gameTypeId];
+    return queue.users;
   }
 
+  /**
+   * Refresh queue join ask in order to avoid expiration
+   * @param key
+   * @param user
+   */
   async refreshAsk(
-    gameTypeId: string,
+    key: string,
     user: number,
   ): Promise<IGameUser[]> {
     // Exit method if user is not in the queue
-    if (!this.isUserInQueue(gameTypeId, user)) {
+    if (!this.isUserInQueue(key, user)) {
       throw new Error('User not in the queue.');
     }
 
     // Check queue availability
-    if (!Array.isArray(this.queue[gameTypeId])) {
-      throw new Error('Queue not available. Check the game type ID or retry in a few minutes.');
+    const queue: IQueueInstance|undefined = this.queueInstances.find((q) => q.key === key);
+    if (!queue) {
+      throw new Error('Queue instance not available. Check the key or retry in a few minutes.');
     }
 
-    const gameType: IGameType = await this.restService.gameType(gameTypeId);
+    const gameType: IGameType = await this.restService.gameType(queue.gameTypeId);
     if (!gameType) {
       throw new Error('Cannot find this game type.');
     }
 
     // Refresh user queue's expiration date
-    this.queue[gameTypeId].forEach((queueUser: IQueueUser) => {
+    queue.users.forEach((queueUser: IQueueUser) => {
       if (queueUser.user === user) {
         queueUser.queueExpiresAt = Date.now() + (QueueService.QUEUE__EXPIRATION_TIME * 1000);
       }
     });
 
-    return this.queue[gameTypeId];
+    return queue.users;
   }
 
   /**
    * Quit a queue
-   * @param gameTypeId
+   * @param key
    * @param user
    * @returns {IGameUser[]}
    */
   quit(
-    gameTypeId: string,
+    key: string,
     user: number,
   ): IGameUser[] {
     // Check queue availability
-    if (!Array.isArray(this.queue[gameTypeId])) {
-      throw new Error('Queue not available. Check the game type ID or retry in a few minutes.');
+    const queue: IQueueInstance|undefined = this.queueInstances.find((q) => q.key === key);
+    if (!queue) {
+      throw new Error('Queue instance not available. Check the key or retry in a few minutes.');
     }
 
     // Remove the user from the queue
-    this.queue[gameTypeId] = this.queue[gameTypeId].filter(u => u.user !== user);
-    return this.queue[gameTypeId];
+    queue.users = queue.users.filter(u => u.user !== user);
+    return queue.users;
   }
 
   /**
    * Spawn bots on all game types
    */
   async processBotSpawns() {
-    return Promise.all(Object.keys(this.queue).map(this.processBotSpawnsFor.bind(this)));
+    return Promise.all(this.queueInstances.map(this.processBotSpawnsFor.bind(this)));
   }
 
   /**
    * Spawn bots when needed for a particular game type
-   * @param gameTypeId
+   * @param queueInstance
    */
-  async processBotSpawnsFor(gameTypeId: string): Promise<void> {
+  async processBotSpawnsFor(queueInstance: IQueueInstance): Promise<void> {
     // Load game type
-    const gameType: IGameType = await this.restService.gameType(gameTypeId);
+    const gameType: IGameType = await this.restService.gameType(queueInstance.gameTypeId);
 
     // Get users in queue
-    const queueUsers: IQueueUser[] = this.getUsersInQueue(gameType.id);
+    const queueUsers: IQueueUser[] = queueInstance.users;
 
     // On empty queue exit method
     if (queueUsers.length <= 0) {
@@ -209,26 +243,26 @@ export class QueueService {
     }
 
     // On empty queue and user is waiting for more than 60 seconds, call a bot
-    this.botsService.askForABot(gameTypeId);
+    this.botsService.askForABot(queueInstance.key);
   }
 
   /**
    * Process matchmackings for all the available game types.
    */
   async processMatchmakings() {
-    return Promise.all(Object.keys(this.queue).map(this.processMatchmakingFor.bind(this)));
+    return Promise.all(this.queueInstances.map(this.processMatchmakingFor.bind(this)));
   }
 
   /**
    * Process the matchmaking for a given game type
-   * @param gameTypeId
+   * @param queueInstance
    */
-  async processMatchmakingFor(gameTypeId: string): Promise<void> {
+  async processMatchmakingFor(queueInstance: IQueueInstance): Promise<void> {
     // Load game type
-    const gameType: IGameType = await this.restService.gameType(gameTypeId);
+    const gameType: IGameType = await this.restService.gameType(queueInstance.gameTypeId);
 
     // Get users in queue
-    const queueUsers: IQueueUser[] = this.getUsersInQueue(gameType.id);
+    const queueUsers: IQueueUser[] = queueInstance.users;
     const queueWizzards: IWizard[] = queueUsers.map((u: IGameUser) => {
       return this.wizzardService.getOrCreateWizzard(u.user);
     });
@@ -238,9 +272,9 @@ export class QueueService {
       if (gameType.matchmakingMode === 'ranked') {
         queueUsers.sort((a: IGameUser, b: IGameUser) => {
           const aIndex: number = queueUsers.findIndex((u) => u === a);
-          const aScore: number = getScore(queueWizzards[aIndex].history.filter((h: IWizardHistoryItem) => h.gameTypeId === gameTypeId));
+          const aScore: number = getScore(queueWizzards[aIndex].history.filter((h: IWizardHistoryItem) => h.gameTypeId === queueInstance.gameTypeId));
           const bIndex: number = queueUsers.findIndex((u) => u === b);
-          const bScore: number = getScore(queueWizzards[bIndex].history.filter((h: IWizardHistoryItem) => h.gameTypeId === gameTypeId));
+          const bScore: number = getScore(queueWizzards[bIndex].history.filter((h: IWizardHistoryItem) => h.gameTypeId === queueInstance.gameTypeId));
           if (aScore === bScore) {
             return 0;
           }
@@ -271,18 +305,18 @@ export class QueueService {
    * is passed.
    */
   async lookForExpiredQueueAsks() {
-    return Promise.all(Object.keys(this.queue).map(this.processQueueExpirationFor.bind(this)));
+    return Promise.all(this.queueInstances.map(this.processQueueExpirationFor.bind(this)));
   }
 
   /**
    * Manages expired queue asks for a given game type.
-   * @param gameTypeId
+   * @param queueInstance
    */
-  async processQueueExpirationFor(gameTypeId: string) {
+  async processQueueExpirationFor(queueInstance: IQueueInstance) {
     // Load game type
-    const gameType: IGameType = await this.restService.gameType(gameTypeId);
+    const gameType: IGameType = await this.restService.gameType(queueInstance.gameTypeId);
 
-    this.queue[gameTypeId] = this.queue[gameTypeId].filter((queueUser: IQueueUser) => {
+    queueInstance.users = queueInstance.users.filter((queueUser: IQueueUser) => {
       if (queueUser.queueExpiresAt < Date.now()) {
         this.messagingService.sendMessage(
           [queueUser.user],
@@ -290,7 +324,7 @@ export class QueueService {
           {
             event: 'expired',
             gameType,
-            queue: this.queue[gameTypeId].length,
+            queue: queueInstance.users.length,
           },
         );
         return false;
@@ -301,11 +335,11 @@ export class QueueService {
 
   /**
    * Get if user in a queue
-   * @param gameTypeId
+   * @param key
    * @param user
    */
-  isUserInQueue(gameTypeId: string, user: number): boolean {
-    return this.queue[gameTypeId].find(u => u.user === user) !== undefined;
+  isUserInQueue(key: string, user: number): boolean {
+    return !!this.queueInstances.find((q) => q.key === key)?.users.find(u => u.user === user);
   }
 
   /**
@@ -313,31 +347,19 @@ export class QueueService {
    * @param user
    */
   isUserInAllQueues(user: number): boolean {
-    return Object.keys(this.queue).reduce((acc: boolean, gameTypeId: string) => {
-      return acc || this.isUserInQueue(gameTypeId, user);
+    return this.queueInstances.reduce((acc: boolean, queueInstance: IQueueInstance) => {
+      return acc || this.isUserInQueue(queueInstance.key, user);
     }, false);
-  }
-
-  /**
-   * Get users in a queue
-   * @param gameTypeId
-   */
-  getUsersInQueue(gameTypeId): IQueueUser[] {
-    // Check queue availability
-    if (!Array.isArray(this.queue[gameTypeId])) {
-      throw new Error('Queue not available. Check the game type ID or retry in a few minutes.');
-    }
-
-    return JSON.parse(JSON.stringify(this.queue[gameTypeId]));
   }
 
 }
 
-/**
- * Represents a queue for a game type
- */
-export interface IQueue {
-  [key: string]: IQueueUser[];
+export interface IQueueInstance {
+  key: string;
+  gameTypeId: string;
+  users: IQueueUser[];
+  createdAt: number;
+  expiresAt?: number;
 }
 
 export interface IQueueUser extends IGameUser {

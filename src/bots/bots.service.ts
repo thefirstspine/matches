@@ -7,7 +7,7 @@ import fetch, { Response } from 'node-fetch';
 @Injectable()
 export class BotsService {
 
-  public async askForABot(gameType: string): Promise<IApiResponse> {
+  public async askForABot(key: string): Promise<IApiResponse> {
     // Call the bots service
     const ret: Response = await fetch(
       `${process.env.BOTS_URL}/api/spawn`,
@@ -16,7 +16,8 @@ export class BotsService {
         body: JSON.stringify({
           type: 'arena',
           metadata: {
-            gameType,
+            gameType: key, // TODO: delete is once bots are migrated
+            key,
           },
         }),
         headers: {
