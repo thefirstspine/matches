@@ -321,7 +321,7 @@ export class QueueService {
       // Create a game
       const game: IGameInstance = await this.gameService.createGameInstance(gameType.id, queueUsersNeeded);
       // Make them quit from the queue
-      queueUsersNeeded.forEach((queueUser: IGameUser) => this.quit(gameType.id, queueUser.user));
+      queueUsersNeeded.forEach((queueUser: IGameUser) => this.quit(queueInstance.key, queueUser.user));
       // Send message
       this.messagingService.sendMessage(
         queueUsersNeeded.map(e => e.user),
@@ -373,7 +373,7 @@ export class QueueService {
    */
   async processExpiredQueues() {
     this.queueInstances = this.queueInstances.filter((queueInstance: IQueueInstance) => {
-      return queueInstance.expiresAt && queueInstance.expiresAt > Date.now();
+      return queueInstance.expiresAt === undefined || queueInstance.expiresAt > Date.now();
     });
   }
 
