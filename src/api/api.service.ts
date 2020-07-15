@@ -24,7 +24,7 @@ import { IGameUser,
          IApiCreateQueueParams,
          IApiGetQueueParams,
          isGetQueueParams} from '@thefirstspine/types-arena';
-import { randBetween } from 'src/utils/maths.utils';
+import { randBetween } from '../utils/maths.utils';
 
 /**
  * All the methods of the API are mapped here. The controller will call that
