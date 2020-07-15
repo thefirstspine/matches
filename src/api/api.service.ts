@@ -12,7 +12,6 @@ import { IGameUser,
          IApiGetUsersResponse,
          IApiRequest,
          IApiGetGameResponse,
-         IApiQueueResponse,
          IApiRefreshQueueAskParams,
          IApiJoinQueueParams,
          IApiQuitQueueParams,
@@ -51,7 +50,7 @@ export class ApiService {
     }
 
     // Validate allowed game types
-    if (!['classic'].includes(request.params.gameTypeId)) {
+    if (!['standard', 'quick'].includes(request.params.gameTypeId)) {
       throw new ApiError('Disalowed game type ID.', ApiError.CODE_INVALID_PARAMS);
     }
 
