@@ -84,6 +84,23 @@ export class GameService {
       });
     });
 
+    // Add setup cards
+    const cardsSetup = Object.keys(gameType.setup).map((coords: string): IGameCard => {
+      const randomId: number = randBetween(0, Number.MAX_SAFE_INTEGER);
+      const xy = coords.split('-').map((i) => parseInt(i, 10));
+      return {
+        card: gameType.setup[coords],
+        user: 0,
+        location: 'board',
+        id: `${this.nextId}_${randomId}`,
+        coords: {
+          x: xy[0],
+          y: xy[1],
+        },
+      };
+    });
+    cards.push(...cardsSetup);
+
     // Shuffle cards
     const shuffledCards: IGameCard[] = shuffle(cards);
 
@@ -145,7 +162,7 @@ export class GameService {
     await this.gameHookService.dispatch(gameInstance, `game:created:${gameTypeId}`, {gameInstance});
 
     // Create the room in the rooms service
-    await this.arenaRoomsService.createRoomForGame(gameInstance);
+    this.arenaRoomsService.createRoomForGame(gameInstance);
 
     // Increase next ID
     this.nextId ++;
