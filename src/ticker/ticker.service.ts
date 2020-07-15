@@ -30,9 +30,18 @@ export class TickerService {
 
     // Check expired queue asks every tick
     try {
-      await this.queueService.lookForExpiredQueueAsks();
+      await this.queueService.processExpiredQueueAsks();
     } catch (e) {
-      this.logsService.error(`Ticker queue expiration error`, {name: e.name, message: e.message, stack: e.stack});
+      this.logsService.error(`Ticker queue asks expiration error`, {name: e.name, message: e.message, stack: e.stack});
+    }
+
+    // Manages expired queues every 30 ticks
+    if (this.tickCount % 30 === 0) {
+      try {
+        await this.queueService.processExpiredQueues();
+      } catch (e) {
+        this.logsService.error(`Ticker queue expiration error`, {name: e.name, message: e.message, stack: e.stack});
+      }
     }
 
     // Look for spawn bots every 10 tick

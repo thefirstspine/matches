@@ -339,15 +339,15 @@ export class QueueService {
    * Looks for expired queue asks. A queue ask is expired when the delay of QUEUE__EXPIRATION_TIME
    * is passed.
    */
-  async lookForExpiredQueueAsks() {
-    return Promise.all(this.queueInstances.map(this.processQueueExpirationFor.bind(this)));
+  async processExpiredQueueAsks() {
+    return Promise.all(this.queueInstances.map(this.processExpiredQueueAsksFor.bind(this)));
   }
 
   /**
    * Manages expired queue asks for a given game type.
    * @param queueInstance
    */
-  async processQueueExpirationFor(queueInstance: IQueueInstance) {
+  async processExpiredQueueAsksFor(queueInstance: IQueueInstance) {
     // Load game type
     const gameType: IGameType = await this.restService.gameType(queueInstance.gameTypeId);
 
@@ -365,6 +365,15 @@ export class QueueService {
         return false;
       }
       return true;
+    });
+  }
+
+  /**
+   * Looks for expired queues.
+   */
+  async processExpiredQueues() {
+    this.queueInstances = this.queueInstances.filter((queueInstance: IQueueInstance) => {
+      return queueInstance.expiresAt && queueInstance.expiresAt > Date.now();
     });
   }
 
