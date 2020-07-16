@@ -15,7 +15,20 @@ export class ArenaRoomsService {
   constructor(
       private readonly roomsService: RoomsService,
       private readonly wizzardService: WizzardService,
-  ) {}
+  ) {
+    this.roomsService.createRoom(
+      ArenaRoomsService.SUBJECT,
+      {
+        name: 'general-fr',
+        senders: [],
+      });
+    this.roomsService.createRoom(
+      ArenaRoomsService.SUBJECT,
+      {
+        name: 'general-en',
+        senders: [],
+      });
+  }
 
   /**
    * Creates a room for a given game instance
@@ -48,11 +61,32 @@ export class ArenaRoomsService {
       });
   }
 
+  async joinPublicRoom(user: number, language: 'fr'|'en') {
+    return this.roomsService.joinRoom(
+      ArenaRoomsService.SUBJECT,
+      this.getRoomNameForGeneral(language),
+      {
+        user,
+        displayName: '---',
+      });
+  }
+
+  async leavePublicRoom(user: number, language: 'fr'|'en') {
+    return this.roomsService.leaveRoom(
+      ArenaRoomsService.SUBJECT,
+      this.getRoomNameForGeneral(language),
+      user);
+  }
+
   /**
    * Get the room name for a given game
    * @param game
    */
   protected getRoomNameForGame(game: IGameInstance): string {
     return `game-${game.id}`;
+  }
+
+  protected getRoomNameForGeneral(language: 'fr'|'en'): string {
+    return `general-${language}`;
   }
 }
