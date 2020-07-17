@@ -16,7 +16,6 @@ export class BotsService {
         body: JSON.stringify({
           type: 'arena',
           metadata: {
-            gameType: key, // TODO: delete is once bots are migrated
             key,
           },
         }),
