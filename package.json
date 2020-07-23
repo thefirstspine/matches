@@ -24,7 +24,7 @@
     "@nestjs/core": "^6.11.11",
     "@nestjs/platform-express": "^6.11.11",
     "@thefirstspine/auth": "^2.0.0",
-    "@thefirstspine/auth-nest": "1.0.0",
+    "@thefirstspine/auth-nest": "^2.0.0",
     "@thefirstspine/certificate-nest": "0.0.4",
     "@thefirstspine/logs-nest": "1.0.0",
     "@thefirstspine/messaging-nest": "1.0.0",
