@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { ApiError } from './api.error';
-import { QueueService, IQueueInstance } from './../queue/queue.service';
+import { QueueService } from './../queue/queue.service';
 import { GameService } from '../game/game.service';
 import { WizzardService } from '../wizard/wizard.service';
 import { IGameUser,
@@ -23,6 +23,7 @@ import { IGameUser,
          isCreateQueueParams,
          IApiCreateQueueParams,
          IApiGetQueueParams,
+         IQueueInstance,
          isGetQueueParams} from '@thefirstspine/types-arena';
 import { randBetween } from '../utils/maths.utils';
 

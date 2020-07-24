@@ -140,6 +140,8 @@ export class GameService {
     const gameInstance: IGameInstance = {
       status: 'active',
       id: this.nextId,
+      modifiers: [],
+      theme: '',
       gameTypeId,
       users,
       cards: shuffledCards,

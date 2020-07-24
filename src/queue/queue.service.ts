@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { GameService } from '../game/game.service';
 import { WizzardService } from '../wizard/wizard.service';
-import { IGameUser, IGameInstance, IWizardItem, IWizard, IWizardHistoryItem } from '@thefirstspine/types-arena';
+import { IGameUser, IGameInstance, IWizardItem, IWizard, IWizardHistoryItem, IQueueInstance, IQueueUser } from '@thefirstspine/types-arena';
 import { IGameType } from '@thefirstspine/types-rest';
 import { RestService } from '../rest/rest.service';
 import { getScore } from '../utils/game.utils';
@@ -396,17 +396,4 @@ export class QueueService {
     }, false);
   }
 
-}
-
-export interface IQueueInstance {
-  key: string;
-  gameTypeId: string;
-  users: IQueueUser[];
-  createdAt: number;
-  expiresAt?: number;
-}
-
-export interface IQueueUser extends IGameUser {
-  queueExpiresAt: number;
-  queueEnteredAt: number;
 }
