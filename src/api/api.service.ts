@@ -66,7 +66,7 @@ export class ApiService {
     // Return response
     return {
       ...queue,
-      queue: queue.users, // Ensure retrocompatibility
+      queue: queue.users, // Ensure retrocompatibility : deprecated
     };
   }
 
@@ -87,7 +87,7 @@ export class ApiService {
     // Return response
     return {
       ...queue,
-      queue: queue.users, // Ensure retrocompatibility
+      queue: queue.users, // Ensure retrocompatibility: deprecated
     };
   }
 
@@ -96,7 +96,7 @@ export class ApiService {
    * @param request
    */
   async joinQueue(request: IApiRequest<IApiJoinQueueParams>): Promise<IQueueInstance & {queue: any[]}> {
-    // Ensure retrocompatibility (use of gameType instead of key)
+    // Ensure retrocompatibility (use of gameType instead of key): deprecated
     if ((request.params as any).gameType) {
       request.params.key = (request.params as any).gameType;
     }
@@ -115,7 +115,7 @@ export class ApiService {
 
     return {
       ...queue,
-      queue: queue.users, // Ensure retrocompatibility
+      queue: queue.users, // Ensure retrocompatibility: deprecated
     };
   }
 
@@ -124,7 +124,7 @@ export class ApiService {
    * @param request
    */
   async refreshQueueAsk(request: IApiRequest<IApiRefreshQueueAskParams>): Promise<IQueueInstance & {queue: any[]}> {
-    // Ensure retrocompatibility (use of gameType instead of key)
+    // Ensure retrocompatibility (use of gameType instead of key): deprecated
     if ((request.params as any).gameType) {
       request.params.key = (request.params as any).gameType;
     }
@@ -139,7 +139,7 @@ export class ApiService {
 
     return {
       ...queue,
-      queue: queue.users, // Ensure retrocompatibility
+      queue: queue.users, // Ensure retrocompatibility: deprecated
     };
   }
 
@@ -148,7 +148,7 @@ export class ApiService {
    * @param request
    */
   async quitQueue(request: IApiRequest<IApiQuitQueueParams>): Promise<IQueueInstance & {queue: any[]}> {
-    // Ensure retrocompatibility (use of gameType instead of key)
+    // Ensure retrocompatibility (use of gameType instead of key): deprecated
     if ((request.params as any).gameType) {
       request.params.key = (request.params as any).gameType;
     }
@@ -160,7 +160,7 @@ export class ApiService {
 
     return {
       ...queue,
-      queue: queue.users, // Ensure retrocompatibility
+      queue: queue.users, // Ensure retrocompatibility: deprecated
     };
   }
 

@@ -52,7 +52,7 @@ export class GameService {
    * @param gameTypeId
    * @param users
    */
-  async createGameInstance(gameTypeId: string, users: IGameUser[]): Promise<IGameInstance> {
+  async createGameInstance(gameTypeId: string, users: IGameUser[], modifiers: string[], theme: string): Promise<IGameInstance> {
     // Throws an error when max concurrent games is reached
     if (Object.keys(this.gameInstances).length >= GameService.MAX_CONCURRENT_GAMES) {
       throw new Error('Reached max concurrent games.');
@@ -140,8 +140,8 @@ export class GameService {
     const gameInstance: IGameInstance = {
       status: 'active',
       id: this.nextId,
-      modifiers: [],
-      theme: '',
+      modifiers,
+      theme,
       gameTypeId,
       users,
       cards: shuffledCards,

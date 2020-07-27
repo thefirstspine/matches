@@ -8,6 +8,7 @@ import { mergeLootsInItems } from '../../utils/game.utils';
 import { RestService } from '../../rest/rest.service';
 import { LogsService } from '@thefirstspine/logs-nest';
 import { MessagingService } from '@thefirstspine/messaging-nest';
+import { Modifiers } from '../modifiers';
 
 /**
  * This subscriber is executed once a 'card:lifeChanged:damaged:{player}' event is thrown and look for dead
@@ -34,11 +35,7 @@ export class PlayerDamagedGameHook implements IGameHook {
       const losers: IGameUser[] = gameInstance.users.filter((u: IGameUser) => u.user === params.gameCard.user);
       const winners: IGameUser[] = gameInstance.users.filter((u: IGameUser) => u.user !== params.gameCard.user);
 
-      // Get the game type
       const gameType = await this.restService.gameType(gameInstance.gameTypeId);
-
-      // Get the cycle
-      const cycle: ICycle = await this.restService.currentCycle();
 
       // Get aditionnal triumphs based on opponents
       const additionalTriumphs: string[] = [];
@@ -58,7 +55,11 @@ export class PlayerDamagedGameHook implements IGameHook {
       // Generate results & register history
       const result: IGameResult[] = [];
       losers.forEach((gameUser: IGameUser) => {
-        const loots: ILoot[] = [...gameType.loots.defeat];
+        const loots: ILoot[] = [];
+        if (gameInstance.modifiers.includes('deprecated')) {
+          loots.push(...gameType.loots.defeat);
+        }
+        /*
         if (cycle.id === 'treasure-2020') {
           loots.push({
             name: 'golden-galleon',
@@ -66,6 +67,7 @@ export class PlayerDamagedGameHook implements IGameHook {
               .filter((c: IGameCard) => c.user === gameUser.user && c.location === 'hand' && c.card.id === 'golden-galleon').length,
           });
         }
+        */
         this.registerResult(
           false,
           gameUser,
@@ -76,7 +78,11 @@ export class PlayerDamagedGameHook implements IGameHook {
       });
 
       winners.forEach((gameUser: IGameUser) => {
-        const loots: ILoot[] = [...gameType.loots.victory];
+        const loots: ILoot[] = [];
+        if (gameInstance.modifiers.includes('deprecated')) {
+          loots.push(...gameType.loots.defeat);
+        }
+        /*
         if (cycle.id === 'treasure-2020') {
           loots.push({
             name: 'golden-galleon',
@@ -84,6 +90,7 @@ export class PlayerDamagedGameHook implements IGameHook {
               .filter((c: IGameCard) => c.user === gameUser.user && c.location === 'hand' && c.card.id === 'golden-galleon').length,
           });
         }
+        */
         this.registerResult(
           true,
           gameUser,
@@ -121,7 +128,88 @@ export class PlayerDamagedGameHook implements IGameHook {
     additionalTriumphs: string[],
   ) {
     // Get wizard's account
-    const wizzard: IWizard = this.wizzardService.getOrCreateWizzard(gameUser.user);
+    const wizard: IWizard = this.wizzardService.getOrCreateWizzard(gameUser.user);
+
+    if (victory) {
+      loot.push({name: 'victory-mark', num: 1});
+    } else {
+      loot.push({name: 'defeat-mark', num: 1});
+    }
+
+    if (gameInstance.modifiers.includes(Modifiers.IMMEDIATE)) {
+      if (victory) {
+        loot.push({name: 'shard', num: 30});
+      } else {
+        loot.push({name: 'shard', num: 10});
+      }
+    }
+
+    if (gameInstance.modifiers.includes(Modifiers.DAILY)) {
+      const gamesOfTheDay: IWizardHistoryItem[] = wizard.history.filter((h) => {
+        const today: Date = new Date();
+        const todayStr: string = today. getFullYear() + '-' + (today. getMonth() + 1) + '-' + (today.getDate());
+        const gameDate: Date = new Date(h.timestamp);
+        const gameDateStr: string = gameDate. getFullYear() + '-' + (gameDate. getMonth() + 1) + '-' +  (gameDate.getDate());
+        return todayStr === gameDateStr;
+      });
+      const mutiplier: number = gamesOfTheDay.length === 0 ? 2 : 1;
+      if (victory) {
+        loot.push({name: 'shard', num: 30 * mutiplier});
+      } else {
+        loot.push({name: 'shard', num: 10 * mutiplier});
+      }
+    }
+
+    if (gameInstance.modifiers.includes(Modifiers.CYCLE)) {
+      if (victory) {
+        loot.push({name: 'shard', num: 60});
+      }
+    }
+
+    if (
+      gameInstance.modifiers.includes(Modifiers.CYCLE) &&
+      gameInstance.modifiers.includes(Modifiers.GREAT_ANCIENTS_EGGS)
+    ) {
+      if (victory) {
+        loot.push(...[
+          {name: 'holo-great-ancient-egg', num: 1},
+          {name: 'premium-great-ancient-egg', num: 1},
+          {name: 'great-ancient-mark', num: 1},
+        ]);
+      } else {
+        loot.push(...[
+          {name: 'holo-great-ancient-egg', num: 1},
+          {name: 'great-ancient-mark', num: 1},
+        ]);
+      }
+    }
+
+    if (
+      gameInstance.modifiers.includes(Modifiers.CYCLE) &&
+      gameInstance.modifiers.includes(Modifiers.SOUVENIRS_FROM_YOUR_ENEMY)
+    ) {
+      if (victory) {
+        loot.push(...[
+          {name: 'holo-conjurer-souvenir', num: 1},
+          {name: 'holo-summoner-souvenir', num: 1},
+          {name: 'holo-sorcerer-souvenir', num: 1},
+          {name: 'holo-hunter-souvenir', num: 1},
+          {name: 'souvenirs-mark', num: 1},
+        ]);
+      } else {
+        loot.push(...[
+          {name: 'holo-conjurer-souvenir', num: 1},
+          {name: 'premium-conjurer-souvenir', num: 1},
+          {name: 'holo-summoner-souvenir', num: 1},
+          {name: 'premium-summoner-souvenir', num: 1},
+          {name: 'holo-sorcerer-souvenir', num: 1},
+          {name: 'premium-sorcerer-souvenir', num: 1},
+          {name: 'holo-hunter-souvenir', num: 1},
+          {name: 'premium-hunter-souvenir', num: 1},
+          {name: 'souvenirs-mark', num: 1},
+        ]);
+      }
+    }
 
     // Register data in wizard's history
     const historyItem: IWizardHistoryItem = {
@@ -130,43 +218,43 @@ export class PlayerDamagedGameHook implements IGameHook {
       victory,
       timestamp: Date.now(),
     };
-    wizzard.history.push(historyItem);
+    wizard.history.push(historyItem);
     this.logsService.info(`Register history to user #${gameUser.user}`, historyItem);
 
     // Add loot
-    mergeLootsInItems(wizzard.items, loot);
+    mergeLootsInItems(wizard.items, loot);
 
     if (!victory) {
       // Register the triumph "spirit"
-      if (!wizzard.triumphs.includes('spirit')) {
-        wizzard.triumphs.push('spirit');
+      if (!wizard.triumphs.includes('spirit')) {
+        wizard.triumphs.push('spirit');
       }
     } else {
       // Register the triumphs for the destiny & the origin
-      if (gameUser.destiny && !wizzard.triumphs.includes(gameUser.destiny)) {
-        wizzard.triumphs.push(gameUser.destiny);
+      if (gameUser.destiny && !wizard.triumphs.includes(gameUser.destiny)) {
+        wizard.triumphs.push(gameUser.destiny);
       }
-      if (gameUser.origin && !wizzard.triumphs.includes(gameUser.origin)) {
-        wizzard.triumphs.push(gameUser.origin);
+      if (gameUser.origin && !wizard.triumphs.includes(gameUser.origin)) {
+        wizard.triumphs.push(gameUser.origin);
       }
     }
 
     // Register triumph for FPE
-    if (gameInstance.gameTypeId === 'fpe' && !wizzard.triumphs.includes('wizzard')) {
-      wizzard.triumphs.push('wizzard');
+    if (gameInstance.gameTypeId === 'fpe' && !wizard.triumphs.includes('wizzard')) {
+      wizard.triumphs.push('wizzard');
     }
 
     // Register other triumphs
     additionalTriumphs.forEach((t: string) => {
-      if (!wizzard.triumphs.includes(t)) {
-        wizzard.triumphs.push(t);
+      if (!wizard.triumphs.includes(t)) {
+        wizard.triumphs.push(t);
       }
     });
 
     // Save wizard
-    this.messagingService.sendMessage([wizzard.id], 'TheFirstSpine:account', wizzard);
-    this.wizzardsStorageService.save(wizzard);
-    this.logsService.info(`Wizard #${gameUser.user} saved`, wizzard);
+    this.messagingService.sendMessage([wizard.id], 'TheFirstSpine:account', wizard);
+    this.wizzardsStorageService.save(wizard);
+    this.logsService.info(`Wizard #${gameUser.user} saved`, wizard);
 
     result.push({
       user: gameUser.user,

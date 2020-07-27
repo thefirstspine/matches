@@ -7,6 +7,8 @@ import { RestService } from '../rest/rest.service';
 import { getScore } from '../utils/game.utils';
 import { BotsService } from '../bots/bots.service';
 import { MessagingService } from '@thefirstspine/messaging-nest';
+import { Modifiers } from '../game/modifiers';
+import { Themes } from '../game/themes';
 
 /**
  * Service to manage the game queue
@@ -42,16 +44,41 @@ export class QueueService {
         users: [],
         createdAt: Date.now(),
       },
+      // These queues are deprecated now
       {
         key: 'tournament',
         gameTypeId: 'tournament',
         users: [],
+        modifiers: [Modifiers.SOUVENIRS_FROM_YOUR_ENEMY, 'deprecated'],
         createdAt: Date.now(),
       },
       {
         key: 'classic',
         gameTypeId: 'classic',
         users: [],
+        modifiers: [Modifiers.SOUVENIRS_FROM_YOUR_ENEMY, 'deprecated'],
+        createdAt: Date.now(),
+      },
+      // New standard queues
+      {
+        key: 'immediate',
+        gameTypeId: 'classic',
+        users: [],
+        modifiers: [Modifiers.IMMEDIATE],
+        createdAt: Date.now(),
+      },
+      {
+        key: 'daily',
+        gameTypeId: 'classic',
+        users: [],
+        modifiers: [Modifiers.DAILY],
+        createdAt: Date.now(),
+      },
+      {
+        key: 'cycle',
+        gameTypeId: 'classic',
+        users: [],
+        modifiers: [Modifiers.CYCLE],
         createdAt: Date.now(),
       },
     );
@@ -319,7 +346,11 @@ export class QueueService {
       // Extract the users needed from the queue
       const queueUsersNeeded: IGameUser[] = queueUsers.splice(0, gameType.players.length);
       // Create a game
-      const game: IGameInstance = await this.gameService.createGameInstance(gameType.id, queueUsersNeeded);
+      const game: IGameInstance = await this.gameService.createGameInstance(
+        gameType.id,
+        queueUsersNeeded,
+        queueInstance.modifiers ? queueInstance.modifiers : [],
+        queueInstance.theme ? queueInstance.theme : Themes.DEAD_FOREST);
       // Make them quit from the queue
       queueUsersNeeded.forEach((queueUser: IGameUser) => this.quit(queueInstance.key, queueUser.user));
       // Send message

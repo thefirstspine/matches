@@ -5,6 +5,7 @@ import { RestService } from '../../rest/rest.service';
 import { ICycle, ICard } from '@thefirstspine/types-rest';
 import { randBetween } from '../../utils/maths.utils';
 import { shuffle } from '../../utils/array.utils';
+import { Modifiers } from '../modifiers';
 
 @Injectable()
 export class ClassicCreatedGameHook implements IGameHook {
@@ -14,8 +15,7 @@ export class ClassicCreatedGameHook implements IGameHook {
   ) {}
 
   async execute(gameInstance: IGameInstance, params: {gameInstance: IGameInstance}): Promise<boolean> {
-    const cycle: ICycle = await this.restService.currentCycle();
-
+    /*
     if (cycle.id === 'treasure-2020') {
       // Get the "golden-galleon" card
       const goldenGalleonCard: ICard = await this.restService.card('golden-galleon');
@@ -36,8 +36,9 @@ export class ClassicCreatedGameHook implements IGameHook {
       // Shuffle the cards
       gameInstance.cards = shuffle(gameInstance.cards);
     }
+    */
 
-    if (cycle.id === 'souvenirs-2020') {
+    if (gameInstance.modifiers.includes(Modifiers.GREAT_ANCIENTS_EGGS)) {
       // Get the "great-ancient-egg" card
       const hunterSouvenirCard: ICard = await this.restService.card('hunter-souvenir');
       const conjurerSouvenirCard: ICard = await this.restService.card('conjurer-souvenir');
