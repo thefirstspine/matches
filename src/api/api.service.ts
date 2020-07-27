@@ -15,17 +15,18 @@ import { IGameUser,
          IApiRefreshQueueAskParams,
          IApiJoinQueueParams,
          IApiQuitQueueParams,
-         isRespondToActionParams,
-         isQuitQueueParams,
-         isRefreshAskQueueParams,
-         isJoinQueueParams,
          IGameInteraction,
-         isCreateQueueParams,
          IApiCreateQueueParams,
          IApiGetQueueParams,
-         IQueueInstance,
-         isGetQueueParams} from '@thefirstspine/types-arena';
+         IQueueInstance} from '@thefirstspine/types-arena';
 import { randBetween } from '../utils/maths.utils';
+import { validate, ValidationError } from 'class-validator';
+import { ApiCreateQueueDto } from './api-create-queue.dto';
+import { ApiGetQueueDto } from './api-get-queue.dto';
+import { ApiJoinQueueDto } from './api-join-queue.dto';
+import { ApiRefreshQueueAskDto } from './api-refresh-queue-ask.dto';
+import { ApiQuitQueueDto } from './api-quit-queue.dto';
+import { ApiRespondToActionDto } from './api-respond-to-action.dto';
 
 /**
  * All the methods of the API are mapped here. The controller will call that
@@ -46,9 +47,7 @@ export class ApiService {
    */
   async createQueue(request: IApiRequest<IApiCreateQueueParams>): Promise<IQueueInstance & {queue: any[]}> {
     // Validate input
-    if (!isCreateQueueParams(request.params)) {
-      throw new ApiError('Invalid method parameter(s).', ApiError.CODE_INVALID_PARAMS);
-    }
+    await this.validateAgainst(request.params, ApiCreateQueueDto);
 
     // Validate allowed game types
     if (!['standard', 'quick'].includes(request.params.gameTypeId)) {
@@ -77,9 +76,7 @@ export class ApiService {
    */
   async getQueue(request: IApiRequest<IApiGetQueueParams>): Promise<IQueueInstance & {queue: any[]}> {
     // Validate input
-    if (!isGetQueueParams(request.params)) {
-      throw new ApiError('Invalid method parameter(s).', ApiError.CODE_INVALID_PARAMS);
-    }
+    await this.validateAgainst(request.params, ApiGetQueueDto);
 
     // Create the the instance
     const queue: IQueueInstance = this.queueService.getQueueInstance(request.params.key);
@@ -104,9 +101,8 @@ export class ApiService {
       request.params.key = (request.params as any).gameType;
     }
 
-    if (!isJoinQueueParams(request.params)) {
-      throw new ApiError('Invalid method parameter(s).', ApiError.CODE_INVALID_PARAMS);
-    }
+    // Validate input
+    await this.validateAgainst(request.params, ApiJoinQueueDto);
 
     const queue: IQueueInstance = await this.queueService.join(
       request.params.key,
@@ -133,9 +129,8 @@ export class ApiService {
       request.params.key = (request.params as any).gameType;
     }
 
-    if (!isRefreshAskQueueParams(request.params)) {
-      throw new ApiError('Invalid method parameter(s).', ApiError.CODE_INVALID_PARAMS);
-    }
+    // Validate input
+    await this.validateAgainst(request.params, ApiRefreshQueueAskDto);
 
     const queue: IQueueInstance = await this.queueService.refreshAsk(
       request.params.key,
@@ -158,9 +153,8 @@ export class ApiService {
       request.params.key = (request.params as any).gameType;
     }
 
-    if (!isQuitQueueParams(request.params)) {
-      throw new ApiError('Invalid method parameter(s).', ApiError.CODE_INVALID_PARAMS);
-    }
+    // Validate input
+    await this.validateAgainst(request.params, ApiQuitQueueDto);
 
     const queue: IQueueInstance = this.queueService.quit(request.params.key, request.user);
 
@@ -332,9 +326,8 @@ export class ApiService {
    * @param request
    */
   async respondToAction(request: IApiRequest<IApiRespondToActionParams>): Promise<IApiRespondToActionResponse> {
-    if (!isRespondToActionParams(request.params)) {
-      throw new ApiError('Invalid method parameter(s).', ApiError.CODE_INVALID_PARAMS);
-    }
+    // Validate input
+    await this.validateAgainst(request.params, ApiRespondToActionDto);
 
     // Get the ID of the game
     const id: number|undefined = request.id;
@@ -396,6 +389,18 @@ export class ApiService {
     await this.gameService.concedeGame(id, request.user);
 
     return this.getGame(request);
+  }
+
+  protected async validateAgainst(data: any, classValidator: (new() => void)): Promise<boolean> {
+    const built: any = new classValidator();
+    Object.keys(data).forEach((property: string) => built[property] = data[property]);
+
+    const result: ValidationError[] = await validate(built);
+    if (result.length) {
+      const errorParams: string = result.map((error: ValidationError) => error.property).join(', ');
+      throw new ApiError(`Invalid method parameter${(result.length > 1 ? 's' : '')}: ${errorParams}`, ApiError.CODE_INVALID_PARAMS);
+    }
+    return true;
   }
 
 }

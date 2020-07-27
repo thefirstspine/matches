@@ -2,6 +2,7 @@ import { Controller, Post, Body, UseGuards, Req } from '@nestjs/common';
 import { ApiService } from './api.service';
 import { ApiError } from './api.error';
 import { AuthGuard } from '@thefirstspine/auth-nest';
+import { JsonRpcRequestDto } from './json-rpc-request.dto';
 
 /**
  * Main API Controller. The controller does accept only one POST request.
@@ -18,28 +19,23 @@ export class ApiController {
    */
   @Post()
   @UseGuards(AuthGuard)
-  async api(@Req() request: any): Promise<IJsonRpcResponse|IJsonRpcError> {
-    // Try to decode request
-    if (!isJsonRpcRequest(request.body)) {
-      return this.outputError(new ApiError('The JSON sent is not a valid Request object', ApiError.CODE_INVALID_REQUEST));
-    }
-
+  async api(@Req() request, @Body() body: JsonRpcRequestDto): Promise<IJsonRpcResponse|IJsonRpcError> {
     // Does the method exist?
-    if (typeof this.apiService[request.body.method] === 'undefined') {
+    if (typeof this.apiService[body.method] === 'undefined') {
       return this.outputError(new ApiError('The method does not exist / is not available', ApiError.CODE_METHOD_NOT_FOUND));
     }
 
     try {
       // Try to execute the method on the service
-      const result: any = await this.apiService[request.body.method]({
-        params: request.body.params,
-        id: request.body.id,
+      const result: any = await this.apiService[body.method]({
+        params: body.params,
+        id: body.id,
         user: request.user,
       });
       return {
         jsonrpc: '2.0',
         result,
-        id: request.body.id,
+        id: body.id,
       };
     } catch (e) {
       // In case of error, output the error
@@ -99,12 +95,4 @@ export interface IJsonRpcError {
     message: string;
     data?: any;
   };
-}
-
-/**
- * Type guard for IJsonRpcRequest
- * @param toBeDetermined
- */
-export function isJsonRpcRequest(toBeDetermined: any): toBeDetermined is IJsonRpcRequest {
-  return toBeDetermined.jsonrpc === '2.0' && toBeDetermined.method && toBeDetermined.params;
 }
