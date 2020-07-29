@@ -42,6 +42,7 @@ export class QueueService {
         key: 'fpe',
         gameTypeId: 'fpe',
         users: [],
+        modifiers: [],
         createdAt: Date.now(),
       },
       // These queues are deprecated now
@@ -62,21 +63,21 @@ export class QueueService {
       // New standard queues
       {
         key: 'immediate',
-        gameTypeId: 'classic',
+        gameTypeId: 'standard',
         users: [],
         modifiers: [Modifiers.IMMEDIATE],
         createdAt: Date.now(),
       },
       {
         key: 'daily',
-        gameTypeId: 'classic',
+        gameTypeId: 'standard',
         users: [],
         modifiers: [Modifiers.DAILY],
         createdAt: Date.now(),
       },
       {
         key: 'cycle',
-        gameTypeId: 'classic',
+        gameTypeId: 'standard',
         users: [],
         modifiers: [Modifiers.CYCLE],
         createdAt: Date.now(),

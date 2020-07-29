@@ -223,6 +223,8 @@ export class ApiService {
       status: gameInstance.status,
       result: gameInstance.result,
       users: gameInstance.users,
+      theme: gameInstance.theme,
+      modifiers: gameInstance.modifiers,
       stats,
     };
   }
