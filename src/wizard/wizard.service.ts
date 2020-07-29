@@ -143,9 +143,6 @@ export class WizzardService {
     return migrated;
   }
 
-  /**
-   * @deprecated
-   */
   getOrCreateWizzard(user: number): IWizard {
     // The user "0" is a default wizzard
     if (user === 0) {

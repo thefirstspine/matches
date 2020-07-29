@@ -79,7 +79,6 @@ export class ShopController {
       const url = `${process.env.ARENA_URL}/shop/v/go/${purchase.timestamp}`;
       return {
         status: true,
-        html: purchase.data?.checkoutCode,
         url,
       };
     } catch (e) {
@@ -163,9 +162,5 @@ export interface IExchangeResult {
 export interface IPurchaseResult {
   status: boolean;
   message?: string;
-  /**
-   * @deprecated
-   */
-  html?: string;
   url?: string;
 }

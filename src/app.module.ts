@@ -8,7 +8,6 @@ import { TickerService } from './ticker/ticker.service';
 import { GamesStorageService } from './storage/games.storage.service';
 import { WizzardService } from './wizard/wizard.service';
 import { WizzardsStorageService } from './storage/wizzards.storage.service';
-import { WizzardController } from './wizzard/wizzard.controller';
 import { ShopController } from './shop/shop.controller';
 import { ShopService } from './shop/shop.service';
 import { RestService } from './rest/rest.service';
@@ -32,7 +31,7 @@ import { WizardController } from './wizard/wizard.controller';
       socketFile: __dirname + '/../socket',
     }),
   ],
-  controllers: [ApiController, TickerController, WizzardController, ShopController, IndexController, WizardController],
+  controllers: [ApiController, TickerController, ShopController, IndexController, WizardController],
   providers: [
     ApiService,
     GameService,

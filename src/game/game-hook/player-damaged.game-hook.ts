@@ -56,9 +56,6 @@ export class PlayerDamagedGameHook implements IGameHook {
       const result: IGameResult[] = [];
       losers.forEach((gameUser: IGameUser) => {
         const loots: ILoot[] = [];
-        if (gameInstance.modifiers.includes('deprecated')) {
-          loots.push(...gameType.loots.defeat);
-        }
         /*
         if (cycle.id === 'treasure-2020') {
           loots.push({

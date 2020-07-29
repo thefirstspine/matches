@@ -45,7 +45,7 @@ export class ApiService {
    * Create a queue in the queue service
    * @param request
    */
-  async createQueue(request: IApiRequest<IApiCreateQueueParams>): Promise<IQueueInstance & {queue: any[]}> {
+  async createQueue(request: IApiRequest<IApiCreateQueueParams>): Promise<IQueueInstance> {
     // Validate input
     await this.validateAgainst(request.params, ApiCreateQueueDto);
 
@@ -66,7 +66,6 @@ export class ApiService {
     // Return response
     return {
       ...queue,
-      queue: queue.users, // Ensure retrocompatibility : deprecated
     };
   }
 
@@ -74,7 +73,7 @@ export class ApiService {
    * Get a queue in the queue service
    * @param request
    */
-  async getQueue(request: IApiRequest<IApiGetQueueParams>): Promise<IQueueInstance & {queue: any[]}> {
+  async getQueue(request: IApiRequest<IApiGetQueueParams>): Promise<IQueueInstance> {
     // Validate input
     await this.validateAgainst(request.params, ApiGetQueueDto);
 
@@ -87,7 +86,6 @@ export class ApiService {
     // Return response
     return {
       ...queue,
-      queue: queue.users, // Ensure retrocompatibility: deprecated
     };
   }
 
@@ -95,12 +93,7 @@ export class ApiService {
    * Join a queue in the queue service
    * @param request
    */
-  async joinQueue(request: IApiRequest<IApiJoinQueueParams>): Promise<IQueueInstance & {queue: any[]}> {
-    // Ensure retrocompatibility (use of gameType instead of key): deprecated
-    if ((request.params as any).gameType) {
-      request.params.key = (request.params as any).gameType;
-    }
-
+  async joinQueue(request: IApiRequest<IApiJoinQueueParams>): Promise<IQueueInstance> {
     // Validate input
     await this.validateAgainst(request.params, ApiJoinQueueDto);
 
@@ -115,7 +108,6 @@ export class ApiService {
 
     return {
       ...queue,
-      queue: queue.users, // Ensure retrocompatibility: deprecated
     };
   }
 
@@ -123,12 +115,7 @@ export class ApiService {
    * Join a queue in the queue service
    * @param request
    */
-  async refreshQueueAsk(request: IApiRequest<IApiRefreshQueueAskParams>): Promise<IQueueInstance & {queue: any[]}> {
-    // Ensure retrocompatibility (use of gameType instead of key): deprecated
-    if ((request.params as any).gameType) {
-      request.params.key = (request.params as any).gameType;
-    }
-
+  async refreshQueueAsk(request: IApiRequest<IApiRefreshQueueAskParams>): Promise<IQueueInstance> {
     // Validate input
     await this.validateAgainst(request.params, ApiRefreshQueueAskDto);
 
@@ -139,7 +126,6 @@ export class ApiService {
 
     return {
       ...queue,
-      queue: queue.users, // Ensure retrocompatibility: deprecated
     };
   }
 
@@ -147,12 +133,7 @@ export class ApiService {
    * Quit a queue in the queue service
    * @param request
    */
-  async quitQueue(request: IApiRequest<IApiQuitQueueParams>): Promise<IQueueInstance & {queue: any[]}> {
-    // Ensure retrocompatibility (use of gameType instead of key): deprecated
-    if ((request.params as any).gameType) {
-      request.params.key = (request.params as any).gameType;
-    }
-
+  async quitQueue(request: IApiRequest<IApiQuitQueueParams>): Promise<IQueueInstance> {
     // Validate input
     await this.validateAgainst(request.params, ApiQuitQueueDto);
 
@@ -160,7 +141,6 @@ export class ApiService {
 
     return {
       ...queue,
-      queue: queue.users, // Ensure retrocompatibility: deprecated
     };
   }
 
@@ -292,35 +272,6 @@ export class ApiService {
         return action.user === request.user && action.priority === maxPriority;
       },
     );
-  }
-
-  /**
-   * Get users
-   * @param request
-   * @deprecated
-   */
-  async getUsers(request: IApiRequest<undefined>): Promise<IApiGetUsersResponse> {
-    // Get the ID of the game
-    const id: number|undefined = request.id;
-    if (!id) {
-      throw new ApiError('Required ID.', ApiError.CODE_INVALID_REQUEST);
-    }
-
-    // Get the game instance
-    const gameInstance: IGameInstance|null = this.gameService.getGameInstance(id);
-    if (!gameInstance) {
-      throw new ApiError('Unknown game instance.', ApiError.CODE_METHOD_NOT_FOUND);
-    }
-
-    // Get the cards in the board OR in the discard OR in the user's deck OR in the user's hand
-    return {
-      users: gameInstance.users.map((u: IGameUser) => {
-        return {
-          account: this.wizzardService.getOrCreateWizzard(u.user),
-          game: u,
-        };
-      }),
-    };
   }
 
   /**

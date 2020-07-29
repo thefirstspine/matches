@@ -45,22 +45,6 @@ export class QueueService {
         modifiers: [],
         createdAt: Date.now(),
       },
-      // These queues are deprecated now
-      {
-        key: 'tournament',
-        gameTypeId: 'tournament',
-        users: [],
-        modifiers: [Modifiers.SOUVENIRS_FROM_YOUR_ENEMY, 'deprecated'],
-        createdAt: Date.now(),
-      },
-      {
-        key: 'classic',
-        gameTypeId: 'classic',
-        users: [],
-        modifiers: [Modifiers.SOUVENIRS_FROM_YOUR_ENEMY, 'deprecated'],
-        createdAt: Date.now(),
-      },
-      // New standard queues
       {
         key: 'immediate',
         gameTypeId: 'standard',
