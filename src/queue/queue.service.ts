@@ -77,6 +77,8 @@ export class QueueService {
   async create(
     key: string,
     gameTypeId: string,
+    theme: string,
+    modifiers: string[],
   ): Promise<IQueueInstance> {
     const gameType: IGameType = await this.restService.gameType(gameTypeId);
     if (!gameType) {
@@ -87,6 +89,8 @@ export class QueueService {
       key,
       gameTypeId,
       users: [],
+      theme,
+      modifiers,
       createdAt: Date.now(),
       expiresAt: Date.now() + (60 * 30 * 1000),
     };

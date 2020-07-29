@@ -16,7 +16,6 @@ import { IGameUser,
          IApiJoinQueueParams,
          IApiQuitQueueParams,
          IGameInteraction,
-         IApiCreateQueueParams,
          IApiGetQueueParams,
          IQueueInstance} from '@thefirstspine/types-arena';
 import { randBetween } from '../utils/maths.utils';
@@ -27,6 +26,7 @@ import { ApiJoinQueueDto } from './api-join-queue.dto';
 import { ApiRefreshQueueAskDto } from './api-refresh-queue-ask.dto';
 import { ApiQuitQueueDto } from './api-quit-queue.dto';
 import { ApiRespondToActionDto } from './api-respond-to-action.dto';
+import { Themes } from '../game/themes';
 
 /**
  * All the methods of the API are mapped here. The controller will call that
@@ -45,7 +45,7 @@ export class ApiService {
    * Create a queue in the queue service
    * @param request
    */
-  async createQueue(request: IApiRequest<IApiCreateQueueParams>): Promise<IQueueInstance> {
+  async createQueue(request: IApiRequest<ApiCreateQueueDto>): Promise<IQueueInstance> {
     // Validate input
     await this.validateAgainst(request.params, ApiCreateQueueDto);
 
@@ -61,6 +61,8 @@ export class ApiService {
     const queue: IQueueInstance = await this.queueService.create(
       key,
       request.params.gameTypeId,
+      request.params.theme ? request.params.theme : Themes.DEAD_FOREST,
+      request.params.modifiers ? request.params.modifiers : [],
     );
 
     // Return response
