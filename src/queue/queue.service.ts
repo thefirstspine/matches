@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { GameService } from '../game/game.service';
 import { WizzardService } from '../wizard/wizard.service';
 import { IGameUser, IGameInstance, IWizardItem, IWizard, IWizardHistoryItem, IQueueInstance, IQueueUser } from '@thefirstspine/types-arena';
-import { IGameType } from '@thefirstspine/types-rest';
+import { IGameType, ICycle } from '@thefirstspine/types-rest';
 import { RestService } from '../rest/rest.service';
 import { getScore } from '../utils/game.utils';
 import { BotsService } from '../bots/bots.service';
@@ -67,6 +67,7 @@ export class QueueService {
         createdAt: Date.now(),
       },
     );
+    this.updateQueueInstancesData();
   }
 
   /**
@@ -106,6 +107,43 @@ export class QueueService {
    */
   getQueueInstance(key: string): IQueueInstance|undefined {
     return this.queueInstances.find((q) => q.key === key);
+  }
+
+  /**
+   * Update the instances data based on cycle & day
+   */
+  async updateQueueInstancesData() {
+    const currentCycle: ICycle = await this.restService.currentCycle();
+    const fixedCycleData: {
+      [key: string]: {theme: string, modifier: string},
+    } = {
+      'renewal-2020': {theme: '', modifier: ''},
+      'great-ancient-2020': {theme: Themes.SPINE_S_CAVE, modifier: Modifiers.GREAT_ANCIENTS_EGGS},
+      'treasure-2020': {theme: '', modifier: ''},
+      'souvenirs-2020': {theme: Themes.FORGOTTEN_CEMETERY, modifier: Modifiers.SOUVENIRS_FROM_YOUR_ENEMY},
+      'harvest-2020': {theme: Themes.SPINE_S_CAVE, modifier: Modifiers.SOUVENIRS_FROM_YOUR_ENEMY},
+    };
+
+    const fixedDailyData: Array<{theme: string, modifier: string}> = [
+      {theme: Themes.SPINE_S_CAVE, modifier: Modifiers.GREAT_ANCIENTS_EGGS},
+    ];
+
+    this.queueInstances.forEach((instance: IQueueInstance) => {
+      if (instance.key === 'daily') {
+        instance.theme = fixedDailyData[(new Date()).getDay() % fixedDailyData.length].theme;
+        instance.modifiers = [
+          'daily',
+          fixedDailyData[(new Date()).getDay() % fixedDailyData.length].modifier,
+        ];
+      }
+      if (instance.key === 'cycle') {
+        instance.theme = fixedCycleData[currentCycle.id].theme;
+        instance.modifiers = [
+          'cycle',
+          fixedCycleData[currentCycle.id].modifier,
+        ];
+      }
+    });
   }
 
   /**
