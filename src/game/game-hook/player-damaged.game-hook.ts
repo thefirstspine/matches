@@ -167,17 +167,11 @@ export class PlayerDamagedGameHook implements IGameHook {
       gameInstance.modifiers.includes(Modifiers.CYCLE) &&
       gameInstance.modifiers.includes(Modifiers.GREAT_ANCIENTS_EGGS)
     ) {
+      loot.push({name: 'great-ancient-mark', num: 1});
       if (victory) {
-        loot.push(...[
-          {name: 'holo-great-ancient-egg', num: 1},
-          {name: 'premium-great-ancient-egg', num: 1},
-          {name: 'great-ancient-mark', num: 1},
-        ]);
+        loot.push({name: 'holo-great-ancient-egg', num: 1}, {name: 'premium-great-ancient-egg', num: 1});
       } else {
-        loot.push(...[
-          {name: 'holo-great-ancient-egg', num: 1},
-          {name: 'great-ancient-mark', num: 1},
-        ]);
+        loot.push({name: 'holo-great-ancient-egg', num: 1});
       }
     }
 
@@ -185,16 +179,16 @@ export class PlayerDamagedGameHook implements IGameHook {
       gameInstance.modifiers.includes(Modifiers.CYCLE) &&
       gameInstance.modifiers.includes(Modifiers.SOUVENIRS_FROM_YOUR_ENEMY)
     ) {
+      loot.push({name: 'souvenirs-mark', num: 1});
       if (victory) {
-        loot.push(...[
+        loot.push(
           {name: 'holo-conjurer-souvenir', num: 1},
           {name: 'holo-summoner-souvenir', num: 1},
           {name: 'holo-sorcerer-souvenir', num: 1},
           {name: 'holo-hunter-souvenir', num: 1},
-          {name: 'souvenirs-mark', num: 1},
-        ]);
+        );
       } else {
-        loot.push(...[
+        loot.push(
           {name: 'holo-conjurer-souvenir', num: 1},
           {name: 'premium-conjurer-souvenir', num: 1},
           {name: 'holo-summoner-souvenir', num: 1},
@@ -203,8 +197,7 @@ export class PlayerDamagedGameHook implements IGameHook {
           {name: 'premium-sorcerer-souvenir', num: 1},
           {name: 'holo-hunter-souvenir', num: 1},
           {name: 'premium-hunter-souvenir', num: 1},
-          {name: 'souvenirs-mark', num: 1},
-        ]);
+        );
       }
     }
 
