@@ -49,7 +49,6 @@ export class QueueService {
         key: 'immediate',
         gameTypeId: 'standard',
         users: [],
-        modifiers: [Modifiers.IMMEDIATE],
         createdAt: Date.now(),
       },
       {
