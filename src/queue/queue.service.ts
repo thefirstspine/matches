@@ -49,6 +49,7 @@ export class QueueService {
         key: 'immediate',
         gameTypeId: 'standard',
         users: [],
+        modifiers: [Modifiers.IMMEDIATE],
         createdAt: Date.now(),
       },
       {
@@ -302,9 +303,6 @@ export class QueueService {
    * @param queueInstance
    */
   async processBotSpawnsFor(queueInstance: IQueueInstance): Promise<void> {
-    // Load game type
-    const gameType: IGameType = await this.restService.gameType(queueInstance.gameTypeId);
-
     // Get users in queue
     const queueUsers: IQueueUser[] = queueInstance.users;
 
@@ -319,7 +317,8 @@ export class QueueService {
     }
 
     // Spawn bot only on queue older than 31 seconds
-    if (Date.now() - queueUsers[0].queueEnteredAt < (31 * 1000)) {
+    const timeToMatch = queueInstance.modifiers?.includes(Modifiers.IMMEDIATE) ? 10 : 31;
+    if (Date.now() - queueUsers[0].queueEnteredAt < (timeToMatch * 1000)) {
       return;
     }
 
