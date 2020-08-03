@@ -35,8 +35,6 @@ export class PlayerDamagedGameHook implements IGameHook {
       const losers: IGameUser[] = gameInstance.users.filter((u: IGameUser) => u.user === params.gameCard.user);
       const winners: IGameUser[] = gameInstance.users.filter((u: IGameUser) => u.user !== params.gameCard.user);
 
-      const gameType = await this.restService.gameType(gameInstance.gameTypeId);
-
       // Get aditionnal triumphs based on opponents
       const additionalTriumphs: string[] = [];
       if (losers.find((user: IGameUser) => user.user === 933)) {
@@ -76,9 +74,6 @@ export class PlayerDamagedGameHook implements IGameHook {
 
       winners.forEach((gameUser: IGameUser) => {
         const loots: ILoot[] = [];
-        if (gameInstance.modifiers.includes('deprecated')) {
-          loots.push(...gameType.loots.victory);
-        }
         /*
         if (cycle.id === 'treasure-2020') {
           loots.push({

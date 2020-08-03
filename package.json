@@ -29,7 +29,7 @@
     "@thefirstspine/logs-nest": "1.0.0",
     "@thefirstspine/messaging-nest": "1.0.0",
     "@thefirstspine/types-arena": "^1.10.0",
-    "@thefirstspine/types-rest": "^1.1.0",
+    "@thefirstspine/types-rest": "^1.2.0",
     "@types/dotenv": "^6.1.1",
     "@types/node-fetch": "^2.5.5",
     "@types/winston": "^2.4.4",
