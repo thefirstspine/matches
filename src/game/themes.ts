@@ -8,6 +8,22 @@ export class Themes {
     return [
       Themes.DEAD_FOREST,
       Themes.SPINE_S_CAVE,
+      Themes.FORGOTTEN_CEMETERY,
+    ];
+  }
+
+  static get user(): string[] {
+    return [
+      Themes.DEAD_FOREST,
+      Themes.SPINE_S_CAVE,
+    ];
+  }
+
+  static get system(): string[] {
+    return [
+      Themes.DEAD_FOREST,
+      Themes.SPINE_S_CAVE,
+      Themes.FORGOTTEN_CEMETERY,
     ];
   }
 

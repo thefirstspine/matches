@@ -9,7 +9,7 @@ export class ApiCreateQueueDto {
 
   @IsString()
   @IsOptional()
-  @IsIn(Themes.all)
+  @IsIn(Themes.user)
   theme?: string;
 
   @IsArray()

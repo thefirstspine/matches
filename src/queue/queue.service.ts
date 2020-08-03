@@ -9,6 +9,7 @@ import { BotsService } from '../bots/bots.service';
 import { MessagingService } from '@thefirstspine/messaging-nest';
 import { Modifiers } from '../game/modifiers';
 import { Themes } from '../game/themes';
+import { randBetween } from '../utils/maths.utils';
 
 /**
  * Service to manage the game queue
@@ -366,7 +367,7 @@ export class QueueService {
         gameType.id,
         queueUsersNeeded,
         queueInstance.modifiers ? queueInstance.modifiers : [],
-        queueInstance.theme ? queueInstance.theme : Themes.DEAD_FOREST);
+        queueInstance.theme ? queueInstance.theme : Themes.user[randBetween(0, Themes.user.length - 1)]);
       // Make them quit from the queue
       queueUsersNeeded.forEach((queueUser: IGameUser) => this.quit(queueInstance.key, queueUser.user));
       // Send message
