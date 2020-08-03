@@ -209,8 +209,6 @@ export class QueueService {
       throw new Error('Origin not allowed in that game type.');
     }
 
-    // TODO: guard here to check for max games & shields => will be deleted in a next update
-
     // Add the user in the queue
     queue.users.push({
       user,
@@ -320,11 +318,6 @@ export class QueueService {
       return;
     }
 
-    // The matchmaking mode should be on "asap"
-    if (gameType.matchmakingMode !== 'asap') {
-      return;
-    }
-
     // Spawn bot only on queue older than 31 seconds
     if (Date.now() - queueUsers[0].queueEnteredAt < (31 * 1000)) {
       return;
@@ -357,18 +350,16 @@ export class QueueService {
 
     if (queueUsers.length >= gameType.players.length) {
       // We have to sort the users here in a ranked matchmaking type
-      if (gameType.matchmakingMode === 'ranked') {
-        queueUsers.sort((a: IGameUser, b: IGameUser) => {
-          const aIndex: number = queueUsers.findIndex((u) => u === a);
-          const aScore: number = getScore(queueWizzards[aIndex].history.filter((h: IWizardHistoryItem) => h.gameTypeId === queueInstance.gameTypeId));
-          const bIndex: number = queueUsers.findIndex((u) => u === b);
-          const bScore: number = getScore(queueWizzards[bIndex].history.filter((h: IWizardHistoryItem) => h.gameTypeId === queueInstance.gameTypeId));
-          if (aScore === bScore) {
-            return 0;
-          }
-          return aScore > bScore ? 1 : -1;
-        });
-      }
+      queueUsers.sort((a: IGameUser, b: IGameUser) => {
+        const aIndex: number = queueUsers.findIndex((u) => u === a);
+        const aScore: number = getScore(queueWizzards[aIndex].history.filter((h: IWizardHistoryItem) => h.gameTypeId === queueInstance.gameTypeId));
+        const bIndex: number = queueUsers.findIndex((u) => u === b);
+        const bScore: number = getScore(queueWizzards[bIndex].history.filter((h: IWizardHistoryItem) => h.gameTypeId === queueInstance.gameTypeId));
+        if (aScore === bScore) {
+          return 0;
+        }
+        return aScore > bScore ? 1 : -1;
+      });
       // Extract the users needed from the queue
       const queueUsersNeeded: IGameUser[] = queueUsers.splice(0, gameType.players.length);
       // Create a game
