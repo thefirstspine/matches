@@ -5,6 +5,7 @@ import { GameHookService } from '../game-hook/game-hook.service';
 import { IHasGameHookService } from '../injections.interface';
 import { ArenaRoomsService } from '../../rooms/arena-rooms.service';
 import { LogsService } from '@thefirstspine/logs-nest';
+import { randBetween } from '../../utils/maths.utils';
 
 /**
  * Main worker for "sacrifice-anvil-of-xiarmha-effect" action.
@@ -118,6 +119,10 @@ export class SacrificeAnvilOfXiarmhaEffectGameWorker implements IGameWorker, IHa
    * @param gameAction
    */
   public async expires(gameInstance: IGameInstance, gameAction: IGameAction<IInteractionPutCardOnBoard>): Promise<boolean> {
+    const boardCoords: string[] = this.getBoardCoords(gameInstance, gameAction.user);
+    gameAction.response = {
+      boardCoords: boardCoords[randBetween(0, boardCoords.length - 1)],
+    };
     return true;
   }
 
