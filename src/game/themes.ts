@@ -3,6 +3,7 @@ export class Themes {
   static readonly DEAD_FOREST: string = 'dead-forest';
   static readonly SPINE_S_CAVE: string = 'spine-s-cave';
   static readonly FORGOTTEN_CEMETERY: string = 'forgotten-cemetery';
+  static readonly WASTED_FIELDS: string = 'wasted-fields';
   static readonly SACRIFICE_CHURCH: string = 'sacrifice-church';
 
   static get all(): string[] {
@@ -10,7 +11,7 @@ export class Themes {
       Themes.DEAD_FOREST,
       Themes.SPINE_S_CAVE,
       Themes.FORGOTTEN_CEMETERY,
-      Themes.SACRIFICE_CHURCH,
+      Themes.WASTED_FIELDS,
     ];
   }
 
@@ -18,7 +19,7 @@ export class Themes {
     return [
       Themes.DEAD_FOREST,
       Themes.SPINE_S_CAVE,
-      Themes.SACRIFICE_CHURCH,
+      Themes.FORGOTTEN_CEMETERY,
     ];
   }
 
@@ -26,7 +27,7 @@ export class Themes {
     return [
       Themes.DEAD_FOREST,
       Themes.SPINE_S_CAVE,
-      Themes.FORGOTTEN_CEMETERY,
+      Themes.WASTED_FIELDS,
     ];
   }
 
