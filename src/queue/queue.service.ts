@@ -137,17 +137,21 @@ export class QueueService {
     const events: string[] = jsonResult ? jsonResult.map((e: any) => e.type) : [];
 
     this.queueInstances.forEach((instance: IQueueInstance) => {
+      if (instance.key === 'immediate') {
+        instance.theme = undefined;
+        instance.modifiers = [Modifiers.IMMEDIATE];
+      }
       if (instance.key === 'daily') {
         instance.theme = fixedDailyData[(new Date()).getDay() % fixedDailyData.length].theme;
         instance.modifiers = [
-          'daily',
+          Modifiers.DAILY,
           fixedDailyData[(new Date()).getDay() % fixedDailyData.length].modifier,
         ];
       }
       if (instance.key === 'cycle') {
         instance.theme = fixedCycleData[currentCycle.id].theme;
         instance.modifiers = [
-          'cycle',
+          Modifiers.CYCLE,
           fixedCycleData[currentCycle.id].modifier,
         ];
       }
