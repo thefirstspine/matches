@@ -10,6 +10,7 @@ import { MessagingService } from '@thefirstspine/messaging-nest';
 import { Modifiers } from '../game/modifiers';
 import { Themes } from '../game/themes';
 import { randBetween } from '../utils/maths.utils';
+import fetch from 'node-fetch';
 
 /**
  * Service to manage the game queue
