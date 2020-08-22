@@ -18,15 +18,6 @@ export class Modifiers {
     ];
   }
 
-  static get system(): string[] {
-    return [
-      Modifiers.IMMEDIATE,
-      Modifiers.DAILY,
-      Modifiers.CYCLE,
-      Modifiers.HARVESTING_SOULS,
-    ];
-  }
-
   static get user(): string[] {
     return [
       Modifiers.GREAT_ANCIENTS_EGGS,

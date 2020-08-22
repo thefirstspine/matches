@@ -23,12 +23,4 @@ export class Themes {
     ];
   }
 
-  static get system(): string[] {
-    return [
-      Themes.DEAD_FOREST,
-      Themes.SPINE_S_CAVE,
-      Themes.WASTED_FIELDS,
-    ];
-  }
-
 }
