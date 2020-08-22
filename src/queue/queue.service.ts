@@ -130,6 +130,11 @@ export class QueueService {
       {theme: Themes.FORGOTTEN_CEMETERY, modifier: Modifiers.SOUVENIRS_FROM_YOUR_ENEMY},
     ];
 
+    // Get current events
+    const result = await fetch(`${process.env.WEBSITE_URL}/event?where={"datetimeFrom":{"<":${Date.now()}},"datetimeTo":{">":${Date.now()}}}`);
+    const jsonResult = await result.json();
+    const events: string[] = jsonResult ? jsonResult.map((e: any) => e.type) : [];
+
     this.queueInstances.forEach((instance: IQueueInstance) => {
       if (instance.key === 'daily') {
         instance.theme = fixedDailyData[(new Date()).getDay() % fixedDailyData.length].theme;
@@ -144,6 +149,9 @@ export class QueueService {
           'cycle',
           fixedCycleData[currentCycle.id].modifier,
         ];
+      }
+      if (events.includes('online:corsairs')) {
+        instance.modifiers.push(Modifiers.GOLDEN_GALLEONS);
       }
     });
   }
