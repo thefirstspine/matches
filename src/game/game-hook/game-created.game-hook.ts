@@ -15,8 +15,7 @@ export class GameCreatedGameHook implements IGameHook {
   ) {}
 
   async execute(gameInstance: IGameInstance, params: {gameInstance: IGameInstance}): Promise<boolean> {
-    /*
-    if (cycle.id === 'treasure-2020') {
+    if (gameInstance.modifiers.includes(Modifiers.GOLDEN_GALLEONS)) {
       // Get the "golden-galleon" card
       const goldenGalleonCard: ICard = await this.restService.card('golden-galleon');
       // Add the cards "golden-galleon"
@@ -36,7 +35,6 @@ export class GameCreatedGameHook implements IGameHook {
       // Shuffle the cards
       gameInstance.cards = shuffle(gameInstance.cards);
     }
-    */
 
     if (gameInstance.modifiers.includes(Modifiers.GREAT_ANCIENTS_EGGS)) {
       // Get the "great-ancient-egg" card
