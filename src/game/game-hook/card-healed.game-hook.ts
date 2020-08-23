@@ -39,7 +39,7 @@ export class CardHealedGameHook implements IGameHook {
       // Anvil of Xiarm'ha can have more than the starting value in case of new turn
       return false;
     }
-    if (target.card.id === 'anvil-of-xiarmha' && source.card.id === 'reinforcement') {
+    if (target.card.id === 'anvil-of-xiarmha' && source?.card.id === 'reinforcement') {
       // Anvil of Xiarm'ha can have more than the starting value when reinforcement is used
       return false;
     }

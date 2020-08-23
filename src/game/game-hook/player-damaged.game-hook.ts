@@ -3,7 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { IGameInstance, IGameUser, IGameResult, IGameCard, IWizard, IWizardHistoryItem } from '@thefirstspine/types-arena';
 import { WizzardsStorageService } from '../../storage/wizzards.storage.service';
 import { WizzardService } from '../../wizard/wizard.service';
-import { ILoot, ICycle } from '@thefirstspine/types-rest';
+import { ILoot } from '@thefirstspine/types-rest';
 import { mergeLootsInItems } from '../../utils/game.utils';
 import { RestService } from '../../rest/rest.service';
 import { LogsService } from '@thefirstspine/logs-nest';
@@ -54,15 +54,13 @@ export class PlayerDamagedGameHook implements IGameHook {
       const result: IGameResult[] = [];
       losers.forEach((gameUser: IGameUser) => {
         const loots: ILoot[] = [];
-        /*
-        if (cycle.id === 'treasure-2020') {
+        if (gameInstance.modifiers.includes(Modifiers.GOLDEN_GALLEONS)) {
           loots.push({
             name: 'golden-galleon',
             num: gameInstance.cards
               .filter((c: IGameCard) => c.user === gameUser.user && c.location === 'hand' && c.card.id === 'golden-galleon').length,
           });
         }
-        */
         this.registerResult(
           false,
           gameUser,
@@ -74,15 +72,13 @@ export class PlayerDamagedGameHook implements IGameHook {
 
       winners.forEach((gameUser: IGameUser) => {
         const loots: ILoot[] = [];
-        /*
-        if (cycle.id === 'treasure-2020') {
+        if (gameInstance.modifiers.includes(Modifiers.GOLDEN_GALLEONS)) {
           loots.push({
             name: 'golden-galleon',
             num: gameInstance.cards
               .filter((c: IGameCard) => c.user === gameUser.user && c.location === 'hand' && c.card.id === 'golden-galleon').length,
           });
         }
-        */
         this.registerResult(
           true,
           gameUser,
@@ -193,6 +189,18 @@ export class PlayerDamagedGameHook implements IGameHook {
           {name: 'holo-hunter-souvenir', num: 1},
           {name: 'premium-hunter-souvenir', num: 1},
         );
+      }
+    }
+
+    if (
+      gameInstance.modifiers.includes(Modifiers.CYCLE) &&
+      gameInstance.modifiers.includes(Modifiers.GOLDEN_GALLEONS)
+    ) {
+      loot.push({name: 'treasure-mark', num: 1});
+      if (victory) {
+        loot.push({name: 'holo-golden-galleon', num: 1}, {name: 'premium-golden-galleon', num: 1});
+      } else {
+        loot.push({name: 'holo-golden-galleon', num: 1});
       }
     }
 

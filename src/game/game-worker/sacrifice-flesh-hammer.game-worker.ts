@@ -6,6 +6,7 @@ import { IHasGameHookService, IHasGameWorkerService } from '../injections.interf
 import { ArenaRoomsService } from '../../rooms/arena-rooms.service';
 import { GameWorkerService } from './game-worker.service';
 import { LogsService } from '@thefirstspine/logs-nest';
+import { randBetween } from '../../utils/maths.utils';
 
 /**
  * Worker for "sacrifice-flesh-hammer" action.
@@ -132,8 +133,11 @@ export class SacrificeFleshHammerGameWorker implements IGameWorker, IHasGameHook
    * @param gameAction
    */
   public async expires(gameInstance: IGameInstance, gameAction: IGameAction<IInteractionChoseCardOnBoard>): Promise<boolean> {
-    // no expiration
-    return false;
+    const boardCoords: string[] = this.getBoardCoords(gameInstance, gameAction.user);
+    gameAction.response = {
+      boardCoords: boardCoords[randBetween(0, boardCoords.length - 1)],
+    };
+    return true;
   }
 
   /**

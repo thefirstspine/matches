@@ -10,6 +10,7 @@ import { MessagingService } from '@thefirstspine/messaging-nest';
 import { Modifiers } from '../game/modifiers';
 import { Themes } from '../game/themes';
 import { randBetween } from '../utils/maths.utils';
+import fetch from 'node-fetch';
 
 /**
  * Service to manage the game queue
@@ -122,27 +123,40 @@ export class QueueService {
       'great-ancient-2020': {theme: Themes.SPINE_S_CAVE, modifier: Modifiers.GREAT_ANCIENTS_EGGS},
       'treasure-2020': {theme: '', modifier: ''},
       'souvenirs-2020': {theme: Themes.FORGOTTEN_CEMETERY, modifier: Modifiers.SOUVENIRS_FROM_YOUR_ENEMY},
-      'harvest-2020': {theme: Themes.SPINE_S_CAVE, modifier: Modifiers.SOUVENIRS_FROM_YOUR_ENEMY},
+      'harvest-2020': {theme: Themes.WASTED_FIELDS, modifier: Modifiers.HARVESTING_SOULS},
     };
 
     const fixedDailyData: Array<{theme: string, modifier: string}> = [
       {theme: Themes.SPINE_S_CAVE, modifier: Modifiers.GREAT_ANCIENTS_EGGS},
+      {theme: Themes.FORGOTTEN_CEMETERY, modifier: Modifiers.SOUVENIRS_FROM_YOUR_ENEMY},
     ];
 
+    // Get current events
+    const result = await fetch(`${process.env.WEBSITE_URL}/event?where={"datetimeFrom":{"<":${Date.now()}},"datetimeTo":{">":${Date.now()}}}`);
+    const jsonResult = await result.json();
+    const events: string[] = jsonResult ? jsonResult.map((e: any) => e.type) : [];
+
     this.queueInstances.forEach((instance: IQueueInstance) => {
+      if (instance.key === 'immediate') {
+        instance.theme = undefined;
+        instance.modifiers = [Modifiers.IMMEDIATE];
+      }
       if (instance.key === 'daily') {
         instance.theme = fixedDailyData[(new Date()).getDay() % fixedDailyData.length].theme;
         instance.modifiers = [
-          'daily',
+          Modifiers.DAILY,
           fixedDailyData[(new Date()).getDay() % fixedDailyData.length].modifier,
         ];
       }
       if (instance.key === 'cycle') {
         instance.theme = fixedCycleData[currentCycle.id].theme;
         instance.modifiers = [
-          'cycle',
+          Modifiers.CYCLE,
           fixedCycleData[currentCycle.id].modifier,
         ];
+      }
+      if (events.includes('online:corsairs')) {
+        instance.modifiers.push(Modifiers.GOLDEN_GALLEONS);
       }
     });
   }
