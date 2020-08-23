@@ -1,3 +1,5 @@
+Install & run arena service
+===
 ## Installation
 ```
 npm install
