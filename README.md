@@ -1,5 +1,7 @@
 ## Installation
-```npm install```
+```
+npm install
+```
 ## Configuring
 The service needs a dotenv file to run. This dotenv file will be loaded in the environment variables. Here’s what the app needs:
 
@@ -20,9 +22,15 @@ SHOP_PUBLIC_KEY | Public key to interact with shops net service | App
 SHOP_URL | Shop net service URL | App
 WEBSITE_URL | Website URL | App
 ## Running the app
-```npm run start```
+```
+npm run start
+```
 ## Build & run for production
-```npm run build
-node dist/main.js```
+```
+npm run build
+node dist/main.js
+```
 ## Test
-```npm run test:game```
+```
+npm run test:game
+```
