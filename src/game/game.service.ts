@@ -19,7 +19,7 @@ import { MessagingService } from '@thefirstspine/messaging-nest';
 @Injectable()
 export class GameService {
 
-  public static readonly MAX_CONCURRENT_GAMES: number = 10;
+  public static readonly MAX_CONCURRENT_GAMES: number = 100;
 
   /**
    * All the game instance stored in the hot memory. A game is in the hot memory
