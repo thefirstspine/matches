@@ -140,6 +140,9 @@ export class QueueService {
       if (instance.key === 'immediate') {
         instance.theme = undefined;
         instance.modifiers = [Modifiers.IMMEDIATE];
+        if (events.includes('online:corsairs')) {
+          instance.modifiers.push(Modifiers.GOLDEN_GALLEONS);
+        }
       }
       if (instance.key === 'daily') {
         instance.theme = fixedDailyData[(new Date()).getDay() % fixedDailyData.length].theme;
@@ -147,6 +150,9 @@ export class QueueService {
           Modifiers.DAILY,
           fixedDailyData[(new Date()).getDay() % fixedDailyData.length].modifier,
         ];
+        if (events.includes('online:corsairs')) {
+          instance.modifiers.push(Modifiers.GOLDEN_GALLEONS);
+        }
       }
       if (instance.key === 'cycle') {
         instance.theme = fixedCycleData[currentCycle.id].theme;
@@ -154,9 +160,9 @@ export class QueueService {
           Modifiers.CYCLE,
           fixedCycleData[currentCycle.id].modifier,
         ];
-      }
-      if (events.includes('online:corsairs')) {
-        instance.modifiers.push(Modifiers.GOLDEN_GALLEONS);
+        if (events.includes('online:corsairs')) {
+          instance.modifiers.push(Modifiers.GOLDEN_GALLEONS);
+        }
       }
     });
   }
