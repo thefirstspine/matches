@@ -75,6 +75,8 @@ export class WizzardService {
       title: 'wizzard',
       friends: [],
       publicRoom: null,
+      quests: [],
+      questsProgress: [],
     };
   }
 
@@ -138,6 +140,14 @@ export class WizzardService {
       wizzard.version = 0.8;
       migrated = true;
       wizzard.publicRoom = null;
+    }
+
+    // Migrate from 0.8 to 0.9 => added "publicRoom" property
+    if (wizzard.version === 0.8) {
+      wizzard.version = 0.9;
+      migrated = true;
+      wizzard.quests = [];
+      wizzard.questsProgress = [];
     }
 
     return migrated;
