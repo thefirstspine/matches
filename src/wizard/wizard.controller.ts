@@ -1,7 +1,7 @@
 import { Controller, Param, Get, NotFoundException, UseGuards, Req, Patch, Body, BadRequestException, Post, HttpException } from '@nestjs/common';
 import { WizzardService } from './wizard.service';
 import { PatchWizardDto } from './patch-wizard.dto';
-import { IWizard } from '@thefirstspine/types-arena';
+import { IWizard, IUserQuest } from '@thefirstspine/types-arena';
 import { AuthGuard } from '@thefirstspine/auth-nest';
 import { IAvatar } from '@thefirstspine/types-rest';
 import { RestService } from '../rest/rest.service';
@@ -79,6 +79,43 @@ export class WizardController {
     // Friends field
     if (body.friends) {
       wizard.friends = body.friends;
+    }
+
+    // Quests field
+    if (body.quests) {
+      // Test quests length
+      if (body.quests.length > 4) {
+        throw new HttpException('Cannot subcribe to more than 4 quests.', 400);
+      }
+      // Get the doubles in the request
+      body.quests = [...new Set(body.quests)];
+      // Get the abandonned quests & remove them from history
+      const abandonnedQuests = wizard.quests.filter((q: string) => !body.quests.includes(q));
+      wizard.questsProgress = wizard.questsProgress.filter((q: IUserQuest) => !abandonnedQuests.includes(q.id));
+      // Get the new quests & add them to the history
+      const newQuests = body.quests.filter((q: string) => !wizard.quests.includes(q));
+      if (newQuests.length) {
+        const currentQuests = await this.restService.quests();
+        newQuests.forEach((q: string) => {
+          if (q !== currentQuests.daily.id && q !== currentQuests.weekly.id) {
+            throw new HttpException('This quest is not authorized.', 400);
+          }
+          if (q === currentQuests.daily.id) {
+            wizard.questsProgress.push({
+              ...currentQuests.daily,
+              objectiveCurrent: 0,
+            });
+          }
+          if (q === currentQuests.weekly.id) {
+            wizard.questsProgress.push({
+              ...currentQuests.weekly,
+              objectiveCurrent: 0,
+            });
+          }
+        });
+      }
+      // Save the quests
+      wizard.quests = body.quests;
     }
 
     // publicRoom field
