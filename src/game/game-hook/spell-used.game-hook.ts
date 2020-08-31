@@ -5,6 +5,7 @@ import { IHasGameWorkerService } from '../injections.interface';
 import { GameWorkerService } from '../game-worker/game-worker.service';
 import { WizzardService } from '../../wizard/wizard.service';
 import { WizzardsStorageService } from '../../storage/wizzards.storage.service';
+import { QuestService } from '../quest/quest.service';
 
 /**
  * This subscriber is executed once a 'card:spell:used' event is thrown. It wil delete old spells actions.
@@ -17,6 +18,7 @@ export class SpellUsedGameHook implements IGameHook, IHasGameWorkerService {
   constructor(
     private readonly wizardService: WizzardService,
     private readonly wizzardsStorageService: WizzardsStorageService,
+    private readonly questService: QuestService,
   ) {}
 
   public gameWorkerService: GameWorkerService;
@@ -68,6 +70,12 @@ export class SpellUsedGameHook implements IGameHook, IHasGameWorkerService {
           });
         });
     }
+
+    // Quest progression
+    this.questService.progressQuest(
+      params.gameCard.user,
+      'play:spells',
+      1);
 
     return true;
   }
