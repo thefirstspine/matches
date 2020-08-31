@@ -29,6 +29,8 @@ import { ChimeraPlacesGameHook } from './chimera-placed.game-hook';
 import { LogsService } from '@thefirstspine/logs-nest';
 import { MessagingService } from '@thefirstspine/messaging-nest';
 import { GameCreatedGameHook } from './game-created.game-hook';
+import { CardPlacedGameHook } from './card-placed.game-hook';
+import { QuestService } from '../quest/quest.service';
 
 /**
  * Main service that manages game hooks.
@@ -47,6 +49,7 @@ export class GameHookService extends BaseGameService<IGameHook> {
     private readonly restService: RestService,
     private readonly arenaRoomsService: ArenaRoomsService,
     private readonly wizzardsStorageService: WizzardsStorageService,
+    private readonly questService: QuestService,
     @Inject(forwardRef(() => GameWorkerService)) public readonly gameWorkerService: GameWorkerService,
   ) {
     super();
@@ -65,6 +68,7 @@ export class GameHookService extends BaseGameService<IGameHook> {
     this.deferInjection(this.restService);
     this.deferInjection(this.arenaRoomsService);
     this.deferInjection(this.wizzardsStorageService);
+    this.deferInjection(this.questService);
     this.deferInjection(this); // haya!
 
     // Create hooks
@@ -77,20 +81,21 @@ export class GameHookService extends BaseGameService<IGameHook> {
     this.subscribe('card:lifeChanged:damaged:summoner', this.createInjectable(PlayerDamagedGameHook, injectedProps));
     this.subscribe('card:lifeChanged:damaged:monstrous-portal', this.createInjectable(MonstrousPortalDamagedGameHook, injectedProps));
     this.subscribe('card:lifeChanged:healed', this.createInjectable(CardHealedGameHook, injectedProps));
+    this.subscribe('card:spell:used', this.createInjectable(SpellUsedGameHook, injectedProps));
     this.subscribe('card:destroyed', this.createInjectable(CardDestroyedGameHook, injectedProps));
     this.subscribe('card:destroyed:insanes-run', this.createInjectable(InsanesRunDestroyedGameHook, injectedProps));
     this.subscribe('card:destroyed:volkha', this.createInjectable(VolkhaDestroyedGameHook, injectedProps));
-    this.subscribe('card:spell:used', this.createInjectable(SpellUsedGameHook, injectedProps));
-    this.subscribe('card:placed:soul-of-a-sacrified-hunter', this.createInjectable(SoulOfASacrifiedHunterPlacesGameHook, injectedProps));
-    this.subscribe('game:created:fpe', this.createInjectable(FpeCreatedGameHook, injectedProps));
-    this.subscribe('game:phaseChanged:actions', this.createInjectable(PhaseActionsGameHook, injectedProps));
     this.subscribe('card:destroyed:guardian', this.createInjectable(GuardianDestroyedGameHook, injectedProps));
     this.subscribe('card:destroyed:caduceus', this.createInjectable(CaduceusDestroyedGameHook, injectedProps));
-    this.subscribe('card:placed:caduceus', this.createInjectable(CaduceusPlacesGameHook, injectedProps));
     this.subscribe('card:destroyed:jellyfish', this.createInjectable(JellyfishDestroyedGameHook, injectedProps));
     this.subscribe('card:destroyed:pocket-volcano', this.createInjectable(PocketVolcanoDestroyedGameHook, injectedProps));
+    this.subscribe('card:placed', this.createInjectable(CardPlacedGameHook, injectedProps));
+    this.subscribe('card:placed:soul-of-a-sacrified-hunter', this.createInjectable(SoulOfASacrifiedHunterPlacesGameHook, injectedProps));
+    this.subscribe('card:placed:caduceus', this.createInjectable(CaduceusPlacesGameHook, injectedProps));
     this.subscribe('card:placed:torturer', this.createInjectable(TorturerPlacesGameHook, injectedProps));
     this.subscribe('card:placed:chimera', this.createInjectable(ChimeraPlacesGameHook, injectedProps));
+    this.subscribe('game:created:fpe', this.createInjectable(FpeCreatedGameHook, injectedProps));
+    this.subscribe('game:phaseChanged:actions', this.createInjectable(PhaseActionsGameHook, injectedProps));
     this.subscribe('game:created', this.createInjectable(GameCreatedGameHook, injectedProps));
   }
 
