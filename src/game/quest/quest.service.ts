@@ -28,7 +28,9 @@ export class QuestService {
         if (q.objectiveCurrent === q.objectiveTarget) {
           // Objective is complete: add the loot & send the message
           loot.push(...q.loots);
-          this.messagingService.sendMessage([user], 'TheFirstSpine:quest', q);
+          this.messagingService.sendMessage([user], 'TheFirstSpine:quest:complete', q);
+        } else {
+          this.messagingService.sendMessage([user], 'TheFirstSpine:quest:progress', q);
         }
       }
     });
