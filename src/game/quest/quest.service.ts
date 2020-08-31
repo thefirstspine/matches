@@ -32,6 +32,10 @@ export class QuestService {
         } else {
           this.messagingService.sendMessage([user], 'TheFirstSpine:quest:progress', q);
         }
+        // Handle quest progress for quest completion
+        if (objectiveType !== 'quest') {
+          this.progressQuest(user, 'quest', 1);
+        }
       }
     });
 
