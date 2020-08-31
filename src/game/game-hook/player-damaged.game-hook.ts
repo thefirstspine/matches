@@ -5,10 +5,10 @@ import { WizzardsStorageService } from '../../storage/wizzards.storage.service';
 import { WizzardService } from '../../wizard/wizard.service';
 import { ILoot } from '@thefirstspine/types-rest';
 import { mergeLootsInItems } from '../../utils/game.utils';
-import { RestService } from '../../rest/rest.service';
 import { LogsService } from '@thefirstspine/logs-nest';
 import { MessagingService } from '@thefirstspine/messaging-nest';
 import { Modifiers } from '../modifiers';
+import { QuestService } from '../quest/quest.service';
 
 /**
  * This subscriber is executed once a 'card:lifeChanged:damaged:{player}' event is thrown and look for dead
@@ -22,7 +22,7 @@ export class PlayerDamagedGameHook implements IGameHook {
   constructor(
     private readonly wizzardService: WizzardService,
     private readonly wizzardsStorageService: WizzardsStorageService,
-    private readonly restService: RestService,
+    private readonly questService: QuestService,
     private readonly messagingService: MessagingService,
     private readonly logsService: LogsService,
   ) {}
@@ -120,6 +120,10 @@ export class PlayerDamagedGameHook implements IGameHook {
 
     if (victory) {
       loot.push({name: 'victory-mark', num: 1});
+      this.questService.progressQuest(
+        gameUser.user,
+        'win',
+        1);
     } else {
       loot.push({name: 'defeat-mark', num: 1});
     }
