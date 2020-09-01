@@ -220,6 +220,7 @@ export class PlayerDamagedGameHook implements IGameHook {
 
     // Add loot
     mergeLootsInItems(wizard.items, loot);
+    this.messagingService.sendMessage([wizard.id], 'TheFirstSpine:loot', loot);
 
     if (!victory) {
       // Register the triumph "spirit"

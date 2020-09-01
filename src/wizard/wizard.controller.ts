@@ -9,6 +9,7 @@ import { WizzardsStorageService } from '../storage/wizzards.storage.service';
 import { CertificateGuard } from '@thefirstspine/certificate-nest';
 import { mergeLootsInItems } from '../utils/game.utils';
 import { ArenaRoomsService } from '../rooms/arena-rooms.service';
+import { MessagingService } from '@thefirstspine/messaging-nest';
 
 /**
  * Main wizard API to get & edit wizard data.
@@ -21,6 +22,7 @@ export class WizardController {
     private readonly wizardStorageService: WizzardsStorageService,
     private readonly restService: RestService,
     private readonly roomsService: ArenaRoomsService,
+    private readonly messagingService: MessagingService,
   ) {}
 
   /**
@@ -105,12 +107,14 @@ export class WizardController {
               ...currentQuests.daily,
               objectiveCurrent: 0,
             });
+            this.messagingService.sendMessage([request.user], 'TheFirstSpine:quest:obtain', q);
           }
           if (q === currentQuests.weekly.id) {
             wizard.questsProgress.push({
               ...currentQuests.weekly,
               objectiveCurrent: 0,
             });
+            this.messagingService.sendMessage([request.user], 'TheFirstSpine:quest:obtain', q);
           }
         });
       }
@@ -170,6 +174,7 @@ export class WizardController {
 
     // Add the loots & save the wizard
     mergeLootsInItems(wizard.items, [{name, num}]);
+    this.messagingService.sendMessage([wizard.id], 'TheFirstSpine:loot', [{name, num}]);
     this.wizardStorageService.save(wizard);
   }
 

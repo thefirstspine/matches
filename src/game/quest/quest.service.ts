@@ -43,6 +43,7 @@ export class QuestService {
     if (loot.length > 0) {
       wizard.questsProgress = wizard.questsProgress.filter((q) => q.objectiveCurrent < q.objectiveTarget);
       mergeLootsInItems(wizard.items, loot);
+      this.messagingService.sendMessage([wizard.id], 'TheFirstSpine:loot', loot);
     }
 
     if (changedWizard) {
