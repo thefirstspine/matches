@@ -21,11 +21,19 @@ export class CardPlacedGameHook implements IGameHook {
         params.gameCard.user,
         'play:creatures',
         1);
+      this.questService.progressQuest(
+        params.gameCard.user,
+        'play:creaturesOrArtifacts',
+        1);
     }
     if (params.gameCard.card.type === 'artifact') {
       this.questService.progressQuest(
         params.gameCard.user,
         'play:artifacts',
+        1);
+      this.questService.progressQuest(
+        params.gameCard.user,
+        'play:creaturesOrArtifacts',
         1);
     }
     return true;
