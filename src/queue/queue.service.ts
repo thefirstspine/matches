@@ -132,9 +132,7 @@ export class QueueService {
     ];
 
     // Get current events
-    const result = await fetch(`${process.env.WEBSITE_URL}/event?where={"datetimeFrom":{"<":${Date.now()}},"datetimeTo":{">":${Date.now()}}}`);
-    const jsonResult = await result.json();
-    const events: string[] = jsonResult ? jsonResult.map((e: any) => e.type) : [];
+    const events: string[] = await this.getEvents();
 
     this.queueInstances.forEach((instance: IQueueInstance) => {
       if (instance.key === 'immediate') {
@@ -462,6 +460,19 @@ export class QueueService {
     return this.queueInstances.reduce((acc: boolean, queueInstance: IQueueInstance) => {
       return acc || this.isUserInQueue(queueInstance.key, user);
     }, false);
+  }
+
+  /**
+   * Get the current events in the website service
+   */
+  protected async getEvents(): Promise<string[]> {
+    try {
+      const result = await fetch(`${process.env.WEBSITE_URL}/event?where={"datetimeFrom":{"<":${Date.now()}},"datetimeTo":{">":${Date.now()}}}`);
+      const jsonResult = await result.json();
+      return jsonResult ? jsonResult.map((e: any) => e.type) : [];
+    } catch (e) {
+      return [];
+    }
   }
 
 }
