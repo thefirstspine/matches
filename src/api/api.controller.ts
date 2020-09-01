@@ -3,6 +3,7 @@ import { ApiService } from './api.service';
 import { ApiError } from './api.error';
 import { AuthGuard } from '@thefirstspine/auth-nest';
 import { JsonRpcRequestDto } from './json-rpc-request.dto';
+import { LogsService } from '@thefirstspine/logs-nest';
 
 /**
  * Main API Controller. The controller does accept only one POST request.
@@ -11,7 +12,10 @@ import { JsonRpcRequestDto } from './json-rpc-request.dto';
 @Controller('api')
 export class ApiController {
 
-  constructor(private readonly apiService: ApiService) {}
+  constructor(
+    private readonly apiService: ApiService,
+    private readonly logService: LogsService,
+  ) {}
 
   /**
    * Main post method. This method is protected with the AuthGuard
@@ -39,6 +43,15 @@ export class ApiController {
       };
     } catch (e) {
       // In case of error, output the error
+      if (e instanceof Error) {
+        this.logService.error(
+          'API error',
+          {
+            name: e.name,
+            message: e.message,
+            stack: e.stack,
+          });
+      }
       if (e instanceof ApiError) {
         return this.outputError(e);
       } else {
