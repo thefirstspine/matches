@@ -107,14 +107,14 @@ export class WizardController {
               ...currentQuests.daily,
               objectiveCurrent: 0,
             });
-            this.messagingService.sendMessage([request.user], 'TheFirstSpine:quest:obtain', q);
+            this.messagingService.sendMessage([request.user], 'TheFirstSpine:quest:obtain', currentQuests.daily);
           }
           if (q === currentQuests.weekly.id) {
             wizard.questsProgress.push({
               ...currentQuests.weekly,
               objectiveCurrent: 0,
             });
-            this.messagingService.sendMessage([request.user], 'TheFirstSpine:quest:obtain', q);
+            this.messagingService.sendMessage([request.user], 'TheFirstSpine:quest:obtain', currentQuests.weekly);
           }
         });
       }
