@@ -34,7 +34,7 @@ export class WizardController {
   @Get('me')
   @UseGuards(AuthGuard)
   getMe(@Req() request: any): IWizard {
-    const wizard: IWizard = this.wizardService.getWizard(request.user, true);
+    const wizard: IWizard = this.wizardService.getWizard(request.user);
     if (!wizard) {
       return this.wizardService.createWizard(request.user);
     }
@@ -51,7 +51,7 @@ export class WizardController {
   @Patch('me')
   @UseGuards(AuthGuard)
   async patchMe(@Req() request: any, @Body() body: PatchWizardDto): Promise<IWizard> {
-    const wizard: IWizard = this.wizardService.getWizard(request.user, true);
+    const wizard: IWizard = this.wizardService.getWizard(request.user);
     if (!wizard) {
       throw new NotFoundException();
     }
@@ -144,10 +144,12 @@ export class WizardController {
    */
   @Get(':id')
   single(@Param('id') id: number, @Req() request: any): IWizard {
-    const wizard: IWizard = this.wizardService.getWizard(id, false);
+    const wizard: IWizard = this.wizardService.getWizard(id);
     if (!wizard) {
       throw new NotFoundException();
     }
+
+    delete wizard.purchases;
 
     return wizard;
   }
