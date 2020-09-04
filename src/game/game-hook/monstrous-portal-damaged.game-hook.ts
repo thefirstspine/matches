@@ -36,7 +36,7 @@ export class MonstrousPortalDamagedGameHook implements IGameHook, IHasGameWorker
       const action: IGameAction<any> = await this.gameWorkerService.getWorker('monstrous-portal-effect')
         .create(gameInstance, {user: params.gameCard.user});
       if (
-        action.interaction.params.boardCoords.length > 0 ||
+        action.interaction.params.boardCoords.length > 0 &&
         action.interaction.params.handIndexes.length > 0
       ) {
         gameInstance.actions.current.push(action);
