@@ -1,9 +1,12 @@
-import { Controller, Post, UseGuards, Req, Get, Param } from '@nestjs/common';
+import { Controller, Post, UseGuards, Req, Get, Param, Body, HttpException } from '@nestjs/common';
 import { ShopService, IShopPurchase } from './shop.service';
 import { IShopItem } from '@thefirstspine/types-rest';
 import { RestService } from '../rest/rest.service';
 import * as fs from 'fs';
 import { AuthGuard } from '@thefirstspine/auth-nest';
+import { ExchangeDto } from './exchange.dto';
+import { PurchaseDto } from './purchase.dto';
+import { PurchaseGooglePlayDto } from './purchase-google-play.dto';
 
 /**
  * Main Shop API
@@ -22,16 +25,13 @@ export class ShopController {
    */
   @UseGuards(AuthGuard)
   @Post('exchange')
-  async exchange(@Req() request): Promise<IExchangeResult> {
+  async exchange(@Req() request, @Body() body: ExchangeDto): Promise<IExchangeResult> {
     // Get the shop item
-    const item: IShopItem|undefined = await this.restService.shopItem(request.body.shopItemId);
+    const item: IShopItem|undefined = await this.restService.shopItem(body.shopItemId);
 
     // Validate currency
     if (!item || item.price.currency === 'eur') {
-      return {
-        status: false,
-        message: 'Invalid item',
-      };
+      throw new HttpException('Invalid item', 400);
     }
 
     try {
@@ -44,10 +44,7 @@ export class ShopController {
         status: true,
       };
     } catch (e) {
-      return {
-        status: false,
-        message: e.message,
-      };
+      throw new HttpException(e.message, 400);
     }
   }
 
@@ -58,16 +55,13 @@ export class ShopController {
    */
   @UseGuards(AuthGuard)
   @Post('purchase')
-  async purchase(@Req() request): Promise<IPurchaseResult> {
+  async purchase(@Req() request, @Body() body: PurchaseDto): Promise<IPurchaseResult> {
     // Get the shop item
-    const item: IShopItem|undefined = await this.restService.shopItem(request.body.shopItemId);
+    const item: IShopItem|undefined = await this.restService.shopItem(body.shopItemId);
 
     // Validate currency
     if (!item || item.price.currency !== 'eur') {
-      return {
-        status: false,
-        message: 'Invalid item',
-      };
+      throw new HttpException('Invalid item', 400);
     }
 
     try {
@@ -82,10 +76,7 @@ export class ShopController {
         url,
       };
     } catch (e) {
-      return {
-        status: false,
-        message: e.message,
-      };
+      throw new HttpException(e.message, 400);
     }
   }
 
@@ -96,9 +87,9 @@ export class ShopController {
    */
   @UseGuards(AuthGuard)
   @Post('purchase/thirdparty/google-play')
-  async purchaseThirdPartyGooglePlay(@Req() request): Promise<IPurchaseResult> {
+  async purchaseThirdPartyGooglePlay(@Req() request, @Body() body: PurchaseGooglePlayDto): Promise<IPurchaseResult> {
     // Get the shop item
-    const item: IShopItem|undefined = await this.restService.shopItem(request.body.shopItemId);
+    const item: IShopItem|undefined = await this.restService.shopItem(body.shopItemId);
 
     // Validate product ID
     const googlePlayProductIdsMap = {
@@ -107,12 +98,9 @@ export class ShopController {
       '1000-shards': 'fr.thefirstspine.arena.shards.1000',
       '2000-shards': 'fr.thefirstspine.arena.shards.2000',
     };
-    const googlePlayProductId: undefined|string = googlePlayProductIdsMap[request.body.shopItemId];
+    const googlePlayProductId: undefined|string = googlePlayProductIdsMap[body.shopItemId];
     if (!googlePlayProductId) {
-      return {
-        status: false,
-        message: 'Invalid item',
-      };
+      throw new HttpException('Invalid item', 400);
     }
 
     try {
@@ -120,15 +108,12 @@ export class ShopController {
       await this.shopService.purchaseThirdPartyGooglePlay(
         { user: request.user, ...item},
         googlePlayProductId,
-        request.body.googlePlayToken);
+        body.googlePlayToken);
       return {
         status: true,
       };
     } catch (e) {
-      return {
-        status: false,
-        message: e.message,
-      };
+      throw new HttpException(e.message, 400);
     }
   }
 

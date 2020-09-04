@@ -132,14 +132,15 @@ export class QueueService {
     ];
 
     // Get current events
-    const result = await fetch(`${process.env.WEBSITE_URL}/event?where={"datetimeFrom":{"<":${Date.now()}},"datetimeTo":{">":${Date.now()}}}`);
-    const jsonResult = await result.json();
-    const events: string[] = jsonResult ? jsonResult.map((e: any) => e.type) : [];
+    const events: string[] = await this.getEvents();
 
     this.queueInstances.forEach((instance: IQueueInstance) => {
       if (instance.key === 'immediate') {
         instance.theme = undefined;
         instance.modifiers = [Modifiers.IMMEDIATE];
+        if (events.includes('online:corsairs')) {
+          instance.modifiers.push(Modifiers.GOLDEN_GALLEONS);
+        }
       }
       if (instance.key === 'daily') {
         instance.theme = fixedDailyData[(new Date()).getDay() % fixedDailyData.length].theme;
@@ -147,6 +148,9 @@ export class QueueService {
           Modifiers.DAILY,
           fixedDailyData[(new Date()).getDay() % fixedDailyData.length].modifier,
         ];
+        if (events.includes('online:corsairs')) {
+          instance.modifiers.push(Modifiers.GOLDEN_GALLEONS);
+        }
       }
       if (instance.key === 'cycle') {
         instance.theme = fixedCycleData[currentCycle.id].theme;
@@ -154,9 +158,9 @@ export class QueueService {
           Modifiers.CYCLE,
           fixedCycleData[currentCycle.id].modifier,
         ];
-      }
-      if (events.includes('online:corsairs')) {
-        instance.modifiers.push(Modifiers.GOLDEN_GALLEONS);
+        if (events.includes('online:corsairs')) {
+          instance.modifiers.push(Modifiers.GOLDEN_GALLEONS);
+        }
       }
     });
   }
@@ -456,6 +460,19 @@ export class QueueService {
     return this.queueInstances.reduce((acc: boolean, queueInstance: IQueueInstance) => {
       return acc || this.isUserInQueue(queueInstance.key, user);
     }, false);
+  }
+
+  /**
+   * Get the current events in the website service
+   */
+  protected async getEvents(): Promise<string[]> {
+    try {
+      const result = await fetch(`${process.env.WEBSITE_URL}/event?where={"datetimeFrom":{"<":${Date.now()}},"datetimeTo":{">":${Date.now()}}}`);
+      const jsonResult = await result.json();
+      return jsonResult ? jsonResult.map((e: any) => e.type) : [];
+    } catch (e) {
+      return [];
+    }
   }
 
 }

@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { ICard, IGameType, IDeck, IShopItem, IAvatar, ICycle } from '@thefirstspine/types-rest';
+import { ICard, IGameType, IDeck, IShopItem, IAvatar, ICycle, IQuest } from '@thefirstspine/types-rest';
 import fetch, { Response } from 'node-fetch';
 
 @Injectable()
@@ -41,6 +41,13 @@ export class RestService {
     return this.single('cycles', id);
   }
 
+  public async quests(): Promise<{
+    daily: IQuest,
+    weekly: IQuest,
+  }> {
+    return this.listAdSingle('quests');
+  }
+
   public async list<T>(resource: string): Promise<T[]> {
     const response: Response = await fetch(`${process.env.REST_URL}/rest/${resource}`);
     const json = await response.json();
@@ -49,6 +56,12 @@ export class RestService {
 
   public async single<T>(resource: string, id: string): Promise<T> {
     const response: Response = await fetch(`${process.env.REST_URL}/rest/${resource}/${id}`);
+    const json = await response.json();
+    return json as T;
+  }
+
+  public async listAdSingle<T>(resource: string): Promise<T> {
+    const response: Response = await fetch(`${process.env.REST_URL}/rest/${resource}`);
     const json = await response.json();
     return json as T;
   }

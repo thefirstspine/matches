@@ -92,7 +92,8 @@ export class ApiService {
   }
 
   /**
-   * Join a queue in the queue service
+   * Join a queue in the queue service for 60 seconds. This joining request should be
+   * refreshed with the `refreshQueueAsk` method.
    * @param request
    */
   async joinQueue(request: IApiRequest<IApiJoinQueueParams>): Promise<IQueueInstance> {
@@ -114,7 +115,7 @@ export class ApiService {
   }
 
   /**
-   * Join a queue in the queue service
+   * Refresh the joining request, and set the expiration date to 60 seconds from this refresh.
    * @param request
    */
   async refreshQueueAsk(request: IApiRequest<IApiRefreshQueueAskParams>): Promise<IQueueInstance> {
@@ -147,7 +148,7 @@ export class ApiService {
   }
 
   /**
-   * Get the current game instance for the player
+   * Get the current game to player joined previously.
    * @param request
    */
   async getCurrentGame(request: IApiRequest<undefined>): Promise<IApiGetGameResponse> {
@@ -164,7 +165,7 @@ export class ApiService {
   }
 
   /**
-   * Get cards
+   * Get a game instance. The `id` field must be filled for this method.
    * @param request
    */
   async getGame(request: IApiRequest<undefined>): Promise<IApiGetGameResponse> {
@@ -212,7 +213,8 @@ export class ApiService {
   }
 
   /**
-   * Get cards
+   * Get cards in a game instance. Only the cards visible for the current player are visible (e.g. cards
+   * on board, on the discards and on the player's hand). The `id` field must be filled for this method.
    * @param request
    */
   async getCards(request: IApiRequest<undefined>): Promise<IGameCard[]> {
@@ -242,7 +244,7 @@ export class ApiService {
   }
 
   /**
-   * Get actions
+   * Get the actions available for the current player. The `id` field must be filled for this method.
    * @param request
    */
   async getActions(request: IApiRequest<undefined>): Promise<Array<IGameAction<IGameInteraction>>> {
@@ -277,7 +279,7 @@ export class ApiService {
   }
 
   /**
-   * Get users
+   * Respond to an action. The `id` field must be filled for this method.
    * @param request
    */
   async respondToAction(request: IApiRequest<IApiRespondToActionParams>): Promise<IApiRespondToActionResponse> {
@@ -320,7 +322,7 @@ export class ApiService {
   }
 
   /**
-   * Get cards
+   * Concede a game.
    * @param request
    */
   async concede(request: IApiRequest<undefined>): Promise<IApiGetGameResponse> {

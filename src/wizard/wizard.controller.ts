@@ -1,7 +1,7 @@
 import { Controller, Param, Get, NotFoundException, UseGuards, Req, Patch, Body, BadRequestException, Post, HttpException } from '@nestjs/common';
 import { WizzardService } from './wizard.service';
 import { PatchWizardDto } from './patch-wizard.dto';
-import { IWizard } from '@thefirstspine/types-arena';
+import { IWizard, IUserQuest } from '@thefirstspine/types-arena';
 import { AuthGuard } from '@thefirstspine/auth-nest';
 import { IAvatar } from '@thefirstspine/types-rest';
 import { RestService } from '../rest/rest.service';
@@ -9,6 +9,7 @@ import { WizzardsStorageService } from '../storage/wizzards.storage.service';
 import { CertificateGuard } from '@thefirstspine/certificate-nest';
 import { mergeLootsInItems } from '../utils/game.utils';
 import { ArenaRoomsService } from '../rooms/arena-rooms.service';
+import { MessagingService } from '@thefirstspine/messaging-nest';
 
 /**
  * Main wizard API to get & edit wizard data.
@@ -21,6 +22,7 @@ export class WizardController {
     private readonly wizardStorageService: WizzardsStorageService,
     private readonly restService: RestService,
     private readonly roomsService: ArenaRoomsService,
+    private readonly messagingService: MessagingService,
   ) {}
 
   /**
@@ -32,7 +34,7 @@ export class WizardController {
   @Get('me')
   @UseGuards(AuthGuard)
   getMe(@Req() request: any): IWizard {
-    const wizard: IWizard = this.wizardService.getWizard(request.user, true);
+    const wizard: IWizard = this.wizardService.getWizard(request.user);
     if (!wizard) {
       return this.wizardService.createWizard(request.user);
     }
@@ -49,7 +51,7 @@ export class WizardController {
   @Patch('me')
   @UseGuards(AuthGuard)
   async patchMe(@Req() request: any, @Body() body: PatchWizardDto): Promise<IWizard> {
-    const wizard: IWizard = this.wizardService.getWizard(request.user, true);
+    const wizard: IWizard = this.wizardService.getWizard(request.user);
     if (!wizard) {
       throw new NotFoundException();
     }
@@ -81,6 +83,45 @@ export class WizardController {
       wizard.friends = body.friends;
     }
 
+    // Quests field
+    if (body.quests) {
+      // Test quests length
+      if (body.quests.length > 4) {
+        throw new HttpException('Cannot subcribe to more than 4 quests.', 400);
+      }
+      // Get the doubles in the request
+      body.quests = [...new Set(body.quests)];
+      // Get the abandonned quests & remove them from history
+      const abandonnedQuests = wizard.quests.filter((q: string) => !body.quests.includes(q));
+      wizard.questsProgress = wizard.questsProgress.filter((q: IUserQuest) => !abandonnedQuests.includes(q.id));
+      // Get the new quests & add them to the history
+      const newQuests = body.quests.filter((q: string) => !wizard.quests.includes(q));
+      if (newQuests.length) {
+        const currentQuests = await this.restService.quests();
+        newQuests.forEach((q: string) => {
+          if (q !== currentQuests.daily.id && q !== currentQuests.weekly.id) {
+            throw new HttpException('This quest is not authorized.', 400);
+          }
+          if (q === currentQuests.daily.id) {
+            wizard.questsProgress.push({
+              ...currentQuests.daily,
+              objectiveCurrent: 0,
+            });
+            this.messagingService.sendMessage([request.user], 'TheFirstSpine:quest:obtain', currentQuests.daily);
+          }
+          if (q === currentQuests.weekly.id) {
+            wizard.questsProgress.push({
+              ...currentQuests.weekly,
+              objectiveCurrent: 0,
+            });
+            this.messagingService.sendMessage([request.user], 'TheFirstSpine:quest:obtain', currentQuests.weekly);
+          }
+        });
+      }
+      // Save the quests
+      wizard.quests = body.quests;
+    }
+
     // publicRoom field
     if (body.publicRoom) {
       await this.roomsService.leavePublicRoom(wizard.id, 'fr');
@@ -103,10 +144,12 @@ export class WizardController {
    */
   @Get(':id')
   single(@Param('id') id: number, @Req() request: any): IWizard {
-    const wizard: IWizard = this.wizardService.getWizard(id, false);
+    const wizard: IWizard = this.wizardService.getWizard(id);
     if (!wizard) {
       throw new NotFoundException();
     }
+
+    delete wizard.purchases;
 
     return wizard;
   }
@@ -133,6 +176,7 @@ export class WizardController {
 
     // Add the loots & save the wizard
     mergeLootsInItems(wizard.items, [{name, num}]);
+    this.messagingService.sendMessage([wizard.id], 'TheFirstSpine:loot', [{name, num}]);
     this.wizardStorageService.save(wizard);
   }
 

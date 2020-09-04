@@ -20,7 +20,7 @@ export class WizzardService {
    * @param user
    * @param withPrivateFields
    */
-  getWizard(user: number, withPrivateFields: boolean = false): IWizard|null {
+  getWizard(user: number): IWizard|null {
     // The user "0" is a default wizard
     if (user === 0) {
       return this.getDefaultWizardData(0);
@@ -33,10 +33,6 @@ export class WizzardService {
 
     if (this.migrate(wizard)) {
       this.wizzardsStorageService.save(wizard);
-    }
-
-    if (withPrivateFields === false) {
-      delete wizard.purchases;
     }
 
     return wizard;
@@ -75,6 +71,8 @@ export class WizzardService {
       title: 'wizzard',
       friends: [],
       publicRoom: null,
+      quests: [],
+      questsProgress: [],
     };
   }
 
@@ -138,6 +136,14 @@ export class WizzardService {
       wizzard.version = 0.8;
       migrated = true;
       wizzard.publicRoom = null;
+    }
+
+    // Migrate from 0.8 to 0.9 => added "publicRoom" property
+    if (wizzard.version === 0.8) {
+      wizzard.version = 0.9;
+      migrated = true;
+      wizzard.quests = [];
+      wizzard.questsProgress = [];
     }
 
     return migrated;

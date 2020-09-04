@@ -19,7 +19,7 @@ import { MessagingService } from '@thefirstspine/messaging-nest';
 @Injectable()
 export class GameService {
 
-  public static readonly MAX_CONCURRENT_GAMES: number = 10;
+  public static readonly MAX_CONCURRENT_GAMES: number = 100;
 
   /**
    * All the game instance stored in the hot memory. A game is in the hot memory
@@ -388,10 +388,7 @@ export class GameService {
       });
 
     // Set the status of the game when closed
-    const instanceAfterConcede: IGameInstance = this.gameInstances[id];
-    if (instanceAfterConcede.status === 'ended') {
-      instanceAfterConcede.status = 'conceded';
-    }
+    instance.status = 'conceded';
 
   }
 
