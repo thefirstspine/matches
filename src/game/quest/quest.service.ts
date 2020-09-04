@@ -37,12 +37,12 @@ export class QuestService {
           // Objective is complete: add the loot & send the message
           loot.push(...q.loots);
           this.messagingService.sendMessage([wizard.id], 'TheFirstSpine:quest:complete', q);
+          // Handle quest progress for quest completion
+          if (objectiveType !== 'quest') {
+            this.progressQuestOnWizard(wizard, 'quest', 1);
+          }
         } else {
           this.messagingService.sendMessage([wizard.id], 'TheFirstSpine:quest:progress', q);
-        }
-        // Handle quest progress for quest completion
-        if (objectiveType !== 'quest') {
-          this.progressQuestOnWizard(wizard, 'quest', 1);
         }
       }
     });
