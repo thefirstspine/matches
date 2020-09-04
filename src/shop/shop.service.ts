@@ -27,29 +27,30 @@ export class ShopService {
     }
 
     // Get the wizzard
-    const wizzard: IWizard = this.wizzardService.getOrCreateWizzard(purchase.user);
-    if (purchase.oneTimePurchase && wizzard.purchases.includes(purchase.id)) {
+    const wizard: IWizard = this.wizzardService.getOrCreateWizzard(purchase.user);
+    if (purchase.oneTimePurchase && wizard.purchases.includes(purchase.id)) {
       throw new Error('Already purchased');
     }
 
     // Gather & check required items
     const lookedItem = purchase.price.currency === 'shards' ? 'shard' : purchase.price.currency;
-    const itemFrom: IWizardItem = wizzard.items.find(item => item.name === lookedItem);
+    const itemFrom: IWizardItem = wizard.items.find(item => item.name === lookedItem);
     if (!itemFrom || itemFrom.num < purchase.price.num) {
       throw new Error('No sufficient item count');
     }
 
     // Gather or create item
-    mergeLootsInItems(wizzard.items, [{name: lookedItem, num: -purchase.price.num}]);
-    mergeLootsInItems(wizzard.items, purchase.loots);
+    mergeLootsInItems(wizard.items, [{name: lookedItem, num: -purchase.price.num}]);
+    mergeLootsInItems(wizard.items, purchase.loots);
+    this.messagingService.sendMessage([wizard.id], 'TheFirstSpine:loot', purchase.loots);
 
     // Add purchase to history
-    wizzard.purchases.push(purchase.id);
+    wizard.purchases.push(purchase.id);
 
     // Save wizzard
-    this.wizzardStorageService.save(wizzard);
-    this.messagingService.sendMessage([wizzard.id], 'TheFirstSpine:account', wizzard);
-    this.messagingService.sendMessage([wizzard.id], 'TheFirstSpine:shop', purchase);
+    this.wizzardStorageService.save(wizard);
+    this.messagingService.sendMessage([wizard.id], 'TheFirstSpine:account', wizard);
+    this.messagingService.sendMessage([wizard.id], 'TheFirstSpine:shop', purchase);
   }
 
   async purchase(purchase: IPurchase): Promise<IShopPurchase|null> {

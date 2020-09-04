@@ -1,4 +1,4 @@
-import {Length, IsOptional, IsNumber, IsIn} from 'class-validator';
+import {Length, IsOptional, IsNumber, IsIn, IsString} from 'class-validator';
 
 export class PatchWizardDto {
 
@@ -19,4 +19,8 @@ export class PatchWizardDto {
   @IsOptional()
   @IsIn(['fr', 'en'])
   publicRoom?: 'fr'|'en';
+
+  @IsOptional()
+  @IsString({each: true})
+  quests?: string[];
 }
