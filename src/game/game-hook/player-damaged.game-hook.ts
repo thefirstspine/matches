@@ -120,8 +120,8 @@ export class PlayerDamagedGameHook implements IGameHook {
 
     if (victory) {
       loot.push({name: 'victory-mark', num: 1});
-      this.questService.progressQuest(
-        gameUser.user,
+      this.questService.progressQuestOnWizard(
+        wizard,
         'win',
         1);
     } else {
