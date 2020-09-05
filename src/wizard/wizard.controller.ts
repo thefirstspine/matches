@@ -85,10 +85,6 @@ export class WizardController {
 
     // Quests field
     if (body.quests) {
-      // Test quests length
-      if (body.quests.length > 4) {
-        throw new HttpException('Cannot subcribe to more than 4 quests.', 400);
-      }
       // Get the doubles in the request
       body.quests = [...new Set(body.quests)];
       // Get the abandonned quests & remove them from history
@@ -117,6 +113,10 @@ export class WizardController {
             this.messagingService.sendMessage([request.user], 'TheFirstSpine:quest:obtain', currentQuests.weekly);
           }
         });
+      }
+      // Test quests length
+      if (wizard.questsProgress.length > 4) {
+        throw new HttpException('Cannot subcribe to more than 4 quests.', 400);
       }
       // Save the quests
       wizard.quests = body.quests;
