@@ -29,11 +29,6 @@ export class ShopController {
     // Get the shop item
     const item: IShopItem|undefined = await this.restService.shopItem(body.shopItemId);
 
-    // Validate currency
-    if (!item || item.price.currency === 'eur') {
-      throw new HttpException('Invalid item', 400);
-    }
-
     try {
       // Call service
       this.shopService.exchange({
@@ -58,11 +53,6 @@ export class ShopController {
   async purchase(@Req() request, @Body() body: PurchaseDto): Promise<IPurchaseResult> {
     // Get the shop item
     const item: IShopItem|undefined = await this.restService.shopItem(body.shopItemId);
-
-    // Validate currency
-    if (!item || item.price.currency !== 'eur') {
-      throw new HttpException('Invalid item', 400);
-    }
 
     try {
       // Call service

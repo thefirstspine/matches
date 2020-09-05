@@ -22,25 +22,34 @@ export class ShopService {
 
   exchange(purchase: IPurchase) {
     // Check for currency
-    if (purchase.price.currency === 'eur') {
+    if (purchase.price.find((p) => p.currency === 'eur')) {
       throw new Error('Cannot exchange with `eur` currency');
     }
 
     // Get the wizzard
     const wizard: IWizard = this.wizzardService.getOrCreateWizzard(purchase.user);
+
+    // Look for already purchased items
     if (this.hasAlreadyPurchased(wizard, purchase)) {
       throw new Error('Already purchased');
     }
 
     // Gather & check required items
-    const lookedItem = purchase.price.currency === 'shards' ? 'shard' : purchase.price.currency;
-    const itemFrom: IWizardItem = wizard.items.find(item => item.name === lookedItem);
-    if (!itemFrom || itemFrom.num < purchase.price.num) {
-      throw new Error('No sufficient item count');
-    }
+    purchase.price.forEach((price: {
+      num: number;
+      currency: string;
+    }) => {
+        const lookedItem = price.currency === 'shards' ? 'shard' : price.currency;
+        const itemFrom: IWizardItem = wizard.items.find(item => item.name === lookedItem);
+        if (!itemFrom || itemFrom.num < price.num) {
+          throw new Error('No sufficient item count');
+        }
+    });
 
     // Gather or create item
-    mergeLootsInItems(wizard.items, [{name: lookedItem, num: -purchase.price.num}]);
+    mergeLootsInItems(wizard.items, purchase.price.map((price) => {
+      return {name: price.currency === 'shards' ? 'shard' : price.currency, num: -price.num};
+    }));
     mergeLootsInItems(wizard.items, purchase.loots);
     this.messagingService.sendMessage([wizard.id], 'TheFirstSpine:loot', purchase.loots);
 
@@ -55,7 +64,10 @@ export class ShopService {
 
   async purchase(purchase: IPurchase): Promise<IShopPurchase|null> {
     // Check for currency
-    if (purchase.price.currency !== 'eur') {
+    if (purchase.price.length !== 1) {
+      throw new Error('Can only purchase with a single price.');
+    }
+    if (purchase.price[0].currency !== 'eur') {
       throw new Error('Can only purchase with `eur` currency');
     }
 
@@ -64,7 +76,7 @@ export class ShopService {
       item: {
         name: 'Achat depuis Arena',
         description: 'Achat depuis Arena',
-        price: purchase.price.num * 100,
+        price: purchase.price[0].num * 100,
       },
       successUrl: `${process.env.ARENA_URL}/shop/v/success`,
       cancelUrl: `${process.env.ARENA_URL}/shop/v/cancel`,
