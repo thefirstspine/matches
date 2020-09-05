@@ -17,6 +17,14 @@ export class QuestService {
 
   progressQuest(user: number, objectiveType: string, value: number) {
     const wizard: IWizard = this.wizardService.getWizard(user);
+    const changedWizard: boolean = this.progressQuestOnWizard(wizard, objectiveType, value);
+
+    if (changedWizard) {
+      this.wizzardsStorageService.save(wizard);
+    }
+  }
+
+  progressQuestOnWizard(wizard: IWizard, objectiveType: string, value: number) {
     const loot: ILoot[] = [];
     let changedWizard: boolean = false;
 
@@ -28,13 +36,13 @@ export class QuestService {
         if (q.objectiveCurrent === q.objectiveTarget) {
           // Objective is complete: add the loot & send the message
           loot.push(...q.loots);
-          this.messagingService.sendMessage([user], 'TheFirstSpine:quest:complete', q);
+          this.messagingService.sendMessage([wizard.id], 'TheFirstSpine:quest:complete', q);
+          // Handle quest progress for quest completion
+          if (objectiveType !== 'quest') {
+            this.progressQuestOnWizard(wizard, 'quest', 1);
+          }
         } else {
-          this.messagingService.sendMessage([user], 'TheFirstSpine:quest:progress', q);
-        }
-        // Handle quest progress for quest completion
-        if (objectiveType !== 'quest') {
-          this.progressQuest(user, 'quest', 1);
+          this.messagingService.sendMessage([wizard.id], 'TheFirstSpine:quest:progress', q);
         }
       }
     });
@@ -46,9 +54,7 @@ export class QuestService {
       this.messagingService.sendMessage([wizard.id], 'TheFirstSpine:loot', loot);
     }
 
-    if (changedWizard) {
-      this.wizzardsStorageService.save(wizard);
-    }
+    return changedWizard;
   }
 
 }
