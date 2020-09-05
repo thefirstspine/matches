@@ -8,6 +8,9 @@ import { mergeLootsInItems } from '../utils/game.utils';
 import { LogsService } from '@thefirstspine/logs-nest';
 import { MessagingService } from '@thefirstspine/messaging-nest';
 
+/**
+ * Shop service
+ */
 @Injectable()
 export class ShopService {
 
@@ -20,10 +23,19 @@ export class ShopService {
     private readonly logsService: LogsService,
   ) {}
 
+  /**
+   * Exchange a shop item for other items
+   * @param purchase
+   */
   exchange(purchase: IPurchase) {
     // Check for currency
     if (purchase.price.find((p) => p.currency === 'eur')) {
       throw new Error('Cannot exchange with `eur` currency');
+    }
+
+    // Look items that can be exchanged
+    if (purchase.loots.length === 0) {
+      throw new Error('Cannot exchange empty shop item');
     }
 
     // Get the wizzard
@@ -62,6 +74,10 @@ export class ShopService {
     this.messagingService.sendMessage([wizard.id], 'TheFirstSpine:shop', purchase);
   }
 
+  /**
+   * Purchase an item. Only for "eur" currency.
+   * @param purchase
+   */
   async purchase(purchase: IPurchase): Promise<IShopPurchase|null> {
     // Check for currency
     if (purchase.price.length !== 1) {
