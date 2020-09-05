@@ -3,7 +3,7 @@ import { WizzardService } from '../wizard/wizard.service';
 import { WizzardsStorageService } from '../storage/wizzards.storage.service';
 import fetch, { Response } from 'node-fetch';
 import { IWizard, IWizardItem } from '@thefirstspine/types-arena';
-import { IShopItem } from '@thefirstspine/types-rest';
+import { IShopItem, ILoot } from '@thefirstspine/types-rest';
 import { mergeLootsInItems } from '../utils/game.utils';
 import { LogsService } from '@thefirstspine/logs-nest';
 import { MessagingService } from '@thefirstspine/messaging-nest';
@@ -23,12 +23,12 @@ export class ShopService {
   exchange(purchase: IPurchase) {
     // Check for currency
     if (purchase.price.currency === 'eur') {
-      throw new Error('Cannot only exchange with `eur` currency');
+      throw new Error('Cannot exchange with `eur` currency');
     }
 
     // Get the wizzard
     const wizard: IWizard = this.wizzardService.getOrCreateWizzard(purchase.user);
-    if (purchase.oneTimePurchase && wizard.purchases.includes(purchase.id)) {
+    if (this.hasAlreadyPurchased(wizard, purchase)) {
       throw new Error('Already purchased');
     }
 
@@ -188,6 +188,19 @@ export class ShopService {
     });
 
     await Promise.all(promises);
+  }
+
+  protected hasAlreadyPurchased(wizard: IWizard, shopItem: IShopItem): boolean {
+    if (!shopItem.oneTimePurchase) {
+      return false;
+    }
+
+    const firstNotPurchasedItem: ILoot|undefined = shopItem.loots.find((loot: ILoot) => {
+      return (wizard as IWizard).items
+        .find((item: IWizardItem) => item.name === loot.name && item.num > 0) !== undefined;
+    });
+
+    return firstNotPurchasedItem !== undefined;
   }
 
 }
