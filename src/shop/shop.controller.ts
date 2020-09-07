@@ -22,16 +22,51 @@ export class ShopController {
   /**
    * Exchange for resources for a shop item.
    * @param request
+   * @deprecated
    */
   @UseGuards(AuthGuard)
   @Post('exchange')
   async exchange(@Req() request, @Body() body: ExchangeDto): Promise<IExchangeResult> {
+    return this.exchangeLoot(request, body);
+  }
+
+  /**
+   * Trade some resources for other ones that are references under the "loots" shop item's field.
+   * @param request
+   */
+  @UseGuards(AuthGuard)
+  @Post('exchange/loot')
+  async exchangeLoot(@Req() request, @Body() body: ExchangeDto): Promise<IExchangeResult> {
     // Get the shop item
     const item: IShopItem|undefined = await this.restService.shopItem(body.shopItemId);
 
     try {
       // Call service
-      this.shopService.exchange({
+      this.shopService.exchangeLoot({
+        user: request.user,
+        ...item,
+      });
+      return {
+        status: true,
+      };
+    } catch (e) {
+      throw new HttpException(e.message, 400);
+    }
+  }
+
+  /**
+   * Trade some resources for other ones that are references under the "possibilities" shop item's field.
+   * @param request
+   */
+  @UseGuards(AuthGuard)
+  @Post('exchange/possibility')
+  async exchangePossibility(@Req() request, @Body() body: ExchangeDto): Promise<IExchangeResult> {
+    // Get the shop item
+    const item: IShopItem|undefined = await this.restService.shopItem(body.shopItemId);
+
+    try {
+      // Call service
+      this.shopService.exchangePossibility({
         user: request.user,
         ...item,
       });
