@@ -3,11 +3,15 @@ import { WizzardService } from '../wizard/wizard.service';
 import { WizzardsStorageService } from '../storage/wizzards.storage.service';
 import fetch, { Response } from 'node-fetch';
 import { IWizard, IWizardItem } from '@thefirstspine/types-arena';
-import { IShopItem } from '@thefirstspine/types-rest';
+import { IShopItem, ILoot } from '@thefirstspine/types-rest';
 import { mergeLootsInItems } from '../utils/game.utils';
 import { LogsService } from '@thefirstspine/logs-nest';
 import { MessagingService } from '@thefirstspine/messaging-nest';
+import { randBetween } from '../utils/maths.utils';
 
+/**
+ * Shop service
+ */
 @Injectable()
 export class ShopService {
 
@@ -20,31 +24,50 @@ export class ShopService {
     private readonly logsService: LogsService,
   ) {}
 
-  exchange(purchase: IPurchase) {
+  /**
+   * Exchange a shop item for other items
+   * @param purchase
+   */
+  exchangeLoot(purchase: IPurchase) {
     // Check for currency
-    if (purchase.price.currency === 'eur') {
-      throw new Error('Cannot only exchange with `eur` currency');
+    if (purchase.price.find((p) => p.currency === 'eur')) {
+      throw new Error('Cannot exchange with `eur` currency');
+    }
+
+    // Look items that can be exchanged
+    if (purchase.loots.length === 0) {
+      throw new Error('Cannot exchange empty shop item');
     }
 
     // Get the wizzard
     const wizard: IWizard = this.wizzardService.getOrCreateWizzard(purchase.user);
-    if (purchase.oneTimePurchase && wizard.purchases.includes(purchase.id)) {
+
+    // Look for already purchased items
+    if (purchase.oneTimePurchase && this.hasAlreadyPurchased(wizard, purchase.loots)) {
       throw new Error('Already purchased');
     }
 
     // Gather & check required items
-    const lookedItem = purchase.price.currency === 'shards' ? 'shard' : purchase.price.currency;
-    const itemFrom: IWizardItem = wizard.items.find(item => item.name === lookedItem);
-    if (!itemFrom || itemFrom.num < purchase.price.num) {
-      throw new Error('No sufficient item count');
-    }
+    purchase.price.forEach((price: {
+      num: number;
+      currency: string;
+    }) => {
+        const lookedItem = price.currency === 'shards' ? 'shard' : price.currency;
+        const itemFrom: IWizardItem = wizard.items.find(item => item.name === lookedItem);
+        if (!itemFrom || itemFrom.num < price.num) {
+          throw new Error('No sufficient item count');
+        }
+    });
 
     // Gather or create item
-    mergeLootsInItems(wizard.items, [{name: lookedItem, num: -purchase.price.num}]);
+    mergeLootsInItems(wizard.items, purchase.price.map((price) => {
+      return {name: price.currency === 'shards' ? 'shard' : price.currency, num: -price.num};
+    }));
     mergeLootsInItems(wizard.items, purchase.loots);
     this.messagingService.sendMessage([wizard.id], 'TheFirstSpine:loot', purchase.loots);
 
     // Add purchase to history
+    // TODO: Remove this when purchases field is removed from player file
     wizard.purchases.push(purchase.id);
 
     // Save wizzard
@@ -53,9 +76,70 @@ export class ShopService {
     this.messagingService.sendMessage([wizard.id], 'TheFirstSpine:shop', purchase);
   }
 
+  /**
+   * Exchange a shop item for other items
+   * @param purchase
+   */
+  exchangePossibility(purchase: IPurchase) {
+    // Check for currency
+    if (purchase.price.find((p) => p.currency === 'eur')) {
+      throw new Error('Cannot exchange with `eur` currency');
+    }
+
+    // Look items that can be exchanged
+    if (!purchase.possibleLoots) {
+      throw new Error('Cannot exchange non-existant shop item possibility');
+    }
+
+    // Get the wizzard
+    const wizard: IWizard = this.wizzardService.getOrCreateWizzard(purchase.user);
+
+    // Look for already purchased possibilities
+    const possibilities = purchase.possibleLoots.filter((possibility: ILoot[]) => {
+      return !this.hasAlreadyPurchased(wizard, possibility);
+    });
+    if (possibilities.length === 0) {
+      throw new Error('Exhausted possibilities');
+    }
+
+    // Gather & check required items
+    purchase.price.forEach((price: {
+      num: number;
+      currency: string;
+    }) => {
+        const lookedItem = price.currency === 'shards' ? 'shard' : price.currency;
+        const itemFrom: IWizardItem = wizard.items.find(item => item.name === lookedItem);
+        if (!itemFrom || itemFrom.num < price.num) {
+          throw new Error('No sufficient item count');
+        }
+    });
+
+    // Select one possibility
+    const possibility: ILoot[] = possibilities[randBetween(0, possibilities.length - 1)];
+
+    // Gather or create item
+    mergeLootsInItems(wizard.items, purchase.price.map((price) => {
+      return {name: price.currency === 'shards' ? 'shard' : price.currency, num: -price.num};
+    }));
+    mergeLootsInItems(wizard.items, possibility);
+    this.messagingService.sendMessage([wizard.id], 'TheFirstSpine:loot', possibility);
+
+    // Save wizzard
+    this.wizzardStorageService.save(wizard);
+    this.messagingService.sendMessage([wizard.id], 'TheFirstSpine:account', wizard);
+    this.messagingService.sendMessage([wizard.id], 'TheFirstSpine:shop', purchase);
+  }
+
+  /**
+   * Purchase an item. Only for "eur" currency.
+   * @param purchase
+   */
   async purchase(purchase: IPurchase): Promise<IShopPurchase|null> {
     // Check for currency
-    if (purchase.price.currency !== 'eur') {
+    if (purchase.price.length !== 1) {
+      throw new Error('Can only purchase with a single price.');
+    }
+    if (purchase.price[0].currency !== 'eur') {
       throw new Error('Can only purchase with `eur` currency');
     }
 
@@ -64,7 +148,7 @@ export class ShopService {
       item: {
         name: 'Achat depuis Arena',
         description: 'Achat depuis Arena',
-        price: purchase.price.num * 100,
+        price: purchase.price[0].num * 100,
       },
       successUrl: `${process.env.ARENA_URL}/shop/v/success`,
       cancelUrl: `${process.env.ARENA_URL}/shop/v/cancel`,
@@ -188,6 +272,15 @@ export class ShopService {
     });
 
     await Promise.all(promises);
+  }
+
+  protected hasAlreadyPurchased(wizard: IWizard, loots: ILoot[]): boolean {
+    const firstNotPurchasedItem: ILoot|undefined = loots.find((loot: ILoot) => {
+      return (wizard as IWizard).items
+        .find((item: IWizardItem) => item.name === loot.name && item.num > 0) !== undefined;
+    });
+
+    return firstNotPurchasedItem !== undefined;
   }
 
 }
