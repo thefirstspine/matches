@@ -124,9 +124,11 @@ export class SpellReplacementGameWorker implements IGameWorker, IHasGameHookServ
         (['creature', 'artifact'].includes(c.card.type) || ['ditch', 'burden-earth'].includes(c.card.id));
     })) {
       // Create the action for the other player, with the priority 3
-      const action: IGameAction<any> = await this.gameWorkerService.getWorker('replace-card')
+      const action: IGameAction<IInteractionPutCardOnBoard> = await this.gameWorkerService.getWorker('replace-card')
         .create(gameInstance, {user: cardTarget.user, coords: cardTarget.coords});
-      gameInstance.actions.current.push(action);
+      if (action.interaction.params.handIndexes.length > 0) {
+        gameInstance.actions.current.push(action);
+      }
     }
 
     // Send message to rooms
