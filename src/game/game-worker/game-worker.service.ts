@@ -49,6 +49,7 @@ import { SacrificeFleshHammerGameWorker } from './sacrifice-flesh-hammer.game-wo
 import { SkipSacrificeGameWorker } from './skip-sacrifice.game-worker';
 import { SacrificeAnvilOfXiarmhaGameWorker } from './sacrifice-anvil-of-xiarmha.game-worker';
 import { SacrificeAnvilOfXiarmhaEffectGameWorker } from './sacrifice-anvil-of-xiarmha-effect.game-worker';
+import { SpellBloodStrengthGameWorker } from './spell-blood-strength.game-worker';
 
 /**
  * Main service that manages game workers. Each game worker is responsible of a game action type. This service
@@ -130,6 +131,7 @@ export class GameWorkerService extends BaseGameService<IGameWorker> {
     this.createInjectable(SkipSacrificeGameWorker, injectedProps);
     this.createInjectable(SacrificeAnvilOfXiarmhaGameWorker, injectedProps);
     this.createInjectable(SacrificeAnvilOfXiarmhaEffectGameWorker, injectedProps);
+    this.createInjectable(SpellBloodStrengthGameWorker, injectedProps);
   }
 
   /**
