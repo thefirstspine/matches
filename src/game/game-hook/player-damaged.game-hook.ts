@@ -208,6 +208,18 @@ export class PlayerDamagedGameHook implements IGameHook {
       }
     }
 
+    if (
+      gameInstance.modifiers.includes(Modifiers.CYCLE) &&
+      gameInstance.modifiers.includes(Modifiers.HARVESTING_SOULS)
+    ) {
+      loot.push({name: 'harvester-mark', num: 1});
+      if (victory) {
+        loot.push({name: 'holo-blood-strength', num: 1}, {name: 'premium-blood-strength', num: 1});
+      } else {
+        loot.push({name: 'holo-blood-strength', num: 1});
+      }
+    }
+
     // Register data in wizard's history
     const historyItem: IWizardHistoryItem = {
       gameId: gameInstance.id,

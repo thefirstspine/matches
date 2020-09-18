@@ -89,6 +89,26 @@ export class GameCreatedGameHook implements IGameHook {
       gameInstance.cards = shuffle(gameInstance.cards);
     }
 
+    if (gameInstance.modifiers.includes(Modifiers.HARVESTING_SOULS)) {
+      // Get the "great-ancient-egg" card
+      const bloodStrength: ICard = await this.restService.card('blood-strength');
+      // Add the cards "great-ancient-egg"
+      gameInstance.users.forEach((u: IGameUser) => {
+        for (let i = 0; i < 4; i ++) {
+          const randomId: number = randBetween(0, Number.MAX_SAFE_INTEGER);
+          gameInstance.cards.push({
+            card: bloodStrength,
+            id: `${gameInstance.id}_${randomId}`,
+            location: 'deck',
+            user: u.user,
+            metadata: {},
+          });
+        }
+      });
+      // Shuffle the cards
+      gameInstance.cards = shuffle(gameInstance.cards);
+    }
+
     return true;
   }
 
