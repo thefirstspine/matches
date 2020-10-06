@@ -124,11 +124,13 @@ export class QueueService {
       'treasure-2020': {theme: '', modifier: ''},
       'souvenirs-2020': {theme: Themes.FORGOTTEN_CEMETERY, modifier: Modifiers.SOUVENIRS_FROM_YOUR_ENEMY},
       'harvest-2020': {theme: Themes.WASTED_FIELDS, modifier: Modifiers.HARVESTING_SOULS},
+      'crowned-souls-2020': {theme: Themes.SACRIFICE_CHURCH, modifier: Modifiers.ANNIHILATION_MATTS},
     };
 
     const fixedDailyData: Array<{theme: string, modifier: string}> = [
       {theme: Themes.SPINE_S_CAVE, modifier: Modifiers.GREAT_ANCIENTS_EGGS},
       {theme: Themes.FORGOTTEN_CEMETERY, modifier: Modifiers.SOUVENIRS_FROM_YOUR_ENEMY},
+      {theme: Themes.WASTED_FIELDS, modifier: Modifiers.HARVESTING_SOULS},
     ];
 
     // Get current events
