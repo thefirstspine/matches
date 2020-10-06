@@ -2,7 +2,7 @@ import { IGameHook } from './game-hook.interface';
 import { Injectable } from '@nestjs/common';
 import { IGameInstance, IGameUser } from '@thefirstspine/types-arena';
 import { RestService } from '../../rest/rest.service';
-import { ICycle, ICard } from '@thefirstspine/types-rest';
+import { ICycle, ICard, ICardCoords } from '@thefirstspine/types-rest';
 import { randBetween } from '../../utils/maths.utils';
 import { shuffle } from '../../utils/array.utils';
 import { Modifiers } from '../modifiers';
@@ -84,6 +84,32 @@ export class GameCreatedGameHook implements IGameHook {
             currentStats: JSON.parse(JSON.stringify(souvenirs[opponent.destiny].stats)),
           });
         }
+      });
+      // Shuffle the cards
+      gameInstance.cards = shuffle(gameInstance.cards);
+    }
+
+    if (gameInstance.modifiers.includes(Modifiers.ANNIHILATION_MATTS)) {
+      // Get the "annihilation-matt" card
+      const annihilationMattCard: ICard = await this.restService.card('annihilation-matt');
+      // Add the cards "annihilation-matt"
+      const coords: ICardCoords[] = [
+        {x: 5, y: 5},
+        {x: 1, y: 5},
+        {x: 5, y: 1},
+        {x: 1, y: 1},
+      ];
+      coords.forEach((coord: ICardCoords) => {
+        const randomId: number = randBetween(0, Number.MAX_SAFE_INTEGER);
+        gameInstance.cards.push({
+          card: annihilationMattCard,
+          id: `${gameInstance.id}_${randomId}`,
+          location: 'board',
+          user: 0,
+          metadata: {},
+          currentStats: JSON.parse(JSON.stringify(annihilationMattCard.stats)),
+          coords: coord,
+        });
       });
       // Shuffle the cards
       gameInstance.cards = shuffle(gameInstance.cards);

@@ -31,6 +31,7 @@ import { MessagingService } from '@thefirstspine/messaging-nest';
 import { GameCreatedGameHook } from './game-created.game-hook';
 import { CardPlacedGameHook } from './card-placed.game-hook';
 import { QuestService } from '../quest/quest.service';
+import { AnnihilationMattDestroyedGameHook } from './annihilation-matt-destroyed.game-hook';
 
 /**
  * Main service that manages game hooks.
@@ -89,6 +90,7 @@ export class GameHookService extends BaseGameService<IGameHook> {
     this.subscribe('card:destroyed:caduceus', this.createInjectable(CaduceusDestroyedGameHook, injectedProps));
     this.subscribe('card:destroyed:jellyfish', this.createInjectable(JellyfishDestroyedGameHook, injectedProps));
     this.subscribe('card:destroyed:pocket-volcano', this.createInjectable(PocketVolcanoDestroyedGameHook, injectedProps));
+    this.subscribe('card:destroyed:annihilation-matt', this.createInjectable(AnnihilationMattDestroyedGameHook, injectedProps));
     this.subscribe('card:placed', this.createInjectable(CardPlacedGameHook, injectedProps));
     this.subscribe('card:placed:soul-of-a-sacrified-hunter', this.createInjectable(SoulOfASacrifiedHunterPlacesGameHook, injectedProps));
     this.subscribe('card:placed:caduceus', this.createInjectable(CaduceusPlacesGameHook, injectedProps));
