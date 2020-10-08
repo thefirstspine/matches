@@ -143,6 +143,9 @@ export class QueueService {
         if (events.includes('online:corsairs')) {
           instance.modifiers.push(Modifiers.GOLDEN_GALLEONS);
         }
+        if (events.includes('online:tricks-celebration')) {
+          instance.modifiers.push(Modifiers.TRICK_OR_TREAT);
+        }
       }
       if (instance.key === 'daily') {
         instance.theme = fixedDailyData[(new Date()).getDay() % fixedDailyData.length].theme;
@@ -153,6 +156,9 @@ export class QueueService {
         if (events.includes('online:corsairs')) {
           instance.modifiers.push(Modifiers.GOLDEN_GALLEONS);
         }
+        if (events.includes('online:tricks-celebration')) {
+          instance.modifiers.push(Modifiers.TRICK_OR_TREAT);
+        }
       }
       if (instance.key === 'cycle') {
         instance.theme = fixedCycleData[currentCycle.id].theme;
@@ -160,9 +166,6 @@ export class QueueService {
           Modifiers.CYCLE,
           fixedCycleData[currentCycle.id].modifier,
         ];
-        if (events.includes('online:corsairs')) {
-          instance.modifiers.push(Modifiers.GOLDEN_GALLEONS);
-        }
       }
     });
   }

@@ -5,6 +5,7 @@ export class Modifiers {
   static readonly HARVESTING_SOULS: string = 'harvesting-souls';
   static readonly ANNIHILATION_MATTS: string = 'annihilation-matts';
   static readonly GOLDEN_GALLEONS: string = 'golden-galleons';
+  static readonly TRICK_OR_TREAT: string = 'trick-or-treat';
   static readonly IMMEDIATE: string = 'immediate';
   static readonly DAILY: string = 'daily';
   static readonly CYCLE: string = 'cycle';

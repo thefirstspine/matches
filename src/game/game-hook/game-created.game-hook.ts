@@ -114,6 +114,25 @@ export class GameCreatedGameHook implements IGameHook {
       // Shuffle the cards
       gameInstance.cards = shuffle(gameInstance.cards);
     }
+    if (gameInstance.modifiers.includes(Modifiers.TRICK_OR_TREAT)) {
+      // Get the "golden-galleon" card
+      const trickOrTreatCard: ICard = await this.restService.card('trick-or-treat');
+      // Add the cards "golden-galleon"
+      gameInstance.users.forEach((u: IGameUser) => {
+        for (let i = 0; i < 6; i ++) {
+          const randomId: number = randBetween(0, Number.MAX_SAFE_INTEGER);
+          gameInstance.cards.push({
+            card: trickOrTreatCard,
+            id: `${gameInstance.id}_${randomId}`,
+            location: 'deck',
+            user: u.user,
+            metadata: {},
+          });
+        }
+      });
+      // Shuffle the cards
+      gameInstance.cards = shuffle(gameInstance.cards);
+    }
 
     return true;
   }

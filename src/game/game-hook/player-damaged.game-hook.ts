@@ -61,6 +61,12 @@ export class PlayerDamagedGameHook implements IGameHook {
               .filter((c: IGameCard) => c.user === gameUser.user && c.location === 'hand' && c.card.id === 'golden-galleon').length,
           });
         }
+        if (gameInstance.modifiers.includes(Modifiers.TRICK_OR_TREAT)) {
+          loots.push({
+            name: 'candy-shard',
+            num: gameInstance.cards.find((c: IGameCard) => c.user === gameUser.user && c.card.type === 'player').metadata?.candyShards,
+          });
+        }
         this.registerResult(
           false,
           gameUser,
@@ -77,6 +83,12 @@ export class PlayerDamagedGameHook implements IGameHook {
             name: 'golden-galleon',
             num: gameInstance.cards
               .filter((c: IGameCard) => c.user === gameUser.user && c.location === 'hand' && c.card.id === 'golden-galleon').length,
+          });
+        }
+        if (gameInstance.modifiers.includes(Modifiers.TRICK_OR_TREAT)) {
+          loots.push({
+            name: 'candy-shard',
+            num: gameInstance.cards.find((c: IGameCard) => c.user === gameUser.user && c.card.type === 'player').metadata?.candyShards,
           });
         }
         this.registerResult(
