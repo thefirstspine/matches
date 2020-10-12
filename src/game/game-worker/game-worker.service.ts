@@ -50,6 +50,7 @@ import { SkipSacrificeGameWorker } from './skip-sacrifice.game-worker';
 import { SacrificeAnvilOfXiarmhaGameWorker } from './sacrifice-anvil-of-xiarmha.game-worker';
 import { SacrificeAnvilOfXiarmhaEffectGameWorker } from './sacrifice-anvil-of-xiarmha-effect.game-worker';
 import { SpellTrickOrTreatGameWorker } from './spell-trick-or-treat.game-worker';
+import { QuestService } from '../quest/quest.service';
 
 /**
  * Main service that manages game workers. Each game worker is responsible of a game action type. This service
@@ -67,6 +68,7 @@ export class GameWorkerService extends BaseGameService<IGameWorker> {
     private readonly restService: RestService,
     private readonly arenaRoomsService: ArenaRoomsService,
     private readonly wizzardsStorageService: WizzardsStorageService,
+    private readonly questService: QuestService,
     @Inject(forwardRef(() => GameHookService)) private readonly gameHookService: GameHookService,
   ) {
     super();
@@ -86,6 +88,7 @@ export class GameWorkerService extends BaseGameService<IGameWorker> {
     this.deferInjection(this.arenaRoomsService);
     this.deferInjection(this.gameHookService);
     this.deferInjection(this.wizzardsStorageService);
+    this.deferInjection(this.questService);
     this.deferInjection(this); // haya!
 
     // Create workers

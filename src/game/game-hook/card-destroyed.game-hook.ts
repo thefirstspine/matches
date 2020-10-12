@@ -6,6 +6,7 @@ import { ICard } from '@thefirstspine/types-rest';
 import { RestService } from '../../rest/rest.service';
 import { randBetween } from '../../utils/maths.utils';
 import { Modifiers } from '../modifiers';
+import { QuestService } from '../quest/quest.service';
 
 /**
  * This subscriber is executed once a 'game:card:destroyed' event is thrown. It will look for dead
@@ -19,6 +20,7 @@ export class CardDestroyedGameHook implements IGameHook {
   constructor(
     private readonly gameHookService: GameHookService,
     private readonly restService: RestService,
+    private readonly questService: QuestService,
   ) {}
 
   async execute(gameInstance: IGameInstance, params: {gameCard: IGameCard, source: IGameCard}): Promise<boolean> {
@@ -85,6 +87,12 @@ export class CardDestroyedGameHook implements IGameHook {
       params.gameCard.location = 'discard';
       await this.gameHookService.dispatch(gameInstance, `card:discarded:${params.gameCard.card.id}`, {gameCard: params.gameCard});
     }
+
+    // Quest
+    this.questService.progressQuest(
+      params.source.user,
+      `destroye:${params.gameCard.card.type}s`,
+      1);
 
     return true;
   }
