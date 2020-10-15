@@ -152,32 +152,7 @@ export class EndTurnGameWorker implements IGameWorker, IHasGameHookService, IHas
         });
         promisesEffects.push(greatAncientPromise);
       }
-
-      // Add 1 Hp to Anvil of Xiarm'ha
-      if (c.location === 'board' && c.user === nextUser && c.card.id === 'anvil-of-xiarmha') {
-        c.currentStats.life ++;
-        promisesEffects.push(
-          this.gameHookService
-          .dispatch(
-            gameInstance,
-            `card:lifeChanged:healed:${c.card.id}`, {gameCard: c, source: null, lifeChanged: 1}));
-      }
     });
-
-    // Generate Flesh Hammer sacrifice action in when the required cards are on the board
-    const fleshHammerCards: IGameCard[] =
-      gameInstance.cards.filter((c) => c.card.id === 'flesh-hammer' && c.location === 'board' && c.user === nextUser);
-    const anvilCards: IGameCard[] =
-      gameInstance.cards.filter((c) => c.card.id === 'anvil-of-xiarmha' && c.location === 'board' && c.user === nextUser);
-    if (fleshHammerCards.length > 0 && anvilCards.length > 0) {
-      promisesEffects.push(
-        this.gameWorkerService.getWorker('sacrifice-flesh-hammer').create(gameInstance, {user: nextUser}).then((a) => {
-          gameInstance.actions.current.push(a);
-        }),
-        this.gameWorkerService.getWorker('skip-sacrifice').create(gameInstance, {user: nextUser}).then((a) => {
-          gameInstance.actions.current.push(a);
-        }));
-    }
 
     await Promise.all(promisesEffects);
 

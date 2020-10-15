@@ -33,8 +33,8 @@ export class SpellReinforcementGameWorker implements IGameWorker, IHasGameHookSe
         fr: `Jouer un Renforcement`,
       },
       description: {
-        en: `Play Reinforcement on a creature`,
-        fr: `Jouer un Renforcement sur une créature`,
+        en: `Play Reinforcement on a card`,
+        fr: `Jouer un Renforcement sur une card`,
       },
       user: data.user as number,
       priority: 1,
@@ -108,14 +108,13 @@ export class SpellReinforcementGameWorker implements IGameWorker, IHasGameHookSe
       this.logsService.warning('Target not found', gameAction);
       return false;
     }
-    cardDamaged.currentStats.life += 2;
+    cardDamaged.currentStats.top.defense += 2;
+    cardDamaged.currentStats.bottom.defense += 2;
+    cardDamaged.currentStats.right.defense += 2;
+    cardDamaged.currentStats.left.defense += 2;
 
     // Dispatch event
     await this.gameHookService.dispatch(gameInstance, `card:spell:used:${cardUsed.card.id}`, {gameCard: cardUsed});
-    await this.gameHookService.dispatch(
-      gameInstance,
-      `card:lifeChanged:healed:${cardDamaged.card.id}`,
-      {gameCard: cardDamaged, source: cardUsed, lifeChanged: 2});
 
     // Send message to rooms
     this.arenaRoomsService.sendMessageForGame(
@@ -180,7 +179,8 @@ export class SpellReinforcementGameWorker implements IGameWorker, IHasGameHookSe
    */
   protected getBoardCoords(gameInstance: IGameInstance, user: number): string[] {
     // Get the coordinates where the user can place a card
-    return gameInstance.cards.filter((card: IGameCard) => card.location === 'board' && card.card.id === 'anvil-of-xiarmha' && card.coords)
+    return gameInstance.cards
+      .filter((card: IGameCard) => card.location === 'board' && ['creature', 'artifact'].includes(card.card.type) && card.coords)
       .map((card: IGameCard) => `${card.coords.x}-${card.coords.y}`);
   }
 

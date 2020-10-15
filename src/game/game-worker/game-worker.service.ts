@@ -45,13 +45,10 @@ import { SpellPainGameWorker } from './spell-pain.game-worker';
 import { LogsService } from '@thefirstspine/logs-nest';
 import { MessagingService } from '@thefirstspine/messaging-nest';
 import { SpellReinforcementGameWorker } from './spell-reinforcement.game-worker';
-import { SacrificeFleshHammerGameWorker } from './sacrifice-flesh-hammer.game-worker';
-import { SkipSacrificeGameWorker } from './skip-sacrifice.game-worker';
-import { SacrificeAnvilOfXiarmhaGameWorker } from './sacrifice-anvil-of-xiarmha.game-worker';
-import { SacrificeAnvilOfXiarmhaEffectGameWorker } from './sacrifice-anvil-of-xiarmha-effect.game-worker';
 import { SpellTrickOrTreatGameWorker } from './spell-trick-or-treat.game-worker';
 import { QuestService } from '../../wizard/quest/quest.service';
 import { TriumphService } from '../../wizard/triumph/triumph.service';
+import { SpellBloodStrengthGameWorker } from './spell-blood-strength.game-worker';
 
 /**
  * Main service that manages game workers. Each game worker is responsible of a game action type. This service
@@ -133,11 +130,8 @@ export class GameWorkerService extends BaseGameService<IGameWorker> {
     this.createInjectable(SpellTheVoidGameWorker, injectedProps);
     this.createInjectable(SpellPainGameWorker, injectedProps);
     this.createInjectable(SpellReinforcementGameWorker, injectedProps);
-    this.createInjectable(SacrificeFleshHammerGameWorker, injectedProps);
-    this.createInjectable(SkipSacrificeGameWorker, injectedProps);
-    this.createInjectable(SacrificeAnvilOfXiarmhaGameWorker, injectedProps);
-    this.createInjectable(SacrificeAnvilOfXiarmhaEffectGameWorker, injectedProps);
     this.createInjectable(SpellTrickOrTreatGameWorker, injectedProps);
+    this.createInjectable(SpellBloodStrengthGameWorker, injectedProps);
   }
 
   /**

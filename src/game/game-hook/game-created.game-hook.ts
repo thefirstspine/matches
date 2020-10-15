@@ -2,7 +2,7 @@ import { IGameHook } from './game-hook.interface';
 import { Injectable } from '@nestjs/common';
 import { IGameInstance, IGameUser } from '@thefirstspine/types-arena';
 import { RestService } from '../../rest/rest.service';
-import { ICycle, ICard, ICardCoords } from '@thefirstspine/types-rest';
+import { ICard, ICardCoords } from '@thefirstspine/types-rest';
 import { randBetween } from '../../utils/maths.utils';
 import { shuffle } from '../../utils/array.utils';
 import { Modifiers } from '../modifiers';
@@ -114,15 +114,37 @@ export class GameCreatedGameHook implements IGameHook {
       // Shuffle the cards
       gameInstance.cards = shuffle(gameInstance.cards);
     }
+
     if (gameInstance.modifiers.includes(Modifiers.TRICK_OR_TREAT)) {
-      // Get the "golden-galleon" card
+      // Get the "trick-or-treat" card
       const trickOrTreatCard: ICard = await this.restService.card('trick-or-treat');
-      // Add the cards "golden-galleon"
+      // Add the cards "trick-or-treat"
       gameInstance.users.forEach((u: IGameUser) => {
         for (let i = 0; i < 6; i ++) {
           const randomId: number = randBetween(0, Number.MAX_SAFE_INTEGER);
           gameInstance.cards.push({
             card: trickOrTreatCard,
+            id: `${gameInstance.id}_${randomId}`,
+            location: 'deck',
+            user: 0,
+            metadata: {},
+            currentStats: JSON.parse(JSON.stringify(trickOrTreatCard.stats)),
+          });
+        }
+      });
+      // Shuffle the cards
+      gameInstance.cards = shuffle(gameInstance.cards);
+    }
+
+    if (gameInstance.modifiers.includes(Modifiers.HARVESTING_SOULS)) {
+      // Get the "great-ancient-egg" card
+      const bloodStrength: ICard = await this.restService.card('blood-strength');
+      // Add the cards "great-ancient-egg"
+      gameInstance.users.forEach((u: IGameUser) => {
+        for (let i = 0; i < 4; i ++) {
+          const randomId: number = randBetween(0, Number.MAX_SAFE_INTEGER);
+          gameInstance.cards.push({
+            card: bloodStrength,
             id: `${gameInstance.id}_${randomId}`,
             location: 'deck',
             user: u.user,
