@@ -45,6 +45,9 @@ import { SpellPainGameWorker } from './spell-pain.game-worker';
 import { LogsService } from '@thefirstspine/logs-nest';
 import { MessagingService } from '@thefirstspine/messaging-nest';
 import { SpellReinforcementGameWorker } from './spell-reinforcement.game-worker';
+import { SpellTrickOrTreatGameWorker } from './spell-trick-or-treat.game-worker';
+import { QuestService } from '../../wizard/quest/quest.service';
+import { TriumphService } from '../../wizard/triumph/triumph.service';
 import { SpellBloodStrengthGameWorker } from './spell-blood-strength.game-worker';
 
 /**
@@ -63,6 +66,8 @@ export class GameWorkerService extends BaseGameService<IGameWorker> {
     private readonly restService: RestService,
     private readonly arenaRoomsService: ArenaRoomsService,
     private readonly wizzardsStorageService: WizzardsStorageService,
+    private readonly questService: QuestService,
+    private readonly triumphService: TriumphService,
     @Inject(forwardRef(() => GameHookService)) private readonly gameHookService: GameHookService,
   ) {
     super();
@@ -82,6 +87,8 @@ export class GameWorkerService extends BaseGameService<IGameWorker> {
     this.deferInjection(this.arenaRoomsService);
     this.deferInjection(this.gameHookService);
     this.deferInjection(this.wizzardsStorageService);
+    this.deferInjection(this.questService);
+    this.deferInjection(this.triumphService);
     this.deferInjection(this); // haya!
 
     // Create workers
@@ -123,6 +130,7 @@ export class GameWorkerService extends BaseGameService<IGameWorker> {
     this.createInjectable(SpellTheVoidGameWorker, injectedProps);
     this.createInjectable(SpellPainGameWorker, injectedProps);
     this.createInjectable(SpellReinforcementGameWorker, injectedProps);
+    this.createInjectable(SpellTrickOrTreatGameWorker, injectedProps);
     this.createInjectable(SpellBloodStrengthGameWorker, injectedProps);
   }
 

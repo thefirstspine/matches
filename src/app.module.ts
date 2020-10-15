@@ -23,7 +23,8 @@ import { AuthService } from '@thefirstspine/auth-nest';
 import { LogsService } from '@thefirstspine/logs-nest';
 import { MessagingService } from '@thefirstspine/messaging-nest';
 import { WizardController } from './wizard/wizard.controller';
-import { QuestService } from './game/quest/quest.service';
+import { QuestService } from './wizard/quest/quest.service';
+import { TriumphService } from './wizard/triumph/triumph.service';
 
 @Module({
   imports: [
@@ -53,6 +54,7 @@ import { QuestService } from './game/quest/quest.service';
     BotsService,
     FileSocketMethodsService,
     QuestService,
+    TriumphService,
   ],
 })
 export class AppModule {}

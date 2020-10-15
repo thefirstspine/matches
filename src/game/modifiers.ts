@@ -3,7 +3,9 @@ export class Modifiers {
   static readonly GREAT_ANCIENTS_EGGS: string = 'great-ancients-eggs';
   static readonly SOUVENIRS_FROM_YOUR_ENEMY: string = 'souvenirs-from-your-enemy';
   static readonly HARVESTING_SOULS: string = 'harvesting-souls';
+  static readonly ANNIHILATION_MATTS: string = 'annihilation-matts';
   static readonly GOLDEN_GALLEONS: string = 'golden-galleons';
+  static readonly TRICK_OR_TREAT: string = 'trick-or-treat';
   static readonly IMMEDIATE: string = 'immediate';
   static readonly DAILY: string = 'daily';
   static readonly CYCLE: string = 'cycle';
@@ -13,6 +15,7 @@ export class Modifiers {
       Modifiers.GREAT_ANCIENTS_EGGS,
       Modifiers.SOUVENIRS_FROM_YOUR_ENEMY,
       Modifiers.HARVESTING_SOULS,
+      Modifiers.ANNIHILATION_MATTS,
       Modifiers.GOLDEN_GALLEONS,
       Modifiers.IMMEDIATE,
       Modifiers.DAILY,
@@ -24,6 +27,7 @@ export class Modifiers {
     return [
       Modifiers.GREAT_ANCIENTS_EGGS,
       Modifiers.SOUVENIRS_FROM_YOUR_ENEMY,
+      Modifiers.HARVESTING_SOULS,
     ];
   }
 

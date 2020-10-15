@@ -3,8 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { IGameInstance, IGameCard, IGameAction, IWizard } from '@thefirstspine/types-arena';
 import { IHasGameWorkerService } from '../injections.interface';
 import { GameWorkerService } from '../game-worker/game-worker.service';
-import { WizzardService } from '../../wizard/wizard.service';
-import { WizzardsStorageService } from '../../storage/wizzards.storage.service';
+import { TriumphService } from '../../wizard/triumph/triumph.service';
 
 /**
  * This subscriber is executed once a 'card:lifeChanged:damaged:monstrous-portal' event is thrown.
@@ -15,8 +14,7 @@ import { WizzardsStorageService } from '../../storage/wizzards.storage.service';
 export class MonstrousPortalDamagedGameHook implements IGameHook, IHasGameWorkerService {
 
   constructor(
-    private readonly wizardService: WizzardService,
-    private readonly wizzardsStorageService: WizzardsStorageService,
+    private readonly triumphService: TriumphService,
   ) {}
 
   public gameWorkerService: GameWorkerService;
@@ -26,11 +24,7 @@ export class MonstrousPortalDamagedGameHook implements IGameHook, IHasGameWorker
 
       // Unlock title "transporter"
       if (params.source.user === params.gameCard.user) {
-        const wizard: IWizard = this.wizardService.getOrCreateWizzard(params.gameCard.user);
-        if (wizard && !wizard.triumphs.includes('transporter')) {
-          wizard.triumphs.push('transporter');
-          this.wizzardsStorageService.save(wizard);
-        }
+        this.triumphService.unlockTriumph(params.gameCard.user, 'transporter');
       }
 
       const action: IGameAction<any> = await this.gameWorkerService.getWorker('monstrous-portal-effect')
