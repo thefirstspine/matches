@@ -6,7 +6,7 @@ import { ICard } from '@thefirstspine/types-rest';
 import { RestService } from '../../rest/rest.service';
 import { randBetween } from '../../utils/maths.utils';
 import { Modifiers } from '../modifiers';
-import { QuestService } from '../quest/quest.service';
+import { QuestService } from '../../wizard/quest/quest.service';
 
 /**
  * This subscriber is executed once a 'game:card:destroyed' event is thrown. It will look for dead

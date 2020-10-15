@@ -1,7 +1,7 @@
 import { IGameHook } from './game-hook.interface';
 import { Injectable } from '@nestjs/common';
 import { IGameInstance, IGameCard } from '@thefirstspine/types-arena';
-import { QuestService } from '../quest/quest.service';
+import { QuestService } from '../../wizard/quest/quest.service';
 
 /**
  * This subscriber is executed once a 'card:placed' event is thrown.

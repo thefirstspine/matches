@@ -8,7 +8,8 @@ import { mergeLootsInItems } from '../../utils/game.utils';
 import { LogsService } from '@thefirstspine/logs-nest';
 import { MessagingService } from '@thefirstspine/messaging-nest';
 import { Modifiers } from '../modifiers';
-import { QuestService } from '../quest/quest.service';
+import { QuestService } from '../../wizard/quest/quest.service';
+import { TriumphService } from '../../wizard/triumph/triumph.service';
 
 /**
  * This subscriber is executed once a 'card:lifeChanged:damaged:{player}' event is thrown and look for dead
@@ -25,6 +26,7 @@ export class PlayerDamagedGameHook implements IGameHook {
     private readonly questService: QuestService,
     private readonly messagingService: MessagingService,
     private readonly logsService: LogsService,
+    private readonly triumphService: TriumphService,
   ) {}
 
   async execute(gameInstance: IGameInstance, params: {gameCard: IGameCard, source: IGameCard, lifeChanged: number}): Promise<boolean> {
@@ -248,29 +250,21 @@ export class PlayerDamagedGameHook implements IGameHook {
 
     if (!victory) {
       // Register the triumph "spirit"
-      if (!wizard.triumphs.includes('spirit')) {
-        wizard.triumphs.push('spirit');
-      }
+      this.triumphService.unlockTriumphOnWizard(wizard, 'spirit');
     } else {
       // Register the triumphs for the destiny & the origin
-      if (gameUser.destiny && !wizard.triumphs.includes(gameUser.destiny)) {
-        wizard.triumphs.push(gameUser.destiny);
-      }
-      if (gameUser.origin && !wizard.triumphs.includes(gameUser.origin)) {
-        wizard.triumphs.push(gameUser.origin);
-      }
+      this.triumphService.unlockTriumphOnWizard(wizard, gameUser.origin);
+      this.triumphService.unlockTriumphOnWizard(wizard, gameUser.destiny);
     }
 
     // Register triumph for FPE
-    if (gameInstance.gameTypeId === 'fpe' && !wizard.triumphs.includes('wizzard')) {
-      wizard.triumphs.push('wizzard');
+    if (gameInstance.gameTypeId === 'fpe') {
+      this.triumphService.unlockTriumphOnWizard(wizard, 'wizzard');
     }
 
     // Register other triumphs
     additionalTriumphs.forEach((t: string) => {
-      if (!wizard.triumphs.includes(t)) {
-        wizard.triumphs.push(t);
-      }
+      this.triumphService.unlockTriumphOnWizard(wizard, t);
     });
 
     // Save wizard

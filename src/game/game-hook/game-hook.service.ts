@@ -30,8 +30,9 @@ import { LogsService } from '@thefirstspine/logs-nest';
 import { MessagingService } from '@thefirstspine/messaging-nest';
 import { GameCreatedGameHook } from './game-created.game-hook';
 import { CardPlacedGameHook } from './card-placed.game-hook';
-import { QuestService } from '../quest/quest.service';
+import { QuestService } from '../../wizard/quest/quest.service';
 import { AnnihilationMattDestroyedGameHook } from './annihilation-matt-destroyed.game-hook';
+import { TriumphService } from '../../wizard/triumph/triumph.service';
 
 /**
  * Main service that manages game hooks.
@@ -51,6 +52,7 @@ export class GameHookService extends BaseGameService<IGameHook> {
     private readonly arenaRoomsService: ArenaRoomsService,
     private readonly wizzardsStorageService: WizzardsStorageService,
     private readonly questService: QuestService,
+    private readonly triumphService: TriumphService,
     @Inject(forwardRef(() => GameWorkerService)) public readonly gameWorkerService: GameWorkerService,
   ) {
     super();
@@ -70,6 +72,7 @@ export class GameHookService extends BaseGameService<IGameHook> {
     this.deferInjection(this.arenaRoomsService);
     this.deferInjection(this.wizzardsStorageService);
     this.deferInjection(this.questService);
+    this.deferInjection(this.triumphService);
     this.deferInjection(this); // haya!
 
     // Create hooks

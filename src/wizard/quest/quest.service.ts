@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { WizzardService } from '../../wizard/wizard.service';
+import { WizzardService } from '../wizard.service';
 import { IWizard, IUserQuest } from '@thefirstspine/types-arena';
 import { ILoot } from '@thefirstspine/types-rest';
 import { mergeLootsInItems } from '../../utils/game.utils';

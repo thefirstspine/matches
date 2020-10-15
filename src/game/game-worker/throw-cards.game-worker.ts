@@ -6,7 +6,7 @@ import { GameHookService } from '../game-hook/game-hook.service';
 import { IHasGameHookService } from '../injections.interface';
 import { ArenaRoomsService } from '../../rooms/arena-rooms.service';
 import { LogsService } from '@thefirstspine/logs-nest';
-import { QuestService } from '../quest/quest.service';
+import { QuestService } from '../../wizard/quest/quest.service';
 
 /**
  * At the beggining of his turn, the player can throw to the discard one or more cards.
