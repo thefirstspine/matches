@@ -62,7 +62,7 @@ export class WizzardService {
     return {
       id: user,
       name: '',
-      version: 0.8,
+      version: 1.0,
       items: [],
       history: [],
       triumphs: ['wizzard'],
@@ -144,6 +144,13 @@ export class WizzardService {
       migrated = true;
       wizzard.quests = [];
       wizzard.questsProgress = [];
+    }
+
+    // Migrate from 0.8 to 0.9 => added "publicRoom" property
+    if (wizzard.version === 0.9) {
+      wizzard.version = 1.0;
+      migrated = true;
+      wizzard.triumphs.push('devoted');
     }
 
     return migrated;
