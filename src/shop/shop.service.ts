@@ -8,6 +8,7 @@ import { mergeLootsInItems } from '../utils/game.utils';
 import { LogsService } from '@thefirstspine/logs-nest';
 import { MessagingService } from '@thefirstspine/messaging-nest';
 import { randBetween } from '../utils/maths.utils';
+import { TriumphService } from '../wizard/triumph/triumph.service';
 
 /**
  * Shop service
@@ -22,6 +23,7 @@ export class ShopService {
     private readonly wizzardStorageService: WizzardsStorageService,
     private readonly messagingService: MessagingService,
     private readonly logsService: LogsService,
+    private readonly triumphService: TriumphService,
   ) {}
 
   /**
@@ -123,6 +125,11 @@ export class ShopService {
     }));
     mergeLootsInItems(wizard.items, possibility);
     this.messagingService.sendMessage([wizard.id], 'TheFirstSpine:loot', possibility);
+
+    // Unlock the triumph in case of craft
+    if (/^craft-rune/.test(purchase.id)) {
+      this.triumphService.unlockTriumphOnWizard(wizard, 'crafter');
+    }
 
     // Save wizzard
     this.wizzardStorageService.save(wizard);

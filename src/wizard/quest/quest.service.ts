@@ -5,6 +5,7 @@ import { ILoot } from '@thefirstspine/types-rest';
 import { mergeLootsInItems } from '../../utils/game.utils';
 import { MessagingService } from '@thefirstspine/messaging-nest';
 import { WizzardsStorageService } from '../../storage/wizzards.storage.service';
+import { TriumphService } from '../triumph/triumph.service';
 
 @Injectable()
 export class QuestService {
@@ -13,6 +14,7 @@ export class QuestService {
     private readonly wizardService: WizzardService,
     private readonly messagingService: MessagingService,
     private readonly wizzardsStorageService: WizzardsStorageService,
+    private readonly triumphService: TriumphService,
   ) {}
 
   progressQuest(user: number, objectiveType: string, value: number) {
@@ -37,6 +39,7 @@ export class QuestService {
           // Objective is complete: add the loot & send the message
           loot.push(...q.loots);
           this.messagingService.sendMessage([wizard.id], 'TheFirstSpine:quest:complete', q);
+          this.triumphService.unlockTriumphOnWizard(wizard, 'adventurer');
           // Handle quest progress for quest completion
           if (objectiveType !== 'quest') {
             this.progressQuestOnWizard(wizard, 'quest', 1);
