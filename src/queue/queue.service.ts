@@ -125,6 +125,7 @@ export class QueueService {
       'souvenirs-2020': {theme: Themes.FORGOTTEN_CEMETERY, modifier: Modifiers.SOUVENIRS_FROM_YOUR_ENEMY},
       'harvest-2020': {theme: Themes.WASTED_FIELDS, modifier: Modifiers.HARVESTING_SOULS},
       'crowned-souls-2020': {theme: Themes.SACRIFICE_CHURCH, modifier: Modifiers.ANNIHILATION_MATTS},
+      'snow-man-2020': {theme: Themes.SNOW_MAN_LAIR, modifier: Modifiers.FROZEN_STATUES},
     };
 
     const fixedDailyData: Array<{theme: string, modifier: string}> = [
