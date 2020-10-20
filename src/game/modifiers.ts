@@ -4,6 +4,7 @@ export class Modifiers {
   static readonly SOUVENIRS_FROM_YOUR_ENEMY: string = 'souvenirs-from-your-enemy';
   static readonly HARVESTING_SOULS: string = 'harvesting-souls';
   static readonly ANNIHILATION_MATTS: string = 'annihilation-matts';
+  static readonly FROZEN_STATUES: string = 'frozen-statues';
   static readonly GOLDEN_GALLEONS: string = 'golden-galleons';
   static readonly TRICK_OR_TREAT: string = 'trick-or-treat';
   static readonly IMMEDIATE: string = 'immediate';
@@ -16,6 +17,7 @@ export class Modifiers {
       Modifiers.SOUVENIRS_FROM_YOUR_ENEMY,
       Modifiers.HARVESTING_SOULS,
       Modifiers.ANNIHILATION_MATTS,
+      Modifiers.FROZEN_STATUES,
       Modifiers.GOLDEN_GALLEONS,
       Modifiers.IMMEDIATE,
       Modifiers.DAILY,
