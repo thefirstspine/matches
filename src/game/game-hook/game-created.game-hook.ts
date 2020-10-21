@@ -115,6 +115,36 @@ export class GameCreatedGameHook implements IGameHook {
       gameInstance.cards = shuffle(gameInstance.cards);
     }
 
+    if (gameInstance.modifiers.includes(Modifiers.FROZEN_STATUES)) {
+      // Get the "annihilation-matt" card
+      const iceStatueCard: ICard = await this.restService.card('ice-statue');
+      // Add the cards "annihilation-matt"
+      const coords: ICardCoords[] = [
+        {x: 5, y: 5},
+        {x: 1, y: 5},
+        {x: 5, y: 1},
+        {x: 1, y: 1},
+        {x: 2, y: 2},
+        {x: 4, y: 2},
+        {x: 2, y: 4},
+        {x: 4, y: 4},
+      ];
+      coords.forEach((coord: ICardCoords) => {
+        const randomId: number = randBetween(0, Number.MAX_SAFE_INTEGER);
+        gameInstance.cards.push({
+          card: iceStatueCard,
+          id: `${gameInstance.id}_${randomId}`,
+          location: 'board',
+          user: 0,
+          metadata: {},
+          currentStats: JSON.parse(JSON.stringify(iceStatueCard.stats)),
+          coords: coord,
+        });
+      });
+      // Shuffle the cards
+      gameInstance.cards = shuffle(gameInstance.cards);
+    }
+
     if (gameInstance.modifiers.includes(Modifiers.TRICK_OR_TREAT)) {
       // Get the "trick-or-treat" card
       const trickOrTreatCard: ICard = await this.restService.card('trick-or-treat');
