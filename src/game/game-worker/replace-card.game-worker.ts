@@ -126,7 +126,7 @@ export class ReplaceCardGameWorker implements IGameWorker, IHasGameHookService {
    */
   public async expires(gameInstance: IGameInstance, gameAction: IGameAction<IInteractionPutCardOnBoard>): Promise<boolean> {
     const handIndexes = this.getHandIndexes(gameInstance, gameAction.user);
-    const handIndex = handIndexes[randBetween(0, handIndexes.length)];
+    const handIndex = handIndexes[randBetween(0, handIndexes.length - 1)];
     const boardCoords = gameAction.interaction.params.boardCoords[0];
     gameAction.response = {handIndex, boardCoords};
     return true;
