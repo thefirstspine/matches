@@ -128,7 +128,7 @@ export class GameCreatedGameHook implements IGameHook {
             location: 'deck',
             user: 0,
             metadata: {},
-            currentStats: JSON.parse(JSON.stringify(trickOrTreatCard.stats)),
+            currentStats: undefined,
           });
         }
       });
