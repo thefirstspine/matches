@@ -126,7 +126,7 @@ export class GameCreatedGameHook implements IGameHook {
             card: trickOrTreatCard,
             id: `${gameInstance.id}_${randomId}`,
             location: 'deck',
-            user: 0,
+            user: u.user,
             metadata: {},
             currentStats: undefined,
           });
