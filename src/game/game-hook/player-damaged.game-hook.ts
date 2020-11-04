@@ -64,9 +64,10 @@ export class PlayerDamagedGameHook implements IGameHook {
           });
         }
         if (gameInstance.modifiers.includes(Modifiers.TRICK_OR_TREAT)) {
+          const candyShards = gameInstance.cards.find((c: IGameCard) => c.user === gameUser.user && c.card.type === 'player').metadata?.candyShards;
           loots.push({
             name: 'candy-shard',
-            num: gameInstance.cards.find((c: IGameCard) => c.user === gameUser.user && c.card.type === 'player').metadata?.candyShards,
+            num: candyShards ? candyShards : 0,
           });
         }
         this.registerResult(
@@ -132,24 +133,10 @@ export class PlayerDamagedGameHook implements IGameHook {
     // Get wizard's account
     const wizard: IWizard = this.wizzardService.getOrCreateWizzard(gameUser.user);
 
-    if (victory) {
-      loot.push({name: 'victory-mark', num: 1});
-      this.questService.progressQuestOnWizard(
-        wizard,
-        'win',
-        1);
-    } else {
-      loot.push({name: 'defeat-mark', num: 1});
-    }
+    // Init shard multiplier
+    let multiplier = 1;
 
-    if (gameInstance.modifiers.includes(Modifiers.IMMEDIATE)) {
-      if (victory) {
-        loot.push({name: 'shard', num: 30});
-      } else {
-        loot.push({name: 'shard', num: 10});
-      }
-    }
-
+    // Multiplier for daily modifier
     if (gameInstance.modifiers.includes(Modifiers.DAILY)) {
       const gamesOfTheDay: IWizardHistoryItem[] = wizard.history.filter((h) => {
         const today: Date = new Date();
@@ -158,18 +145,32 @@ export class PlayerDamagedGameHook implements IGameHook {
         const gameDateStr: string = gameDate. getFullYear() + '-' + (gameDate. getMonth() + 1) + '-' +  (gameDate.getDate());
         return todayStr === gameDateStr;
       });
-      const mutiplier: number = gamesOfTheDay.length === 0 ? 2 : 1;
-      if (victory) {
-        loot.push({name: 'shard', num: 30 * mutiplier});
-      } else {
-        loot.push({name: 'shard', num: 10 * mutiplier});
+      multiplier *= gamesOfTheDay.length === 0 ? 2 : 1;
+    }
+
+    // Multiplier for cycle modifier
+    if (gameInstance.modifiers.includes(Modifiers.CYCLE)) {
+      if (!victory) {
+        multiplier = 0;
       }
     }
 
-    if (gameInstance.modifiers.includes(Modifiers.CYCLE)) {
-      if (victory) {
-        loot.push({name: 'shard', num: 60});
-      }
+    // Multiplier for triple shards
+    if (gameInstance.modifiers.includes(Modifiers.TRIPLE_SHARDS)) {
+      multiplier *= 3;
+    }
+
+    // Grant loot
+    if (victory) {
+      loot.push({name: 'victory-mark', num: 1});
+      this.questService.progressQuestOnWizard(
+        wizard,
+        'win',
+        1);
+      loot.push({name: 'shard', num: 30 * multiplier});
+    } else {
+      loot.push({name: 'defeat-mark', num: 1});
+      loot.push({name: 'shard', num: 10 * multiplier});
     }
 
     if (
@@ -243,6 +244,24 @@ export class PlayerDamagedGameHook implements IGameHook {
         loot.push({name: 'holo-blood-strength', num: 1}, {name: 'premium-blood-strength', num: 1});
       } else {
         loot.push({name: 'holo-blood-strength', num: 1});
+      }
+    }
+
+    if (
+      gameInstance.modifiers.includes(Modifiers.CYCLE) &&
+      gameInstance.modifiers.includes(Modifiers.FROZEN_STATUES)
+    ) {
+      loot.push({name: 'snow-mark', num: 1});
+      if (victory) {
+        loot.push({name: 'holo-ice-statue', num: 1}, {name: 'premium-ice-statue', num: 1});
+        loot.push({name: 'holo-frozen-fox', num: 1}, {name: 'premium-frozen-fox', num: 1});
+        loot.push({name: 'holo-frozen-viper', num: 1}, {name: 'premium-frozen-viper', num: 1});
+        loot.push({name: 'holo-frozen-banshee', num: 1}, {name: 'premium-frozen-banshee', num: 1});
+      } else {
+        loot.push({name: 'holo-ice-statue', num: 1});
+        loot.push({name: 'holo-frozen-fox', num: 1});
+        loot.push({name: 'holo-frozen-viper', num: 1});
+        loot.push({name: 'holo-frozen-banshee', num: 1});
       }
     }
 
