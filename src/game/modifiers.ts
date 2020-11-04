@@ -7,6 +7,7 @@ export class Modifiers {
   static readonly FROZEN_STATUES: string = 'frozen-statues';
   static readonly GOLDEN_GALLEONS: string = 'golden-galleons';
   static readonly TRICK_OR_TREAT: string = 'trick-or-treat';
+  static readonly TRIPLE_SHARDS: string = 'triple-shards';
   static readonly IMMEDIATE: string = 'immediate';
   static readonly DAILY: string = 'daily';
   static readonly CYCLE: string = 'cycle';
@@ -18,6 +19,8 @@ export class Modifiers {
       Modifiers.HARVESTING_SOULS,
       Modifiers.ANNIHILATION_MATTS,
       Modifiers.FROZEN_STATUES,
+      Modifiers.GOLDEN_GALLEONS,
+      Modifiers.TRICK_OR_TREAT,
       Modifiers.GOLDEN_GALLEONS,
       Modifiers.IMMEDIATE,
       Modifiers.DAILY,

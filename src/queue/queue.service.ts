@@ -147,6 +147,9 @@ export class QueueService {
         if (events.includes('online:tricks-celebration')) {
           instance.modifiers.push(Modifiers.TRICK_OR_TREAT);
         }
+        if (events.includes('online:triple-shards')) {
+          instance.modifiers.push(Modifiers.TRIPLE_SHARDS);
+        }
       }
       if (instance.key === 'daily') {
         instance.theme = fixedDailyData[(new Date()).getDay() % fixedDailyData.length].theme;
@@ -159,6 +162,9 @@ export class QueueService {
         }
         if (events.includes('online:tricks-celebration')) {
           instance.modifiers.push(Modifiers.TRICK_OR_TREAT);
+        }
+        if (events.includes('online:triple-shards')) {
+          instance.modifiers.push(Modifiers.TRIPLE_SHARDS);
         }
       }
       if (instance.key === 'cycle') {
