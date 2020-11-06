@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { WizardService } from '../wizard/wizard.service';
-import { WizzardsStorageService } from '../storage/wizzards.storage.service';
 import fetch, { Response } from 'node-fetch';
 import { IWizard, IWizardItem } from '@thefirstspine/types-arena';
 import { IShopItem, ILoot } from '@thefirstspine/types-rest';
@@ -20,7 +19,6 @@ export class ShopService {
 
   constructor(
     private readonly wizardService: WizardService,
-    private readonly wizzardStorageService: WizzardsStorageService,
     private readonly messagingService: MessagingService,
     private readonly logsService: LogsService,
     private readonly triumphService: TriumphService,
@@ -30,7 +28,7 @@ export class ShopService {
    * Exchange a shop item for other items
    * @param purchase
    */
-  exchangeLoot(purchase: IPurchase) {
+  async exchangeLoot(purchase: IPurchase) {
     // Check for currency
     if (purchase.price.find((p) => p.currency === 'eur')) {
       throw new Error('Cannot exchange with `eur` currency');
@@ -42,7 +40,7 @@ export class ShopService {
     }
 
     // Get the wizzard
-    const wizard: IWizard = this.wizardService.getOrCreateWizzard(purchase.user);
+    const wizard: IWizard = await this.wizardService.getOrCreateWizard(purchase.user);
 
     // Look for already purchased items
     if (purchase.oneTimePurchase && this.hasAlreadyPurchased(wizard, purchase.loots)) {
@@ -73,7 +71,7 @@ export class ShopService {
     wizard.purchases.push(purchase.id);
 
     // Save wizzard
-    this.wizzardStorageService.save(wizard);
+    await this.wizardService.saveWizard(wizard);
     this.messagingService.sendMessage([wizard.id], 'TheFirstSpine:account', wizard);
     this.messagingService.sendMessage([wizard.id], 'TheFirstSpine:shop', purchase);
   }
@@ -82,7 +80,7 @@ export class ShopService {
    * Exchange a shop item for other items
    * @param purchase
    */
-  exchangePossibility(purchase: IPurchase) {
+  async exchangePossibility(purchase: IPurchase) {
     // Check for currency
     if (purchase.price.find((p) => p.currency === 'eur')) {
       throw new Error('Cannot exchange with `eur` currency');
@@ -94,7 +92,7 @@ export class ShopService {
     }
 
     // Get the wizzard
-    const wizard: IWizard = this.wizardService.getOrCreateWizzard(purchase.user);
+    const wizard: IWizard = await this.wizardService.getOrCreateWizard(purchase.user);
 
     // Look for already purchased possibilities
     const possibilities = purchase.possibleLoots.filter((possibility: ILoot[]) => {
@@ -132,7 +130,7 @@ export class ShopService {
     }
 
     // Save wizzard
-    this.wizzardStorageService.save(wizard);
+    this.wizardService.saveWizard(wizard);
     this.messagingService.sendMessage([wizard.id], 'TheFirstSpine:account', wizard);
     this.messagingService.sendMessage([wizard.id], 'TheFirstSpine:shop', purchase);
   }
@@ -264,9 +262,9 @@ export class ShopService {
       // The payment succeeded
       if (responseJson.status === 'succeeded') {
         // Add the loot
-        const wizzard: IWizard = this.wizardService.getOrCreateWizzard(purchase.user);
+        const wizzard: IWizard = await this.wizardService.getOrCreateWizard(purchase.user);
         mergeLootsInItems(wizzard.items, purchase.loots);
-        this.wizzardStorageService.save(wizzard);
+        this.wizardService.saveWizard(wizzard);
         this.messagingService.sendMessage([wizzard.id], 'TheFirstSpine:account', wizzard);
         this.messagingService.sendMessage([wizzard.id], 'TheFirstSpine:shop', purchase);
 

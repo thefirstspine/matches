@@ -107,9 +107,9 @@ export class GameService {
     // Get curse card
     const curseCard: ICard = await this.restService.card('curse-of-mara');
 
-    users.forEach((gameUser: IGameUser, index: number) => {
+    await Promise.all(users.map(async (gameUser: IGameUser, index: number) => {
       // Add the cursed cards
-      const wizzard = this.wizardService.getOrCreateWizzard(gameUser.user);
+      const wizzard = await this.wizardService.getOrCreateWizard(gameUser.user);
       const curseItem: IWizardItem|undefined = wizzard.items.find((item: IWizardItem) => item.name === 'curse');
       if (curseItem) {
         for (let i = 0; i < curseItem.num; i ++) {
@@ -131,7 +131,7 @@ export class GameService {
           cardsTook ++;
         }
       });
-    });
+    }));
 
     // Get the first user
     const firstUserToPlay = randBetween(0, users.length);

@@ -52,7 +52,7 @@ export class ActionExecutedGameHook implements IGameHook {
     const jesters: number = cardsOnBoard.filter((c) => c.card.id === 'jester').length;
     if (jesters >= 5) {
       // Unlock the "comic" title
-      this.triumphService.unlockTriumph(params.user, 'comic');
+      await this.triumphService.unlockTriumph(params.user, 'comic');
     }
 
     // Count the hammers & anvils

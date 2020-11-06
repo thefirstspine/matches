@@ -34,7 +34,7 @@ export class SoulOfASacrifiedHunterPlacesGameHook implements IGameHook {
 
     // Unlock title "sacrificer"
     if (str >= 10) {
-      this.triumphService.unlockTriumph(params.gameCard.user, 'transporter');
+      await this.triumphService.unlockTriumph(params.gameCard.user, 'transporter');
     }
 
     // Set card current stats

@@ -41,7 +41,7 @@ export class SpellUsedGameHook implements IGameHook, IHasGameWorkerService {
 
     if (playerCard?.metadata?.remainedSpells >= 3) {
       // Unlock title "repeater"
-      this.triumphService.unlockTriumph(params.gameCard.user, 'repeater');
+      await this.triumphService.unlockTriumph(params.gameCard.user, 'repeater');
     }
 
     // No spell remaining
@@ -66,7 +66,7 @@ export class SpellUsedGameHook implements IGameHook, IHasGameWorkerService {
     }
 
     // Quest progression
-    this.questService.progressQuest(
+    await this.questService.progressQuest(
       params.gameCard.user,
       'play:spells',
       1);

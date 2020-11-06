@@ -205,7 +205,7 @@ export class QueueService {
     }
 
     // Get the wizard to validate data
-    const wizard: IWizard = this.wizardService.getOrCreateWizzard(user);
+    const wizard: IWizard = await this.wizardService.getOrCreateWizard(user);
 
     // Exit method if user has not the style
     style = style ? style : '';
@@ -374,9 +374,9 @@ export class QueueService {
 
     // Get users in queue
     const queueUsers: IQueueUser[] = queueInstance.users;
-    const queueWizzards: IWizard[] = queueUsers.map((u: IGameUser) => {
-      return this.wizardService.getOrCreateWizzard(u.user);
-    });
+    const queueWizzards: IWizard[] = await Promise.all(queueUsers.map(async (u: IGameUser) => {
+      return await this.wizardService.getOrCreateWizard(u.user);
+    }));
 
     if (queueUsers.length >= gameType.players.length) {
       // We have to sort the users here in a ranked matchmaking type

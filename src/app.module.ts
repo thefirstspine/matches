@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { DynamicModule, Module } from '@nestjs/common';
 import { ApiController } from './api/api.controller';
 import { ApiService } from './api/api.service';
 import { GameService } from './game/game.service';
@@ -7,7 +7,6 @@ import { TickerController } from './ticker/ticker.controller';
 import { TickerService } from './ticker/ticker.service';
 import { GamesStorageService } from './storage/games.storage.service';
 import { WizardService } from './wizard/wizard.service';
-import { WizzardsStorageService } from './storage/wizzards.storage.service';
 import { ShopController } from './shop/shop.controller';
 import { ShopService } from './shop/shop.service';
 import { RestService } from './rest/rest.service';
@@ -25,14 +24,10 @@ import { MessagingService } from '@thefirstspine/messaging-nest';
 import { WizardController } from './wizard/wizard.controller';
 import { QuestService } from './wizard/quest/quest.service';
 import { TriumphService } from './wizard/triumph/triumph.service';
+import { MongooseModule } from '@nestjs/mongoose';
+import { Wizard, WizardSchema } from './wizard/wizard.schema';
 
 @Module({
-  imports: [
-    FileSocketModule.forRoot({
-      methodsMap: FileSocketMethodsService.fileSocketMethods,
-      socketFile: __dirname + '/../socket',
-    }),
-  ],
   controllers: [ApiController, TickerController, ShopController, IndexController, WizardController],
   providers: [
     ApiService,
@@ -41,7 +36,6 @@ import { TriumphService } from './wizard/triumph/triumph.service';
     TickerService,
     GamesStorageService,
     WizardService,
-    WizzardsStorageService,
     ShopService,
     AuthService,
     LogsService,
@@ -57,4 +51,18 @@ import { TriumphService } from './wizard/triumph/triumph.service';
     TriumphService,
   ],
 })
-export class AppModule {}
+export class AppModule {
+  static register(): DynamicModule {
+    return {
+      module: AppModule,
+      imports: [
+        FileSocketModule.forRoot({
+          methodsMap: FileSocketMethodsService.fileSocketMethods,
+          socketFile: __dirname + '/../socket',
+        }),
+        MongooseModule.forRoot(`mongodb://${process.env.MONGO_HOST}/${process.env.MONGO_DB}`),
+        MongooseModule.forFeature([{ name: Wizard.name, schema: WizardSchema }]),
+      ],
+    };
+  }
+}

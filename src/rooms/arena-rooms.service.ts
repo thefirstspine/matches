@@ -35,13 +35,13 @@ export class ArenaRoomsService {
    * @param game
    */
   async createRoomForGame(game: IGameInstance): Promise<IRoomCreated> {
-    const senders: ISender[] = game.users.map((user: IGameUser) => {
-      const wizzard: IWizard = this.wizardService.getOrCreateWizzard(user.user);
+    const senders: ISender[] = await Promise.all(game.users.map(async (user: IGameUser) => {
+      const wizzard: IWizard = await this.wizardService.getOrCreateWizard(user.user);
       return {
         user: user.user,
         displayName: wizzard.name,
       };
-    });
+    }));
     const room: IRoom = {
       name: this.getRoomNameForGame(game),
       senders,

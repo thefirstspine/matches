@@ -15,7 +15,6 @@ import { SpellRuinGameWorker } from './spell-ruin.game-worker';
 import { SpellThunderGameWorker } from './spell-thunder.game-worker';
 import { StartConfrontsGameWorker } from './start-confronts.game-worker';
 import { GameHookService } from '../game-hook/game-hook.service';
-import { WizzardsStorageService } from '../../storage/wizzards.storage.service';
 import { RunGameWorker } from './run.game-worker';
 import { SkipRunGameWorker } from './skip-run.game-worker';
 import { SpellReplacementGameWorker } from './spell-replacement.game-worker';
@@ -65,7 +64,6 @@ export class GameWorkerService extends BaseGameService<IGameWorker> {
     private readonly wizardService: WizardService,
     private readonly restService: RestService,
     private readonly arenaRoomsService: ArenaRoomsService,
-    private readonly wizzardsStorageService: WizzardsStorageService,
     private readonly questService: QuestService,
     private readonly triumphService: TriumphService,
     @Inject(forwardRef(() => GameHookService)) private readonly gameHookService: GameHookService,
@@ -86,7 +84,6 @@ export class GameWorkerService extends BaseGameService<IGameWorker> {
     this.deferInjection(this.restService);
     this.deferInjection(this.arenaRoomsService);
     this.deferInjection(this.gameHookService);
-    this.deferInjection(this.wizzardsStorageService);
     this.deferInjection(this.questService);
     this.deferInjection(this.triumphService);
     this.deferInjection(this); // haya!

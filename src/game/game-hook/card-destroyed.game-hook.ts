@@ -89,7 +89,7 @@ export class CardDestroyedGameHook implements IGameHook {
     }
 
     // Quest
-    this.questService.progressQuest(
+    await this.questService.progressQuest(
       params.source.user,
       `destroye:${params.gameCard.card.type}s`,
       1);

@@ -11,7 +11,6 @@ import { PlayerDamagedGameHook } from './player-damaged.game-hook';
 import { PhaseActionsGameHook } from './phase-actions.game-hook';
 import { SpellUsedGameHook } from './spell-used.game-hook';
 import { GameWorkerService } from '../game-worker/game-worker.service';
-import { WizzardsStorageService } from '../../storage/wizzards.storage.service';
 import { CardDestroyedGameHook } from './card-destroyed.game-hook';
 import { SoulOfASacrifiedHunterPlacesGameHook } from './soul-of-a-sacrified-hunter-placed.game-hook';
 import { ActionExecutedGameHook } from './action-executed.game-hook';
@@ -51,7 +50,6 @@ export class GameHookService extends BaseGameService<IGameHook> {
     private readonly wizardService: WizardService,
     private readonly restService: RestService,
     private readonly arenaRoomsService: ArenaRoomsService,
-    private readonly wizzardsStorageService: WizzardsStorageService,
     private readonly questService: QuestService,
     private readonly triumphService: TriumphService,
     @Inject(forwardRef(() => GameWorkerService)) public readonly gameWorkerService: GameWorkerService,
@@ -71,7 +69,6 @@ export class GameHookService extends BaseGameService<IGameHook> {
     this.deferInjection(this.wizardService);
     this.deferInjection(this.restService);
     this.deferInjection(this.arenaRoomsService);
-    this.deferInjection(this.wizzardsStorageService);
     this.deferInjection(this.questService);
     this.deferInjection(this.triumphService);
     this.deferInjection(this); // haya!
