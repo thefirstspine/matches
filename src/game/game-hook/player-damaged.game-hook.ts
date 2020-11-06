@@ -2,7 +2,7 @@ import { IGameHook } from './game-hook.interface';
 import { Injectable } from '@nestjs/common';
 import { IGameInstance, IGameUser, IGameResult, IGameCard, IWizard, IWizardHistoryItem } from '@thefirstspine/types-arena';
 import { WizzardsStorageService } from '../../storage/wizzards.storage.service';
-import { WizzardService } from '../../wizard/wizard.service';
+import { WizardService } from '../../wizard/wizard.service';
 import { ILoot } from '@thefirstspine/types-rest';
 import { mergeLootsInItems } from '../../utils/game.utils';
 import { LogsService } from '@thefirstspine/logs-nest';
@@ -21,7 +21,7 @@ import { TriumphService } from '../../wizard/triumph/triumph.service';
 export class PlayerDamagedGameHook implements IGameHook {
 
   constructor(
-    private readonly wizzardService: WizzardService,
+    private readonly wizardService: WizardService,
     private readonly wizzardsStorageService: WizzardsStorageService,
     private readonly questService: QuestService,
     private readonly messagingService: MessagingService,
@@ -131,7 +131,7 @@ export class PlayerDamagedGameHook implements IGameHook {
     additionalTriumphs: string[],
   ) {
     // Get wizard's account
-    const wizard: IWizard = this.wizzardService.getOrCreateWizzard(gameUser.user);
+    const wizard: IWizard = this.wizardService.getOrCreateWizzard(gameUser.user);
 
     // Init shard multiplier
     let multiplier = 1;

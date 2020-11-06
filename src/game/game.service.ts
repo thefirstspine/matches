@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { shuffle } from '../utils/array.utils';
 import { randBetween } from '../utils/maths.utils';
 import { GamesStorageService } from '../storage/games.storage.service';
-import { WizzardService } from '../wizard/wizard.service';
+import { WizardService } from '../wizard/wizard.service';
 import { IGameInstance, IGameUser, IGameCard, IGameAction, IWizardItem, IGameInteraction } from '@thefirstspine/types-arena';
 import { RestService } from '../rest/rest.service';
 import { ICard } from '@thefirstspine/types-rest';
@@ -36,7 +36,7 @@ export class GameService {
     private readonly gamesStorageService: GamesStorageService,
     private readonly messagingService: MessagingService,
     private readonly logsService: LogsService,
-    private readonly wizzardService: WizzardService,
+    private readonly wizardService: WizardService,
     private readonly restService: RestService,
     private readonly arenaRoomsService: ArenaRoomsService,
     private readonly gameWorkerService: GameWorkerService,
@@ -109,7 +109,7 @@ export class GameService {
 
     users.forEach((gameUser: IGameUser, index: number) => {
       // Add the cursed cards
-      const wizzard = this.wizzardService.getOrCreateWizzard(gameUser.user);
+      const wizzard = this.wizardService.getOrCreateWizzard(gameUser.user);
       const curseItem: IWizardItem|undefined = wizzard.items.find((item: IWizardItem) => item.name === 'curse');
       if (curseItem) {
         for (let i = 0; i < curseItem.num; i ++) {

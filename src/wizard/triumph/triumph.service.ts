@@ -2,13 +2,13 @@ import { Injectable } from '@nestjs/common';
 import { MessagingService } from '@thefirstspine/messaging-nest';
 import { IWizard } from '@thefirstspine/types-arena';
 import { WizzardsStorageService } from '../../storage/wizzards.storage.service';
-import { WizzardService } from '../wizard.service';
+import { WizardService } from '../wizard.service';
 
 @Injectable()
 export class TriumphService {
 
   constructor(
-    private readonly wizardService: WizzardService,
+    private readonly wizardService: WizardService,
     private readonly wizzardsStorageService: WizzardsStorageService,
     private readonly messagingService: MessagingService,
   ) {}

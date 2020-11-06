@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { GameService } from '../game/game.service';
-import { WizzardService } from '../wizard/wizard.service';
+import { WizardService } from '../wizard/wizard.service';
 import { IGameUser, IGameInstance, IWizardItem, IWizard, IWizardHistoryItem, IQueueInstance, IQueueUser } from '@thefirstspine/types-arena';
 import { IGameType, ICycle } from '@thefirstspine/types-rest';
 import { RestService } from '../rest/rest.service';
@@ -34,7 +34,7 @@ export class QueueService {
   constructor(
     private readonly messagingService: MessagingService,
     private readonly gameService: GameService,
-    private readonly wizzardService: WizzardService,
+    private readonly wizardService: WizardService,
     private readonly restService: RestService,
     private readonly botsService: BotsService,
   ) {
@@ -205,7 +205,7 @@ export class QueueService {
     }
 
     // Get the wizard to validate data
-    const wizard: IWizard = this.wizzardService.getOrCreateWizzard(user);
+    const wizard: IWizard = this.wizardService.getOrCreateWizzard(user);
 
     // Exit method if user has not the style
     style = style ? style : '';
@@ -375,7 +375,7 @@ export class QueueService {
     // Get users in queue
     const queueUsers: IQueueUser[] = queueInstance.users;
     const queueWizzards: IWizard[] = queueUsers.map((u: IGameUser) => {
-      return this.wizzardService.getOrCreateWizzard(u.user);
+      return this.wizardService.getOrCreateWizzard(u.user);
     });
 
     if (queueUsers.length >= gameType.players.length) {

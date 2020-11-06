@@ -6,7 +6,7 @@ import { QueueService } from './queue/queue.service';
 import { TickerController } from './ticker/ticker.controller';
 import { TickerService } from './ticker/ticker.service';
 import { GamesStorageService } from './storage/games.storage.service';
-import { WizzardService } from './wizard/wizard.service';
+import { WizardService } from './wizard/wizard.service';
 import { WizzardsStorageService } from './storage/wizzards.storage.service';
 import { ShopController } from './shop/shop.controller';
 import { ShopService } from './shop/shop.service';
@@ -40,7 +40,7 @@ import { TriumphService } from './wizard/triumph/triumph.service';
     QueueService,
     TickerService,
     GamesStorageService,
-    WizzardService,
+    WizardService,
     WizzardsStorageService,
     ShopService,
     AuthService,

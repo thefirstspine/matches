@@ -1,5 +1,5 @@
 import { Controller, Param, Get, NotFoundException, UseGuards, Req, Patch, Body, BadRequestException, Post, HttpException } from '@nestjs/common';
-import { WizzardService } from './wizard.service';
+import { WizardService } from './wizard.service';
 import { PatchWizardDto } from './patch-wizard.dto';
 import { IWizard, IUserQuest } from '@thefirstspine/types-arena';
 import { AuthGuard } from '@thefirstspine/auth-nest';
@@ -18,7 +18,7 @@ import { MessagingService } from '@thefirstspine/messaging-nest';
 export class WizardController {
 
   constructor(
-    private readonly wizardService: WizzardService,
+    private readonly wizardService: WizardService,
     private readonly wizardStorageService: WizzardsStorageService,
     private readonly restService: RestService,
     private readonly roomsService: ArenaRoomsService,

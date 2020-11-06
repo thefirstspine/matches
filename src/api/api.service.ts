@@ -2,14 +2,13 @@ import { Injectable } from '@nestjs/common';
 import { ApiError } from './api.error';
 import { QueueService } from './../queue/queue.service';
 import { GameService } from '../game/game.service';
-import { WizzardService } from '../wizard/wizard.service';
+import { WizardService } from '../wizard/wizard.service';
 import { IGameUser,
          IGameInstance,
          IGameCard,
          IGameAction,
          IApiRespondToActionParams,
          IApiRespondToActionResponse,
-         IApiGetUsersResponse,
          IApiRequest,
          IApiGetGameResponse,
          IApiRefreshQueueAskParams,
@@ -38,7 +37,6 @@ export class ApiService {
   constructor(
     private readonly queueService: QueueService,
     private readonly gameService: GameService,
-    private readonly wizzardService: WizzardService,
   ) {}
 
   /**

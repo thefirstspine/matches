@@ -8,7 +8,7 @@ import { MessagingService } from '@thefirstspine/messaging-nest';
  * from storage directly.
  */
 @Injectable()
-export class WizzardService {
+export class WizardService {
 
   constructor(
     private readonly wizzardsStorageService: WizzardsStorageService,
@@ -52,6 +52,10 @@ export class WizzardService {
     this.wizzardsStorageService.save(wizard);
 
     return wizard;
+  }
+
+  saveWizard(wizard: IWizard): boolean {
+    return true;
   }
 
   /**

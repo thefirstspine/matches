@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { WizzardService } from '../wizard.service';
+import { WizardService } from '../wizard.service';
 import { IWizard, IUserQuest } from '@thefirstspine/types-arena';
 import { ILoot } from '@thefirstspine/types-rest';
 import { mergeLootsInItems } from '../../utils/game.utils';
@@ -11,7 +11,7 @@ import { TriumphService } from '../triumph/triumph.service';
 export class QuestService {
 
   constructor(
-    private readonly wizardService: WizzardService,
+    private readonly wizardService: WizardService,
     private readonly messagingService: MessagingService,
     private readonly wizzardsStorageService: WizzardsStorageService,
     private readonly triumphService: TriumphService,
