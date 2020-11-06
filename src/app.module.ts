@@ -5,7 +5,6 @@ import { GameService } from './game/game.service';
 import { QueueService } from './queue/queue.service';
 import { TickerController } from './ticker/ticker.controller';
 import { TickerService } from './ticker/ticker.service';
-import { GamesStorageService } from './storage/games.storage.service';
 import { WizardService } from './wizard/wizard.service';
 import { ShopController } from './shop/shop.controller';
 import { ShopService } from './shop/shop.service';
@@ -26,6 +25,7 @@ import { QuestService } from './wizard/quest/quest.service';
 import { TriumphService } from './wizard/triumph/triumph.service';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Wizard, WizardSchema } from './wizard/wizard.schema';
+import { GameInstance, GameInstanceSchema } from './game/game-instance.schema';
 
 @Module({
   controllers: [ApiController, TickerController, ShopController, IndexController, WizardController],
@@ -34,7 +34,6 @@ import { Wizard, WizardSchema } from './wizard/wizard.schema';
     GameService,
     QueueService,
     TickerService,
-    GamesStorageService,
     WizardService,
     ShopService,
     AuthService,
@@ -61,7 +60,10 @@ export class AppModule {
           socketFile: __dirname + '/../socket',
         }),
         MongooseModule.forRoot(`mongodb://${process.env.MONGO_HOST}/${process.env.MONGO_DB}`),
-        MongooseModule.forFeature([{ name: Wizard.name, schema: WizardSchema }]),
+        MongooseModule.forFeature([
+          { name: Wizard.name, schema: WizardSchema },
+          { name: GameInstance.name, schema: GameInstanceSchema },
+        ]),
       ],
     };
   }

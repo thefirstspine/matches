@@ -3,7 +3,6 @@ import { GameWorkerService } from './game-worker.service';
 import { ApiService } from '../../api/api.service';
 import { GameService } from '../game.service';
 import { QueueService } from '../../queue/queue.service';
-import { GamesStorageService } from '../../storage/games.storage.service';
 import { TickerService } from '../../ticker/ticker.service';
 import { WizardService } from '../../wizard/wizard.service';
 import { ShopService } from '../../shop/shop.service';
@@ -36,7 +35,6 @@ describe('Spell heal', () => {
         GameService,
         QueueService,
         TickerService,
-        GamesStorageService,
         WizardService,
         ShopService,
         AuthService,

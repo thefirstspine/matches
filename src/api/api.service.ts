@@ -174,7 +174,7 @@ export class ApiService {
     }
 
     // Get the game instance
-    const gameInstance: IGameInstance|null = this.gameService.getGameInstance(id);
+    const gameInstance: IGameInstance|null = await this.gameService.getGameInstance(id);
     if (!gameInstance) {
       throw new ApiError('Unknown game instance.', ApiError.CODE_METHOD_NOT_FOUND);
     }
@@ -223,7 +223,7 @@ export class ApiService {
     }
 
     // Get the game instance
-    const gameInstance: IGameInstance|null = this.gameService.getGameInstance(id);
+    const gameInstance: IGameInstance|null = await this.gameService.getGameInstance(id);
     if (!gameInstance) {
       throw new ApiError('Unknown game instance.', ApiError.CODE_METHOD_NOT_FOUND);
     }
@@ -253,7 +253,7 @@ export class ApiService {
     }
 
     // Get the game instance
-    const gameInstance: IGameInstance|null = this.gameService.getGameInstance(id);
+    const gameInstance: IGameInstance|null = await this.gameService.getGameInstance(id);
     if (!gameInstance) {
       throw new ApiError('Unknown game instance.', ApiError.CODE_METHOD_NOT_FOUND);
     }
@@ -291,7 +291,7 @@ export class ApiService {
     }
 
     // Get the game instance
-    const gameInstance: IGameInstance|null = this.gameService.getGameInstance(id);
+    const gameInstance: IGameInstance|null = await this.gameService.getGameInstance(id);
     if (!gameInstance) {
       throw new ApiError('Unknown game instance.', ApiError.CODE_METHOD_NOT_FOUND);
     }
@@ -331,7 +331,7 @@ export class ApiService {
     }
 
     // Get the game instance
-    const gameInstance: IGameInstance|null = this.gameService.getGameInstance(id);
+    const gameInstance: IGameInstance|null = await this.gameService.getGameInstance(id);
     if (!gameInstance) {
       throw new ApiError('Unknown game instance.', ApiError.CODE_METHOD_NOT_FOUND);
     }

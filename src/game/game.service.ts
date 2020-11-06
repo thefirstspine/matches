@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { shuffle } from '../utils/array.utils';
 import { randBetween } from '../utils/maths.utils';
-import { GamesStorageService } from '../storage/games.storage.service';
 import { WizardService } from '../wizard/wizard.service';
 import { IGameInstance, IGameUser, IGameCard, IGameAction, IWizardItem, IGameInteraction } from '@thefirstspine/types-arena';
 import { RestService } from '../rest/rest.service';
@@ -12,6 +11,9 @@ import { GameWorkerService } from './game-worker/game-worker.service';
 import { GameHookService } from './game-hook/game-hook.service';
 import { LogsService } from '@thefirstspine/logs-nest';
 import { MessagingService } from '@thefirstspine/messaging-nest';
+import { InjectModel } from '@nestjs/mongoose';
+import { GameInstance, GameInstanceDocument } from './game-instance.schema';
+import { Model } from 'mongoose';
 
 /**
  * Service to manage game instances
@@ -27,13 +29,7 @@ export class GameService {
    */
   private gameInstances: {[id: number]: IGameInstance};
 
-  /**
-   * The next game ID to be generated.
-   */
-  private nextId: number;
-
   constructor(
-    private readonly gamesStorageService: GamesStorageService,
     private readonly messagingService: MessagingService,
     private readonly logsService: LogsService,
     private readonly wizardService: WizardService,
@@ -41,10 +37,10 @@ export class GameService {
     private readonly arenaRoomsService: ArenaRoomsService,
     private readonly gameWorkerService: GameWorkerService,
     private readonly gameHookService: GameHookService,
+    @InjectModel(GameInstance.name) private gameInstanceModel: Model<GameInstanceDocument>,
   ) {
     // Get base data
     this.gameInstances = {};
-    this.nextId = gamesStorageService.getNextId();
   }
 
   /**
@@ -53,6 +49,9 @@ export class GameService {
    * @param users
    */
   async createGameInstance(gameTypeId: string, users: IGameUser[], modifiers: string[], theme: string): Promise<IGameInstance> {
+    // Generate a numeric ID to ensure retrocompatibility
+    const gameInstanceId = Date.now();
+
     // Throws an error when max concurrent games is reached
     if (Object.keys(this.gameInstances).length >= GameService.MAX_CONCURRENT_GAMES) {
       throw new Error('Reached max concurrent games.');
@@ -75,7 +74,7 @@ export class GameService {
             user: gameUser.user,
             location: card.type === 'player' ? 'board' : 'deck',
             coords: card.type === 'player' ? gameType.players[index] : undefined,
-            id: `${this.nextId}_${randomId}`,
+            id: `${gameInstanceId}_${randomId}`,
             currentStats: card.stats ? JSON.parse(JSON.stringify(card.stats)) : undefined,
             metadata: {},
             card: JSON.parse(JSON.stringify(card)),
@@ -92,7 +91,7 @@ export class GameService {
         card: gameType.setup[coords],
         user: 0,
         location: 'board',
-        id: `${this.nextId}_${randomId}`,
+        id: `${gameInstanceId}_${randomId}`,
         coords: {
           x: xy[0],
           y: xy[1],
@@ -118,7 +117,7 @@ export class GameService {
             card: JSON.parse(JSON.stringify(curseCard)),
             user: gameUser.user,
             location: 'deck',
-            id: `${this.nextId}_${randomId}`,
+            id: `${gameInstanceId}_${randomId}`,
           });
         }
       }
@@ -139,7 +138,7 @@ export class GameService {
     // Create the instance
     const gameInstance: IGameInstance = {
       status: 'active',
-      id: this.nextId,
+      id: gameInstanceId,
       modifiers,
       theme,
       gameTypeId,
@@ -157,17 +156,14 @@ export class GameService {
     gameInstance.actions.current.push(action);
 
     // Save it
-    this.gameInstances[this.nextId] = gameInstance;
-    this.gamesStorageService.save(gameInstance);
+    await this.gameInstanceModel.create(gameInstance);
+    this.gameInstances[gameInstanceId] = gameInstance;
 
     // Dispatch event with the created instance
     await this.gameHookService.dispatch(gameInstance, `game:created:${gameTypeId}`, {gameInstance});
 
     // Create the room in the rooms service
     this.arenaRoomsService.createRoomForGame(gameInstance);
-
-    // Increase next ID
-    this.nextId ++;
 
     // Log
     this.logsService.info(`Game ${gameInstance.id} created`, gameInstance);
@@ -193,7 +189,7 @@ export class GameService {
    * Get an instance by id
    * @param user
    */
-  getGameInstance(id: number): IGameInstance|null {
+  async getGameInstance(id: number): Promise<IGameInstance|null> {
     // Get instance in hot memory
     const game: IGameInstance|null = this.gameInstances[id] ? this.gameInstances[id] : null;
     if (game) {
@@ -201,7 +197,8 @@ export class GameService {
     }
 
     // Get instance in cold memory
-    return this.gamesStorageService.get(id);
+    const gameInstance: IGameInstance = await this.gameInstanceModel.findOne({id}).exec();
+    return gameInstance;
   }
 
   /**
@@ -219,9 +216,9 @@ export class GameService {
    * Purge an instance from the hot memory
    * @param gameInstance
    */
-  purgeFromMemory(gameInstance: IGameInstance): void {
+  async purgeFromMemory(gameInstance: IGameInstance) {
     // Ensure that the instance is written on the disk
-    this.gamesStorageService.save(gameInstance);
+    await this.gameInstanceModel.updateOne({id: gameInstance.id}, gameInstance);
     // Deletes the instance from memory
     if (this.gameInstances[gameInstance.id]) {
       delete this.gameInstances[gameInstance.id];
@@ -243,7 +240,7 @@ export class GameService {
   async processActionsFor(gameInstance: IGameInstance): Promise<void> {
     // Game instances should not be played if they are not active
     if (gameInstance.status !== 'active') {
-      this.purgeFromMemory(gameInstance);
+      await this.purgeFromMemory(gameInstance);
       return;
     }
 
@@ -252,7 +249,7 @@ export class GameService {
     if (gameInstance.actions.current.length === 0) {
       this.logsService.error('Game opened without action', gameInstance);
       gameInstance.status = 'closed';
-      this.purgeFromMemory(gameInstance);
+      await this.purgeFromMemory(gameInstance);
       return;
     }
 
@@ -324,12 +321,9 @@ export class GameService {
       return;
     }
 
-    // Save the game instance
-    this.gamesStorageService.save(gameInstance);
-
     // Look for status at the end of this run and purge the game from memory if not opened
     if (gameInstance.status !== 'active') {
-      this.purgeFromMemory(gameInstance);
+      await this.purgeFromMemory(gameInstance);
     }
   }
 
