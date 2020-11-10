@@ -39,8 +39,7 @@ export class GameService {
     private readonly gameHookService: GameHookService,
     @InjectModel(GameInstance.name) private gameInstanceModel: Model<GameInstanceDocument>,
   ) {
-    // Get base data
-    this.gameInstances = {};
+    this.loadPendingGameInstances();
   }
 
   /**
@@ -225,12 +224,52 @@ export class GameService {
     }
   }
 
+  async loadPendingGameInstances() {
+    // Get the current game instances at launch
+    const instances: IGameInstance[] = await this.gameInstanceModel.find({status: 'active'}).exec();
+    this.gameInstances = instances.reduce((acc: {[id: number]: IGameInstance}, instance: IGameInstance) => {
+      acc[instance.id] = instance;
+      return acc;
+    }, {});
+  }
+
   /**
    * Loads an instance in the hot memory
    * @param instance
    */
   loadInMemory(instance: IGameInstance) {
     this.gameInstances[instance.id] = instance;
+  }
+
+  /**
+   * Respond to an action. This response is scopped by game instance, type & user.
+   * @param gameInstanceId
+   * @param actionType
+   * @param user
+   * @param response
+   */
+  async respondToAction(gameInstanceId: number, actionType: string, user: number, response: {[key: string]: any}) {
+    // Get game action
+    const gameInstance = await this.getGameInstance(gameInstanceId);
+    if (!gameInstance) {
+      return false;
+    }
+
+    // Get action
+    const action: IGameAction<any>|undefined = gameInstance.actions.current.find((a: IGameAction<any>) => {
+      return a.type === actionType && a.user === user;
+    });
+    if (!action) {
+      return false;
+    }
+
+    // Store response
+    action.response = response;
+
+    // Save instance
+    await this.gameInstanceModel.updateOne({id: gameInstance.id}, gameInstance);
+
+    return true;
   }
 
   /**
@@ -314,7 +353,12 @@ export class GameService {
         this.logsService.error(`Error in expire action`, e);
       }
     });
+
+    // Wait for pending promises
     await Promise.all(promises);
+
+    // Save game instance
+    await this.gameInstanceModel.updateOne({id: gameInstance.id}, gameInstance);
 
     // Exit method when no changes
     if (JSON.stringify(gameInstance) === jsonHash) {
