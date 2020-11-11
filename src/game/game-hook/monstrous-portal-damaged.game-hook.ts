@@ -24,7 +24,7 @@ export class MonstrousPortalDamagedGameHook implements IGameHook, IHasGameWorker
 
       // Unlock title "transporter"
       if (params.source.user === params.gameCard.user) {
-        this.triumphService.unlockTriumph(params.gameCard.user, 'transporter');
+        await this.triumphService.unlockTriumph(params.gameCard.user, 'transporter');
       }
 
       const action: IGameAction<any> = await this.gameWorkerService.getWorker('monstrous-portal-effect')

@@ -17,21 +17,21 @@ export class CardPlacedGameHook implements IGameHook {
 
   async execute(gameInstance: IGameInstance, params: {gameCard: IGameCard}): Promise<boolean> {
     if (params.gameCard.card.type === 'creature') {
-      this.questService.progressQuest(
+      await this.questService.progressQuest(
         params.gameCard.user,
         'play:creatures',
         1);
-      this.questService.progressQuest(
+      await this.questService.progressQuest(
         params.gameCard.user,
         'play:creaturesOrArtifacts',
         1);
     }
     if (params.gameCard.card.type === 'artifact') {
-      this.questService.progressQuest(
+      await this.questService.progressQuest(
         params.gameCard.user,
         'play:artifacts',
         1);
-      this.questService.progressQuest(
+      await this.questService.progressQuest(
         params.gameCard.user,
         'play:creaturesOrArtifacts',
         1);

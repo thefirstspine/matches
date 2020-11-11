@@ -22,6 +22,7 @@
   "dependencies": {
     "@nestjs/common": "^6.11.11",
     "@nestjs/core": "^6.11.11",
+    "@nestjs/mongoose": "^7.0.2",
     "@nestjs/platform-express": "^6.11.11",
     "@thefirstspine/auth": "^2.0.0",
     "@thefirstspine/auth-nest": "^2.0.0",
@@ -31,6 +32,7 @@
     "@thefirstspine/types-arena": "^1.12.0",
     "@thefirstspine/types-rest": "^2.2.0",
     "@types/dotenv": "^6.1.1",
+    "@types/mongoose": "^5.7.37",
     "@types/node-fetch": "^2.5.7",
     "@types/winston": "^2.4.4",
     "chalk": "^3.0.0",
@@ -39,6 +41,7 @@
     "clear": "^0.1.0",
     "description": "0.0.4",
     "dotenv": "^8.2.0",
+    "mongoose": "^5.10.12",
     "name": "0.0.2",
     "nest-filesocket": "0.0.1",
     "node-fetch": "^2.6.1",

@@ -134,7 +134,7 @@ export class ThrowCardsGameWorker implements IGameWorker, IHasGameHookService {
       },
       gameAction.user);
 
-    this.questService.progressQuest(
+    await this.questService.progressQuest(
       gameAction.user,
       `discard`,
       responseHandIndexes.length);

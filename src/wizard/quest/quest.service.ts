@@ -1,28 +1,26 @@
 import { Injectable } from '@nestjs/common';
-import { WizzardService } from '../wizard.service';
+import { WizardService } from '../wizard.service';
 import { IWizard, IUserQuest } from '@thefirstspine/types-arena';
 import { ILoot } from '@thefirstspine/types-rest';
 import { mergeLootsInItems } from '../../utils/game.utils';
 import { MessagingService } from '@thefirstspine/messaging-nest';
-import { WizzardsStorageService } from '../../storage/wizzards.storage.service';
 import { TriumphService } from '../triumph/triumph.service';
 
 @Injectable()
 export class QuestService {
 
   constructor(
-    private readonly wizardService: WizzardService,
+    private readonly wizardService: WizardService,
     private readonly messagingService: MessagingService,
-    private readonly wizzardsStorageService: WizzardsStorageService,
     private readonly triumphService: TriumphService,
   ) {}
 
-  progressQuest(user: number, objectiveType: string, value: number) {
-    const wizard: IWizard = this.wizardService.getWizard(user);
+  async progressQuest(user: number, objectiveType: string, value: number) {
+    const wizard: IWizard = await this.wizardService.getWizard(user);
     const changedWizard: boolean = this.progressQuestOnWizard(wizard, objectiveType, value);
 
     if (changedWizard) {
-      this.wizzardsStorageService.save(wizard);
+      this.wizardService.saveWizard(wizard);
     }
   }
 

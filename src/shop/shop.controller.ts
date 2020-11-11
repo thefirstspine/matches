@@ -42,7 +42,7 @@ export class ShopController {
 
     try {
       // Call service
-      this.shopService.exchangeLoot({
+      await this.shopService.exchangeLoot({
         user: request.user,
         ...item,
       });
@@ -66,7 +66,7 @@ export class ShopController {
 
     try {
       // Call service
-      this.shopService.exchangePossibility({
+      await this.shopService.exchangePossibility({
         user: request.user,
         ...item,
       });

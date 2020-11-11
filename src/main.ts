@@ -9,7 +9,7 @@ async function bootstrap() {
   require('dotenv').config();
 
   // Launch app
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule.register());
   app.enableCors();
   app.useGlobalFilters(new ErrorFilter(new LogsService()));
   app.useGlobalPipes(new ValidationPipe());

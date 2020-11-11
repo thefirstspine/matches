@@ -1,11 +1,10 @@
 import { Controller, Param, Get, NotFoundException, UseGuards, Req, Patch, Body, BadRequestException, Post, HttpException } from '@nestjs/common';
-import { WizzardService } from './wizard.service';
+import { WizardService } from './wizard.service';
 import { PatchWizardDto } from './patch-wizard.dto';
 import { IWizard, IUserQuest } from '@thefirstspine/types-arena';
 import { AuthGuard } from '@thefirstspine/auth-nest';
 import { IAvatar } from '@thefirstspine/types-rest';
 import { RestService } from '../rest/rest.service';
-import { WizzardsStorageService } from '../storage/wizzards.storage.service';
 import { CertificateGuard } from '@thefirstspine/certificate-nest';
 import { mergeLootsInItems } from '../utils/game.utils';
 import { ArenaRoomsService } from '../rooms/arena-rooms.service';
@@ -18,8 +17,7 @@ import { MessagingService } from '@thefirstspine/messaging-nest';
 export class WizardController {
 
   constructor(
-    private readonly wizardService: WizzardService,
-    private readonly wizardStorageService: WizzardsStorageService,
+    private readonly wizardService: WizardService,
     private readonly restService: RestService,
     private readonly roomsService: ArenaRoomsService,
     private readonly messagingService: MessagingService,
@@ -33,8 +31,8 @@ export class WizardController {
    */
   @Get('me')
   @UseGuards(AuthGuard)
-  getMe(@Req() request: any): IWizard {
-    const wizard: IWizard = this.wizardService.getWizard(request.user);
+  async getMe(@Req() request: any): Promise<IWizard> {
+    const wizard: IWizard = await this.wizardService.getWizard(request.user);
     if (!wizard) {
       return this.wizardService.createWizard(request.user);
     }
@@ -51,7 +49,7 @@ export class WizardController {
   @Patch('me')
   @UseGuards(AuthGuard)
   async patchMe(@Req() request: any, @Body() body: PatchWizardDto): Promise<IWizard> {
-    const wizard: IWizard = this.wizardService.getWizard(request.user);
+    const wizard: IWizard = await this.wizardService.getWizard(request.user);
     if (!wizard) {
       throw new NotFoundException();
     }
@@ -131,7 +129,7 @@ export class WizardController {
     }
 
     // Save the wizard on storage
-    this.wizardStorageService.save(wizard);
+    await this.wizardService.saveWizard(wizard);
 
     return wizard;
   }
@@ -143,8 +141,8 @@ export class WizardController {
    * @param request
    */
   @Get(':id')
-  single(@Param('id') id: number, @Req() request: any): IWizard {
-    const wizard: IWizard = this.wizardService.getWizard(id);
+  async single(@Param('id') id: number, @Req() request: any): Promise<IWizard> {
+    const wizard: IWizard = await this.wizardService.getWizard(id);
     if (!wizard) {
       throw new NotFoundException();
     }
@@ -172,12 +170,12 @@ export class WizardController {
     }
 
     // Load the wizzard
-    const wizard = this.wizardService.getOrCreateWizzard(id);
+    const wizard = await this.wizardService.getOrCreateWizard(id);
 
     // Add the loots & save the wizard
     mergeLootsInItems(wizard.items, [{name, num}]);
     this.messagingService.sendMessage([wizard.id], 'TheFirstSpine:loot', [{name, num}]);
-    this.wizardStorageService.save(wizard);
+    await this.wizardService.saveWizard(wizard);
   }
 
 }

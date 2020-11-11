@@ -1,18 +1,20 @@
 import { Injectable } from '@nestjs/common';
-import { WizzardsStorageService } from '../storage/wizzards.storage.service';
 import { IWizard } from '@thefirstspine/types-arena';
 import { MessagingService } from '@thefirstspine/messaging-nest';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
+import { Wizard, WizardDocument } from './wizard.schema';
 
 /**
  * Service to fetch & migrate some wizards data. Prefere this service instead of getting wizards
  * from storage directly.
  */
 @Injectable()
-export class WizzardService {
+export class WizardService {
 
   constructor(
-    private readonly wizzardsStorageService: WizzardsStorageService,
     private readonly messagingService: MessagingService,
+    @InjectModel(Wizard.name) private wizardModel: Model<WizardDocument>,
   ) {}
 
   /**
@@ -20,19 +22,19 @@ export class WizzardService {
    * @param user
    * @param withPrivateFields
    */
-  getWizard(user: number): IWizard|null {
+  async getWizard(user: number): Promise<IWizard|null> {
     // The user "0" is a default wizard
     if (user === 0) {
       return this.getDefaultWizardData(0);
     }
 
-    const wizard: IWizard|null = this.wizzardsStorageService.get(user);
+    const wizard: IWizard|null = await this.wizardModel.findOne({id: user}).exec();
     if (!wizard) {
       return null;
     }
 
     if (this.migrate(wizard)) {
-      this.wizzardsStorageService.save(wizard);
+      this.saveWizard(wizard);
     }
 
     return wizard;
@@ -42,16 +44,27 @@ export class WizzardService {
    * Create & store basic wizard data. If the file already exists, returns null.
    * @param user
    */
-  createWizard(user: number): IWizard {
-    if (this.getWizard(user)) {
+  async createWizard(user: number): Promise<IWizard> {
+    const testWizard = await this.getWizard(user);
+    if (testWizard) {
       return null;
     }
 
     const wizard = this.getDefaultWizardData(user);
     this.messagingService.sendMessage([wizard.id], 'TheFirstSpine:account', wizard);
-    this.wizzardsStorageService.save(wizard);
+
+    await this.wizardModel.create(wizard);
 
     return wizard;
+  }
+
+  async saveWizard(wizard: IWizard): Promise<boolean> {
+    const model = await this.wizardModel.updateOne({id: wizard.id}, wizard).exec();
+    if (model.ok) {
+      return true;
+    }
+
+    return false;
   }
 
   /**
@@ -156,24 +169,24 @@ export class WizzardService {
     return migrated;
   }
 
-  getOrCreateWizzard(user: number): IWizard {
-    // The user "0" is a default wizzard
+  async getOrCreateWizard(user: number): Promise<IWizard> {
+    // The user "0" is a default wizard
     if (user === 0) {
       return this.getDefaultWizardData(0);
     }
 
-    let wizzard: IWizard|null = this.wizzardsStorageService.get(user);
-    if (!wizzard) {
-      wizzard = this.getDefaultWizardData(user);
-      this.messagingService.sendMessage([wizzard.id], 'TheFirstSpine:account', wizzard);
-      this.wizzardsStorageService.save(wizzard);
+    let wizard: IWizard|null = await this.getWizard(user);
+    if (!wizard) {
+      wizard = this.getDefaultWizardData(user);
+      this.messagingService.sendMessage([wizard.id], 'TheFirstSpine:account', wizard);
+      this.saveWizard(wizard);
     }
 
-    if (this.migrate(wizzard)) {
-      this.wizzardsStorageService.save(wizzard);
+    if (this.migrate(wizard)) {
+      this.saveWizard(wizard);
     }
 
-    return wizzard;
+    return wizard;
   }
 
 }

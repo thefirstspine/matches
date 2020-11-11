@@ -1,7 +1,7 @@
 import { Injectable, Inject, forwardRef } from '@nestjs/common';
 import { ArenaRoomsService } from '../../rooms/arena-rooms.service';
 import { RestService } from '../../rest/rest.service';
-import { WizzardService } from '../../wizard/wizard.service';
+import { WizardService } from '../../wizard/wizard.service';
 import { BaseGameService } from '../base.game.service';
 import { IGameHook } from './game-hook.interface';
 import { IGameInstance } from '@thefirstspine/types-arena';
@@ -11,7 +11,6 @@ import { PlayerDamagedGameHook } from './player-damaged.game-hook';
 import { PhaseActionsGameHook } from './phase-actions.game-hook';
 import { SpellUsedGameHook } from './spell-used.game-hook';
 import { GameWorkerService } from '../game-worker/game-worker.service';
-import { WizzardsStorageService } from '../../storage/wizzards.storage.service';
 import { CardDestroyedGameHook } from './card-destroyed.game-hook';
 import { SoulOfASacrifiedHunterPlacesGameHook } from './soul-of-a-sacrified-hunter-placed.game-hook';
 import { ActionExecutedGameHook } from './action-executed.game-hook';
@@ -48,10 +47,9 @@ export class GameHookService extends BaseGameService<IGameHook> {
   constructor(
     private readonly messagingService: MessagingService,
     private readonly logsService: LogsService,
-    private readonly wizzardService: WizzardService,
+    private readonly wizardService: WizardService,
     private readonly restService: RestService,
     private readonly arenaRoomsService: ArenaRoomsService,
-    private readonly wizzardsStorageService: WizzardsStorageService,
     private readonly questService: QuestService,
     private readonly triumphService: TriumphService,
     @Inject(forwardRef(() => GameWorkerService)) public readonly gameWorkerService: GameWorkerService,
@@ -68,10 +66,9 @@ export class GameHookService extends BaseGameService<IGameHook> {
     // Defer injections for game workers constructions
     this.deferInjection(this.messagingService);
     this.deferInjection(this.logsService);
-    this.deferInjection(this.wizzardService);
+    this.deferInjection(this.wizardService);
     this.deferInjection(this.restService);
     this.deferInjection(this.arenaRoomsService);
-    this.deferInjection(this.wizzardsStorageService);
     this.deferInjection(this.questService);
     this.deferInjection(this.triumphService);
     this.deferInjection(this); // haya!

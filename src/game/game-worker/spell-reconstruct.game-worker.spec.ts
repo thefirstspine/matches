@@ -3,10 +3,8 @@ import { GameWorkerService } from './game-worker.service';
 import { ApiService } from '../../api/api.service';
 import { GameService } from '../game.service';
 import { QueueService } from '../../queue/queue.service';
-import { GamesStorageService } from '../../storage/games.storage.service';
 import { TickerService } from '../../ticker/ticker.service';
-import { WizzardService } from '../../wizard/wizard.service';
-import { WizzardsStorageService } from '../../storage/wizzards.storage.service';
+import { WizardService } from '../../wizard/wizard.service';
 import { ShopService } from '../../shop/shop.service';
 import { RestService } from '../../rest/rest.service';
 import { RoomsService } from '../../rooms/rooms.service';
@@ -37,9 +35,7 @@ describe('Spell reconstruct', () => {
         GameService,
         QueueService,
         TickerService,
-        GamesStorageService,
-        WizzardService,
-        WizzardsStorageService,
+        WizardService,
         ShopService,
         AuthService,
         LogsService,
@@ -344,6 +340,8 @@ function getDefaultGameInstance(): IGameInstance {
       current: [],
       previous: [],
     },
+    modifiers: [],
+    theme: 'forest',
     users: [
       {destiny: 'hunter', user: Number.MAX_SAFE_INTEGER - 1, origin: null, style: ''},
       {destiny: 'hunter', user: Number.MAX_SAFE_INTEGER - 1, origin: null},
