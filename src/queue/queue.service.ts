@@ -141,13 +141,13 @@ export class QueueService {
       if (instance.key === 'immediate') {
         instance.theme = undefined;
         instance.modifiers = [Modifiers.IMMEDIATE];
-        if (events.includes('online:corsairs')) {
+        if (events.includes('corsairs')) {
           instance.modifiers.push(Modifiers.GOLDEN_GALLEONS);
         }
-        if (events.includes('online:tricks-celebration')) {
+        if (events.includes('tricks-celebration')) {
           instance.modifiers.push(Modifiers.TRICK_OR_TREAT);
         }
-        if (events.includes('online:triple-shards')) {
+        if (events.includes('triple-shards')) {
           instance.modifiers.push(Modifiers.TRIPLE_SHARDS);
         }
       }
@@ -157,13 +157,13 @@ export class QueueService {
           Modifiers.DAILY,
           fixedDailyData[(new Date()).getDay() % fixedDailyData.length].modifier,
         ];
-        if (events.includes('online:corsairs')) {
+        if (events.includes('corsairs')) {
           instance.modifiers.push(Modifiers.GOLDEN_GALLEONS);
         }
-        if (events.includes('online:tricks-celebration')) {
+        if (events.includes('tricks-celebration')) {
           instance.modifiers.push(Modifiers.TRICK_OR_TREAT);
         }
-        if (events.includes('online:triple-shards')) {
+        if (events.includes('triple-shards')) {
           instance.modifiers.push(Modifiers.TRIPLE_SHARDS);
         }
       }
@@ -479,7 +479,8 @@ export class QueueService {
    */
   protected async getEvents(): Promise<string[]> {
     try {
-      const result = await fetch(`${process.env.WEBSITE_URL}/event?where={"datetimeFrom":{"<":${Date.now()}},"datetimeTo":{">":${Date.now()}}}`);
+      const date = (new Date()).toISOString();
+      const result = await fetch(`${process.env.CALENDAR_URL}/events?filter=datetimeFrom||lt||${date}&filter=datetimeTo||gt||${date}`);
       const jsonResult = await result.json();
       return jsonResult ? jsonResult.map((e: any) => e.type) : [];
     } catch (e) {
