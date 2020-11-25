@@ -176,10 +176,10 @@ export class QueueService {
         }
       }
       if (instance.key === 'cycle') {
-        instance.theme = fixedCycleData[currentCycle.id].theme;
+        instance.theme = fixedCycleData[currentCycle.name].theme;
         instance.modifiers = [
           Modifiers.CYCLE,
-          fixedCycleData[currentCycle.id].modifier,
+          fixedCycleData[currentCycle.name].modifier,
         ];
       }
     });
