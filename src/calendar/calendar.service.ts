@@ -25,7 +25,7 @@ export class CalendarService {
       const responseJson = response.json();
       return responseJson[0];
     } catch (e) {
-      this.logsService.error(`Cannot fetch cycles`, e);
+      this.logsService.error(`Cannot fetch cycle`, e);
       return null;
     }
   }
@@ -36,7 +36,7 @@ export class CalendarService {
       const response: Response = await fetch(`${process.env.CALENDAR_URL}/events?filter=datetimeFrom||lt||${date}&filter=datetimeTo||gt||${date}`);
       return response.json();
     } catch (e) {
-      this.logsService.error(`Cannot fetch cycles`, e);
+      this.logsService.error(`Cannot fetch events`, e);
       return [];
     }
   }
