@@ -20,10 +20,8 @@ export class CalendarService {
 
   async getCurrentCycle(): Promise<ICycle|null> {
     try {
-      const date: string = (new Date()).toISOString();
-      const response: Response = await fetch(`${process.env.CALENDAR_URL}/cycles?filter=datetimeFrom||lt||${date}&filter=datetimeTo||gt||${date}`);
-      const responseJson = await response.json();
-      return responseJson[0];
+      const response: Response = await fetch(`${process.env.CALENDAR_URL}/cycles/current`);
+      return response.json();
     } catch (e) {
       this.logsService.error(`Cannot fetch cycle`, e);
       return null;
