@@ -26,6 +26,7 @@ import { TriumphService } from './wizard/triumph/triumph.service';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Wizard, WizardSchema } from './wizard/wizard.schema';
 import { GameInstance, GameInstanceSchema } from './game/game-instance.schema';
+import { CalendarService } from './calendar/calendar.service';
 
 @Module({
   controllers: [ApiController, TickerController, ShopController, IndexController, WizardController],
@@ -48,6 +49,7 @@ import { GameInstance, GameInstanceSchema } from './game/game-instance.schema';
     FileSocketMethodsService,
     QuestService,
     TriumphService,
+    CalendarService,
   ],
 })
 export class AppModule {

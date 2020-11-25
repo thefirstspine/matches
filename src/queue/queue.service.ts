@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { GameService } from '../game/game.service';
 import { WizardService } from '../wizard/wizard.service';
 import { IGameUser, IGameInstance, IWizardItem, IWizard, IWizardHistoryItem, IQueueInstance, IQueueUser } from '@thefirstspine/types-arena';
-import { IGameType, ICycle } from '@thefirstspine/types-rest';
+import { IGameType } from '@thefirstspine/types-rest';
 import { RestService } from '../rest/rest.service';
 import { getScore } from '../utils/game.utils';
 import { BotsService } from '../bots/bots.service';
@@ -11,6 +11,7 @@ import { Modifiers } from '../game/modifiers';
 import { Themes } from '../game/themes';
 import { randBetween } from '../utils/maths.utils';
 import fetch from 'node-fetch';
+import { CalendarService, ICycle, IEvent } from 'src/calendar/calendar.service';
 
 /**
  * Service to manage the game queue
@@ -37,6 +38,7 @@ export class QueueService {
     private readonly wizardService: WizardService,
     private readonly restService: RestService,
     private readonly botsService: BotsService,
+    private readonly calendarService: CalendarService,
   ) {
     // Create base queues instances
     this.queueInstances.push(
@@ -115,7 +117,12 @@ export class QueueService {
    * Update the instances data based on cycle & day
    */
   async updateQueueInstancesData() {
-    const currentCycle: ICycle = await this.restService.currentCycle();
+    const currentCycle: ICycle|null = await this.calendarService.getCurrentCycle();
+    if (!currentCycle) {
+      // Exit update method on not found cycle
+      return;
+    }
+
     const fixedCycleData: {
       [key: string]: {theme: string, modifier: string},
     } = {
@@ -135,19 +142,20 @@ export class QueueService {
     ];
 
     // Get current events
-    const events: string[] = await this.getEvents();
+    const events: IEvent[] = await this.calendarService.getCurrentEvents();
+    const eventsString: string[] = events.map((e: IEvent) => e.name);
 
     this.queueInstances.forEach((instance: IQueueInstance) => {
       if (instance.key === 'immediate') {
         instance.theme = undefined;
         instance.modifiers = [Modifiers.IMMEDIATE];
-        if (events.includes('corsairs')) {
+        if (eventsString.includes('corsairs')) {
           instance.modifiers.push(Modifiers.GOLDEN_GALLEONS);
         }
-        if (events.includes('tricks-celebration')) {
+        if (eventsString.includes('tricks-celebration')) {
           instance.modifiers.push(Modifiers.TRICK_OR_TREAT);
         }
-        if (events.includes('triple-shards')) {
+        if (eventsString.includes('triple-shards')) {
           instance.modifiers.push(Modifiers.TRIPLE_SHARDS);
         }
       }
@@ -157,13 +165,13 @@ export class QueueService {
           Modifiers.DAILY,
           fixedDailyData[(new Date()).getDay() % fixedDailyData.length].modifier,
         ];
-        if (events.includes('corsairs')) {
+        if (eventsString.includes('corsairs')) {
           instance.modifiers.push(Modifiers.GOLDEN_GALLEONS);
         }
-        if (events.includes('tricks-celebration')) {
+        if (eventsString.includes('tricks-celebration')) {
           instance.modifiers.push(Modifiers.TRICK_OR_TREAT);
         }
-        if (events.includes('triple-shards')) {
+        if (eventsString.includes('triple-shards')) {
           instance.modifiers.push(Modifiers.TRIPLE_SHARDS);
         }
       }

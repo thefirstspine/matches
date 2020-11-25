@@ -33,14 +33,6 @@ export class RestService {
     return this.single('avatars', id);
   }
 
-  public async currentCycle(): Promise<ICycle> {
-    return this.single('cycles', 'current');
-  }
-
-  public async cycle(id: string): Promise<ICycle> {
-    return this.single('cycles', id);
-  }
-
   public async quests(): Promise<{
     daily: IQuest,
     weekly: IQuest,
