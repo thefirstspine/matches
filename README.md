@@ -22,7 +22,7 @@ ROOMS_PUBLIC_KEY | Public key to interact with rooms net service | App
 ROOMS_URL | Rooms net service URL | App
 SHOP_PUBLIC_KEY | Public key to interact with shops net service | App
 SHOP_URL | Shop net service URL | App
-WEBSITE_URL | Website URL | App
+CALENDAR_URL | Calendar net service URL | App
 ## Running the app
 ```
 npm run start

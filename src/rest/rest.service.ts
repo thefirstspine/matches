@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { ICard, IGameType, IDeck, IShopItem, IAvatar, ICycle, IQuest } from '@thefirstspine/types-rest';
+import { ICard, IGameType, IDeck, IShopItem, IAvatar, IQuest } from '@thefirstspine/types-rest';
 import fetch, { Response } from 'node-fetch';
 
 @Injectable()
@@ -31,14 +31,6 @@ export class RestService {
 
   public async avatar(id: string): Promise<IAvatar> {
     return this.single('avatars', id);
-  }
-
-  public async currentCycle(): Promise<ICycle> {
-    return this.single('cycles', 'current');
-  }
-
-  public async cycle(id: string): Promise<ICycle> {
-    return this.single('cycles', id);
   }
 
   public async quests(): Promise<{

@@ -30,7 +30,7 @@
     "@thefirstspine/logs-nest": "1.0.0",
     "@thefirstspine/messaging-nest": "1.0.0",
     "@thefirstspine/types-arena": "^1.12.0",
-    "@thefirstspine/types-rest": "^2.2.0",
+    "@thefirstspine/types-rest": "^3.0.0",
     "@types/dotenv": "^6.1.1",
     "@types/mongoose": "^5.7.37",
     "@types/node-fetch": "^2.5.7",
