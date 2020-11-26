@@ -11,7 +11,7 @@ import { Modifiers } from '../game/modifiers';
 import { Themes } from '../game/themes';
 import { randBetween } from '../utils/maths.utils';
 import fetch from 'node-fetch';
-import { CalendarService, ICycle, IEvent } from 'src/calendar/calendar.service';
+import { CalendarService, ICycle, IEvent } from '../calendar/calendar.service';
 
 /**
  * Service to manage the game queue
