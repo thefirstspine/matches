@@ -144,12 +144,14 @@ export class QueueService {
         {theme: Themes.SACRIFICE_CHURCH, modifiers: [Modifiers.SOUVENIRS_FROM_YOUR_ENEMY, Modifiers.ANNIHILATION_MATTS]},
         {theme: Themes.DEAD_FOREST, modifiers: [Modifiers.GOLDEN_GALLEONS, Modifiers.FROZEN_STATUES]},
       ][weekNumber],
+      'absurdal-2021': {theme: Themes.RUINED_LABORATORY, modifiers: [Modifiers.MUTATIONS]}
     };
 
     const fixedDailyData: Array<{theme: string, modifier: string}> = [
       {theme: Themes.SPINE_S_CAVE, modifier: Modifiers.GREAT_ANCIENTS_EGGS},
       {theme: Themes.FORGOTTEN_CEMETERY, modifier: Modifiers.SOUVENIRS_FROM_YOUR_ENEMY},
       {theme: Themes.WASTED_FIELDS, modifier: Modifiers.HARVESTING_SOULS},
+      {theme: Themes.SNOW_MAN_LAIR, modifier: Modifiers.FROZEN_STATUES},
     ];
 
     // Get current events
