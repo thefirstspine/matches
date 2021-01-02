@@ -48,6 +48,10 @@ import { SpellTrickOrTreatGameWorker } from './spell-trick-or-treat.game-worker'
 import { QuestService } from '../../wizard/quest/quest.service';
 import { TriumphService } from '../../wizard/triumph/triumph.service';
 import { SpellBloodStrengthGameWorker } from './spell-blood-strength.game-worker';
+import { SpellMutateFoxGameWorker } from './spell-mutate-fox.game-worker';
+import { SpellMutateBansheeGameWorker } from './spell-mutate-banshee.game-worker';
+import { SpellMutateBarbedWiresGameWorker } from './spell-mutate-barbers.game-worker';
+import { SpellMutateTowerGameWorker } from './spell-mutate-tower.game-worker';
 
 /**
  * Main service that manages game workers. Each game worker is responsible of a game action type. This service
@@ -129,6 +133,10 @@ export class GameWorkerService extends BaseGameService<IGameWorker> {
     this.createInjectable(SpellReinforcementGameWorker, injectedProps);
     this.createInjectable(SpellTrickOrTreatGameWorker, injectedProps);
     this.createInjectable(SpellBloodStrengthGameWorker, injectedProps);
+    this.createInjectable(SpellMutateFoxGameWorker, injectedProps);
+    this.createInjectable(SpellMutateBansheeGameWorker, injectedProps);
+    this.createInjectable(SpellMutateBarbedWiresGameWorker, injectedProps);
+    this.createInjectable(SpellMutateTowerGameWorker, injectedProps);
   }
 
   /**
