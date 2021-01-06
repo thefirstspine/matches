@@ -12,7 +12,7 @@ export class TriumphService {
   ) {}
 
   async unlockTriumph(user: number, triumph: string) {
-    const wizard: IWizard = await this.wizardService.getWizard(user);
+    const wizard: IWizard = await this.wizardService.getOrCreateWizard(user);
     const changedWizard: boolean = await this.unlockTriumphOnWizard(wizard, triumph);
 
     if (changedWizard) {

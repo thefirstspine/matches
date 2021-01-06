@@ -22,7 +22,7 @@ export class WizardService {
    * @param user
    * @param withPrivateFields
    */
-  async getWizard(user: number): Promise<IWizard|null> {
+  private async getWizard(user: number): Promise<IWizard|null> {
     // The user "0" is a default wizard
     if (user === 0) {
       return this.getDefaultWizardData(0);
@@ -44,7 +44,7 @@ export class WizardService {
    * Create & store basic wizard data. If the file already exists, returns null.
    * @param user
    */
-  async createWizard(user: number): Promise<IWizard> {
+  private async createWizard(user: number): Promise<IWizard> {
     const testWizard = await this.getWizard(user);
     if (testWizard) {
       return null;
