@@ -186,6 +186,47 @@ export class GameCreatedGameHook implements IGameHook {
       gameInstance.cards = shuffle(gameInstance.cards);
     }
 
+    if (gameInstance.modifiers.includes(Modifiers.MUTATIONS)) {
+      const mutateFox: ICard = await this.restService.card('mutate-fox');
+      const mutateBanshee: ICard = await this.restService.card('mutate-banshee');
+      const mutateTower: ICard = await this.restService.card('mutate-tower');
+      const mutateBarbedWires: ICard = await this.restService.card('mutate-barbed-wires');
+      gameInstance.users.forEach((u: IGameUser) => {
+        for (let i = 0; i < 2; i ++) {
+          gameInstance.cards.push({
+            card: mutateFox,
+            id: `${gameInstance.id}_${randBetween(0, Number.MAX_SAFE_INTEGER)}`,
+            location: 'deck',
+            user: u.user,
+            metadata: {},
+          });
+          gameInstance.cards.push({
+            card: mutateBanshee,
+            id: `${gameInstance.id}_${randBetween(0, Number.MAX_SAFE_INTEGER)}`,
+            location: 'deck',
+            user: u.user,
+            metadata: {},
+          });
+          gameInstance.cards.push({
+            card: mutateTower,
+            id: `${gameInstance.id}_${randBetween(0, Number.MAX_SAFE_INTEGER)}`,
+            location: 'deck',
+            user: u.user,
+            metadata: {},
+          });
+          gameInstance.cards.push({
+            card: mutateBarbedWires,
+            id: `${gameInstance.id}_${randBetween(0, Number.MAX_SAFE_INTEGER)}`,
+            location: 'deck',
+            user: u.user,
+            metadata: {},
+          });
+        }
+      });
+      // Shuffle the cards
+      gameInstance.cards = shuffle(gameInstance.cards);
+    }
+
     return true;
   }
 

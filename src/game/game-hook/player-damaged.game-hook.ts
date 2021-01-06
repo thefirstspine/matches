@@ -262,6 +262,24 @@ export class PlayerDamagedGameHook implements IGameHook {
       }
     }
 
+    if (
+      gameInstance.modifiers.includes(Modifiers.CYCLE) &&
+      gameInstance.modifiers.includes(Modifiers.MUTATIONS)
+    ) {
+      loot.push({name: 'mutation-mark', num: 1});
+      if (victory) {
+        loot.push({name: 'holo-mutate-fox', num: 1}, {name: 'premium-mutate-fox', num: 1});
+        loot.push({name: 'holo-mutate-banshee', num: 1}, {name: 'premium-mutate-banshee', num: 1});
+        loot.push({name: 'holo-mutate-tower', num: 1}, {name: 'premium-mutate-tower', num: 1});
+        loot.push({name: 'holo-mutate-barbed-wires', num: 1}, {name: 'premium-mutate-barbed-wires', num: 1});
+      } else {
+        loot.push({name: 'holo-mutate-fox', num: 1});
+        loot.push({name: 'holo-mutate-banshee', num: 1});
+        loot.push({name: 'holo-mutate-tower', num: 1});
+        loot.push({name: 'holo-mutate-barbed-wires', num: 1});
+      }
+    }
+
     // Register data in wizard's history
     const historyItem: IWizardHistoryItem = {
       gameId: gameInstance.id,

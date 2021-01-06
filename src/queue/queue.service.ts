@@ -123,22 +123,35 @@ export class QueueService {
       return;
     }
 
+    // Get the week number
+    const weekNumber: number = Math.floor((Date.now() - new Date(currentCycle.datetimeFrom).getTime()) / (1000 * 60 * 60 * 24 * 7));
+
     const fixedCycleData: {
-      [key: string]: {theme: string, modifier: string},
+      [key: string]: {theme: string, modifiers: string[]},
     } = {
-      'renewal-2020': {theme: '', modifier: ''},
-      'great-ancient-2020': {theme: Themes.SPINE_S_CAVE, modifier: Modifiers.GREAT_ANCIENTS_EGGS},
-      'treasure-2020': {theme: '', modifier: ''},
-      'souvenirs-2020': {theme: Themes.FORGOTTEN_CEMETERY, modifier: Modifiers.SOUVENIRS_FROM_YOUR_ENEMY},
-      'harvest-2020': {theme: Themes.WASTED_FIELDS, modifier: Modifiers.HARVESTING_SOULS},
-      'crowned-souls-2020': {theme: Themes.SACRIFICE_CHURCH, modifier: Modifiers.ANNIHILATION_MATTS},
-      'snow-man-2020': {theme: Themes.SNOW_MAN_LAIR, modifier: Modifiers.FROZEN_STATUES},
+      'renewal-2020': {theme: '', modifiers: ['']},
+      'great-ancient-2020': {theme: Themes.SPINE_S_CAVE, modifiers: [Modifiers.GREAT_ANCIENTS_EGGS]},
+      'treasure-2020': {theme: '', modifiers: ['']},
+      'souvenirs-2020': {theme: Themes.FORGOTTEN_CEMETERY, modifiers: [Modifiers.SOUVENIRS_FROM_YOUR_ENEMY]},
+      'harvest-2020': {theme: Themes.WASTED_FIELDS, modifiers: [Modifiers.HARVESTING_SOULS]},
+      'crowned-souls-2020': {theme: Themes.SACRIFICE_CHURCH, modifiers: [Modifiers.ANNIHILATION_MATTS]},
+      'snow-man-2020': {theme: Themes.SNOW_MAN_LAIR, modifiers: [Modifiers.FROZEN_STATUES]},
+      'renewal-2021': [
+        {theme: Themes.SPINE_S_CAVE, modifiers: [Modifiers.GREAT_ANCIENTS_EGGS, Modifiers.HARVESTING_SOULS]},
+        {theme: Themes.FORGOTTEN_CEMETERY, modifiers: [Modifiers.SOUVENIRS_FROM_YOUR_ENEMY, Modifiers.ANNIHILATION_MATTS]},
+        {theme: Themes.SNOW_MAN_LAIR, modifiers: [Modifiers.GOLDEN_GALLEONS, Modifiers.FROZEN_STATUES]},
+        {theme: Themes.WASTED_FIELDS, modifiers: [Modifiers.GREAT_ANCIENTS_EGGS, Modifiers.HARVESTING_SOULS]},
+        {theme: Themes.SACRIFICE_CHURCH, modifiers: [Modifiers.SOUVENIRS_FROM_YOUR_ENEMY, Modifiers.ANNIHILATION_MATTS]},
+        {theme: Themes.DEAD_FOREST, modifiers: [Modifiers.GOLDEN_GALLEONS, Modifiers.FROZEN_STATUES]},
+      ][weekNumber],
+      'absurdal-2021': {theme: Themes.RUINED_LABORATORY, modifiers: [Modifiers.MUTATIONS]}
     };
 
     const fixedDailyData: Array<{theme: string, modifier: string}> = [
       {theme: Themes.SPINE_S_CAVE, modifier: Modifiers.GREAT_ANCIENTS_EGGS},
       {theme: Themes.FORGOTTEN_CEMETERY, modifier: Modifiers.SOUVENIRS_FROM_YOUR_ENEMY},
       {theme: Themes.WASTED_FIELDS, modifier: Modifiers.HARVESTING_SOULS},
+      {theme: Themes.SNOW_MAN_LAIR, modifier: Modifiers.FROZEN_STATUES},
     ];
 
     // Get current events
@@ -179,7 +192,7 @@ export class QueueService {
         instance.theme = fixedCycleData[currentCycle.name].theme;
         instance.modifiers = [
           Modifiers.CYCLE,
-          fixedCycleData[currentCycle.name].modifier,
+          ...fixedCycleData[currentCycle.name].modifiers,
         ];
       }
     });
