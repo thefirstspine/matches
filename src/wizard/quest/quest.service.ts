@@ -16,7 +16,7 @@ export class QuestService {
   ) {}
 
   async progressQuest(user: number, objectiveType: string, value: number) {
-    const wizard: IWizard = await this.wizardService.getWizard(user);
+    const wizard: IWizard = await this.wizardService.getOrCreateWizard(user);
     const changedWizard: boolean = this.progressQuestOnWizard(wizard, objectiveType, value);
 
     if (changedWizard) {
