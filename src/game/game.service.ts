@@ -22,6 +22,7 @@ import { Model } from 'mongoose';
 export class GameService {
 
   public static readonly MAX_CONCURRENT_GAMES: number = 100;
+  public static readonly MAX_ARCHIVED_ACTIONS: number = 1000;
 
   /**
    * All the game instance stored in the hot memory. A game is in the hot memory
@@ -357,13 +358,18 @@ export class GameService {
     // Wait for pending promises
     await Promise.all(promises);
 
-    // Save game instance
-    await this.gameInstanceModel.updateOne({id: gameInstance.id}, gameInstance);
-
     // Exit method when no changes
     if (JSON.stringify(gameInstance) === jsonHash) {
       return;
     }
+
+    // Reduce archived actions
+    if (gameInstance.actions.previous.length > GameService.MAX_ARCHIVED_ACTIONS) {
+      gameInstance.actions.previous.splice(0, gameInstance.actions.previous.length - GameService.MAX_ARCHIVED_ACTIONS);
+    }
+
+    // Save game instance
+    await this.gameInstanceModel.updateOne({id: gameInstance.id}, gameInstance);
 
     // Look for status at the end of this run and purge the game from memory if not opened
     if (gameInstance.status !== 'active') {
