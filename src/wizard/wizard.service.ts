@@ -179,11 +179,11 @@ export class WizardService {
     if (!wizard) {
       wizard = this.getDefaultWizardData(user);
       this.messagingService.sendMessage([wizard.id], 'TheFirstSpine:account', wizard);
-      this.saveWizard(wizard);
+      await this.wizardModel.create(wizard);
     }
 
     if (this.migrate(wizard)) {
-      this.saveWizard(wizard);
+      await this.saveWizard(wizard);
     }
 
     return wizard;
