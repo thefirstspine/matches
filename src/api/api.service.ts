@@ -61,6 +61,7 @@ export class ApiService {
       request.params.gameTypeId,
       request.params.theme ? request.params.theme : Themes.DEAD_FOREST,
       request.params.modifiers ? request.params.modifiers : [],
+      request.params.expirationTimeModifier ? request.params.expirationTimeModifier : 1,
     );
 
     // Return response

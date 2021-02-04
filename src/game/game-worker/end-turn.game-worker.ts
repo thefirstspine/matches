@@ -41,7 +41,7 @@ export class EndTurnGameWorker implements IGameWorker, IHasGameHookService, IHas
       },
       user: data.user as number,
       priority: 1,
-      expiresAt: Date.now() + (10 * 1000), // expires in 10 seconds
+      expiresAt: Date.now() + (10 * 1000 * (gameInstance.expirationTimeModifier ? gameInstance.expirationTimeModifier : 1)), // expires in 10 seconds
       interaction: {
         type: 'pass',
         description: {
