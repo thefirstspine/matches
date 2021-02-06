@@ -38,7 +38,7 @@ export class StartConfrontsGameWorker implements IGameWorker, IHasGameHookServic
       },
       user: data.user as number,
       priority: 1,
-      expiresAt: Date.now() + (90 * 1000), // expires in 90 seconds
+      expiresAt: Date.now() + (90 * 1000 * (gameInstance.expirationTimeModifier ? gameInstance.expirationTimeModifier : 1)), // expires in 90 seconds
       interaction: {
         type: 'pass',
         description: {

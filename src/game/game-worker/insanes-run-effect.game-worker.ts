@@ -41,7 +41,7 @@ export class InsanesRunEffectGameWorker implements IGameWorker, IHasGameHookServ
       },
       user: data.user as number,
       priority: 3,
-      expiresAt: Date.now() + (30 * 1000), // expires in 30 seconds
+      expiresAt: Date.now() + (30 * 1000 * (gameInstance.expirationTimeModifier ? gameInstance.expirationTimeModifier : 1)), // expires in 30 seconds
       interaction: {
         type: 'choseCardOnBoard',
         description: {

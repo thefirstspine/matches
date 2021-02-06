@@ -40,7 +40,7 @@ export class SkipRunGameWorker implements IGameWorker, IHasGameHookService, IHas
       },
       user: data.user as number,
       priority: 3,
-      expiresAt: Date.now() + (30 * 1000), // expires in 30 seconds
+      expiresAt: Date.now() + (30 * 1000 * (gameInstance.expirationTimeModifier ? gameInstance.expirationTimeModifier : 1)), // expires in 30 seconds
       interaction: {
         type: 'pass',
         description: {
@@ -94,7 +94,8 @@ export class SkipRunGameWorker implements IGameWorker, IHasGameHookService, IHas
     // The next "throw-cards" game action should have more time
     const action: IGameAction<any>|undefined = gameInstance.actions.current.find((a: IGameAction<any>) => a.type === 'throw-cards');
     if (action) {
-      action.expiresAt = Date.now() + (30 * 1000); // expires in 30 seconds
+      action.expiresAt =
+        Date.now() + 30 * 1000 * (gameInstance.expirationTimeModifier ? gameInstance.expirationTimeModifier : 1); // expires in 30 seconds
     }
 
     gameInstance.actions.current = gameInstance.actions.current.filter((gameActionRef: IGameAction<IInteractionPass>) => {

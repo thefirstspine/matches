@@ -39,7 +39,7 @@ export class MonstrousPortalEffectGameWorker implements IGameWorker, IHasGameHoo
         en: `You can place a card on the board`,
         fr: `Vous pouvez placer une carte sur le plateau de jeu.`,
       },
-      expiresAt: Date.now() + (30 * 1000), // expires in 30 seconds
+      expiresAt: Date.now() + (30 * 1000 * (gameInstance.expirationTimeModifier ? gameInstance.expirationTimeModifier : 1)), // expires in 30 seconds
       user: data.user as number,
       priority: 3,
       interaction: {

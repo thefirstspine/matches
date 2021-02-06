@@ -84,6 +84,7 @@ export class QueueService {
     gameTypeId: string,
     theme: string,
     modifiers: string[],
+    expirationTimeModifier: number,
   ): Promise<IQueueInstance> {
     const gameType: IGameType = await this.restService.gameType(gameTypeId);
     if (!gameType) {
@@ -96,6 +97,7 @@ export class QueueService {
       users: [],
       theme,
       modifiers,
+      expirationTimeModifier,
       createdAt: Date.now(),
       expiresAt: Date.now() + (60 * 30 * 1000),
     };
@@ -144,7 +146,7 @@ export class QueueService {
         {theme: Themes.SACRIFICE_CHURCH, modifiers: [Modifiers.SOUVENIRS_FROM_YOUR_ENEMY, Modifiers.ANNIHILATION_MATTS]},
         {theme: Themes.DEAD_FOREST, modifiers: [Modifiers.GOLDEN_GALLEONS, Modifiers.FROZEN_STATUES]},
       ][weekNumber],
-      'absurdal-2021': {theme: Themes.RUINED_LABORATORY, modifiers: [Modifiers.MUTATIONS]}
+      'absurdal-2021': {theme: Themes.RUINED_LABORATORY, modifiers: [Modifiers.MUTATIONS]},
     };
 
     const fixedDailyData: Array<{theme: string, modifier: string}> = [
@@ -418,7 +420,8 @@ export class QueueService {
         gameType.id,
         queueUsersNeeded,
         queueInstance.modifiers ? queueInstance.modifiers : [],
-        queueInstance.theme ? queueInstance.theme : Themes.user[randBetween(0, Themes.user.length - 1)]);
+        queueInstance.theme ? queueInstance.theme : Themes.user[randBetween(0, Themes.user.length - 1)],
+        queueInstance.expirationTimeModifier ? queueInstance.expirationTimeModifier : 1);
       // Make them quit from the queue
       queueUsersNeeded.forEach((queueUser: IGameUser) => this.quit(queueInstance.key, queueUser.user));
       // Send message
