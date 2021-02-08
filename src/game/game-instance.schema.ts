@@ -35,6 +35,9 @@ export class GameInstance implements IGameInstance {
 
   @Prop()
   result?: IGameResult[];
+
+  @Prop()
+  expirationTimeModifier?: number;
 }
 
 export const GameInstanceSchema = SchemaFactory.createForClass(GameInstance);
