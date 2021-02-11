@@ -158,7 +158,7 @@ export class QueueService {
 
     // Get current events
     const events: IEvent[] = await this.calendarService.getCurrentEvents();
-    const eventsString: string[] = events.map((e: IEvent) => e.name);
+    const eventsString: string[] = events.map((e: IEvent) => e.type);
 
     this.queueInstances.forEach((instance: IQueueInstance) => {
       if (instance.key === 'immediate') {
