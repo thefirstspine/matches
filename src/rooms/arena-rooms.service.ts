@@ -16,18 +16,6 @@ export class ArenaRoomsService {
       private readonly roomsService: RoomsService,
       private readonly wizardService: WizardService,
   ) {
-    this.roomsService.createRoom(
-      ArenaRoomsService.SUBJECT,
-      {
-        name: 'general-fr',
-        senders: [],
-      });
-    this.roomsService.createRoom(
-      ArenaRoomsService.SUBJECT,
-      {
-        name: 'general-en',
-        senders: [],
-      });
   }
 
   /**

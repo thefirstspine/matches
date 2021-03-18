@@ -7,7 +7,6 @@ import { IAvatar } from '@thefirstspine/types-rest';
 import { RestService } from '../rest/rest.service';
 import { CertificateGuard } from '@thefirstspine/certificate-nest';
 import { mergeLootsInItems } from '../utils/game.utils';
-import { ArenaRoomsService } from '../rooms/arena-rooms.service';
 import { MessagingService } from '@thefirstspine/messaging-nest';
 
 /**
@@ -19,7 +18,6 @@ export class WizardController {
   constructor(
     private readonly wizardService: WizardService,
     private readonly restService: RestService,
-    private readonly roomsService: ArenaRoomsService,
     private readonly messagingService: MessagingService,
   ) {}
 
@@ -115,14 +113,6 @@ export class WizardController {
       }
       // Save the quests
       wizard.quests = body.quests;
-    }
-
-    // publicRoom field
-    if (body.publicRoom) {
-      await this.roomsService.leavePublicRoom(wizard.id, 'fr');
-      await this.roomsService.leavePublicRoom(wizard.id, 'en');
-      wizard.publicRoom = body.publicRoom;
-      await this.roomsService.joinPublicRoom(wizard.id, body.publicRoom);
     }
 
     // Save the wizard on storage
