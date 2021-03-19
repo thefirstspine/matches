@@ -16,6 +16,12 @@ export class ArenaRoomsService {
       private readonly roomsService: RoomsService,
       private readonly wizardService: WizardService,
   ) {
+    this.roomsService.createRoom(
+      ArenaRoomsService.SUBJECT,
+      {
+        name: 'realm-' + process.env.REALM,
+        senders: [],
+      });
   }
 
   /**
