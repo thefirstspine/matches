@@ -147,6 +147,8 @@ export class QueueService {
         {theme: Themes.DEAD_FOREST, modifiers: [Modifiers.GOLDEN_GALLEONS, Modifiers.FROZEN_STATUES]},
       ][weekNumber],
       'absurdal-2021': {theme: Themes.RUINED_LABORATORY, modifiers: [Modifiers.MUTATIONS]},
+      'great-ancient-2021': {theme: Themes.SPINE_S_CAVE, modifiers: [Modifiers.GREAT_ANCIENTS_EGGS]},
+      'treasure-2021': {theme: Themes.DEAD_FOREST, modifiers: [Modifiers.GOLDEN_GALLEONS]},
     };
 
     const fixedDailyData: Array<{theme: string, modifier: string}> = [
@@ -276,6 +278,7 @@ export class QueueService {
     });
 
     // Send message
+    // This message is deprecated
     this.messagingService.sendMessage(
       '*',
       'TheFirstSpine:queue',
@@ -285,6 +288,10 @@ export class QueueService {
         queue: queue.users.length,
       },
     );
+    this.messagingService.sendMessage(
+      '*',
+      `TheFirstSpine:queue:${key}:joined`,
+      queue);
 
     return queue;
   }
@@ -339,6 +346,12 @@ export class QueueService {
     if (!queue) {
       throw new Error('Queue instance not available. Check the key or retry in a few minutes.');
     }
+
+    // Send message
+    this.messagingService.sendMessage(
+      '*',
+      `TheFirstSpine:queue:${key}:joined`,
+      queue);
 
     // Remove the user from the queue
     queue.users = queue.users.filter(u => u.user !== user);
@@ -413,8 +426,10 @@ export class QueueService {
         }
         return aScore > bScore ? 1 : -1;
       });
+
       // Extract the users needed from the queue
       const queueUsersNeeded: IGameUser[] = queueUsers.splice(0, gameType.players.length);
+
       // Create a game
       const game: IGameInstance = await this.gameService.createGameInstance(
         gameType.id,
@@ -422,14 +437,25 @@ export class QueueService {
         queueInstance.modifiers ? queueInstance.modifiers : [],
         queueInstance.theme ? queueInstance.theme : Themes.user[randBetween(0, Themes.user.length - 1)],
         queueInstance.expirationTimeModifier ? queueInstance.expirationTimeModifier : 1);
+
       // Make them quit from the queue
       queueUsersNeeded.forEach((queueUser: IGameUser) => this.quit(queueInstance.key, queueUser.user));
+
       // Send message
+      // This message is deprecated
       this.messagingService.sendMessage(
         queueUsersNeeded.map(e => e.user),
         'TheFirstSpine:game',
         {
           event: 'created',
+          gameType,
+          gameId: game.id,
+        },
+      );
+      this.messagingService.sendMessage(
+        queueUsersNeeded.map(e => e.user),
+        'TheFirstSpine:game:created',
+        {
           gameType,
           gameId: game.id,
         },

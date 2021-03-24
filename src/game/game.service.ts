@@ -154,6 +154,7 @@ export class GameService {
         current: [],
         previous: [],
       },
+      realm: process.env.REALM,
     };
 
     // Create the first action
@@ -233,7 +234,8 @@ export class GameService {
 
   async loadPendingGameInstances() {
     // Get the current game instances at launch
-    const instances: IGameInstance[] = await this.gameInstanceModel.find({status: 'active'}).exec();
+    const realm: string|undefined = process.env.REALM;
+    const instances: IGameInstance[] = await this.gameInstanceModel.find({status: 'active', realm}).exec();
     this.gameInstances = instances.reduce((acc: {[id: number]: IGameInstance}, instance: IGameInstance) => {
       acc[instance.id] = instance;
       return acc;

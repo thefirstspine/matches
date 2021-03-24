@@ -83,7 +83,6 @@ export class WizardService {
       avatar: 'applicant',
       title: 'wizzard',
       friends: [],
-      publicRoom: null,
       quests: [],
       questsProgress: [],
     };

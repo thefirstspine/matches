@@ -19,13 +19,7 @@ export class ArenaRoomsService {
     this.roomsService.createRoom(
       ArenaRoomsService.SUBJECT,
       {
-        name: 'general-fr',
-        senders: [],
-      });
-    this.roomsService.createRoom(
-      ArenaRoomsService.SUBJECT,
-      {
-        name: 'general-en',
+        name: 'realm-' + process.env.REALM,
         senders: [],
       });
   }

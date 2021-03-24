@@ -37,9 +37,6 @@ export class Wizard implements IWizard {
   friends: number[];
 
   @Prop()
-  publicRoom: null | 'fr' | 'en';
-
-  @Prop()
   quests: string[];
 
   @Prop()

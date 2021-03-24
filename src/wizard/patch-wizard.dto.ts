@@ -17,10 +17,6 @@ export class PatchWizardDto {
   friends?: number[];
 
   @IsOptional()
-  @IsIn(['fr', 'en'])
-  publicRoom?: 'fr'|'en';
-
-  @IsOptional()
   @IsString({each: true})
   quests?: string[];
 }

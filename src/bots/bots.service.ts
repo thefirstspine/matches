@@ -17,6 +17,7 @@ export class BotsService {
           type: 'arena',
           metadata: {
             key,
+            realm: process.env.REALM,
           },
         }),
         headers: {

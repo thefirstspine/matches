@@ -37,6 +37,9 @@ export class GameInstance implements IGameInstance {
   result?: IGameResult[];
 
   @Prop()
+  realm?: string;
+
+  @Prop()
   expirationTimeModifier?: number;
 }
 
