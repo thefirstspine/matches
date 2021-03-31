@@ -1,38 +1,14 @@
-Install & run arena service
-===
-## Installation
-```
-npm install
-```
-## Configuring
-The service needs a dotenv file to run. This dotenv file will be loaded in the environment variables. Here’s what the app needs:
+# Install & run arena service
 
-Environement key | Summary | Required by
---- | --- | ---
-ARENA_URL | Arena net service URL | App
-BOTS_PUBLIC_KEY | Public key to interact with bots net service | App
-BOTS_URL | Bots net service URL | App
-AUTH_URL | Auth net service URL | @thefirstspine/auth-nest
-MESSAGING_PUBLIC_KEY | Public key to interact with messaging net service | @thefirstspine/messaging-nest
-MESSAGING_URL | Messaging net service URL | @thefirstspine/messaging-nest
-PRIVATE_KEY | Private key to validate protected incoming requests | @thefirstspine/certificate-authority
-PORT | The port where to serve the app | App
-REST_URL | Rest net service URL | App
-ROOMS_PUBLIC_KEY | Public key to interact with rooms net service | App
-ROOMS_URL | Rooms net service URL | App
-SHOP_PUBLIC_KEY | Public key to interact with shops net service | App
-SHOP_URL | Shop net service URL | App
-CALENDAR_URL | Calendar net service URL | App
-## Running the app
-```
-npm run start
-```
-## Build & run for production
-```
-npm run build
-node dist/main.js
-```
-## Test
-```
-npm run test:game
-```
+<div id="main-content" class="wiki-content group">
+                    <h2 id="Install&amp;runarenaservice-Installation">Installation</h2><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
+<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">npm install</pre>
+</div></div><h2 id="Install&amp;runarenaservice-Configuring">Configuring</h2><p>The service needs a dotenv file to run. This dotenv file will be loaded in the environment variables. Here’s what the app needs:</p><div class="table-wrap"><table data-layout="default" class="confluenceTable"><colgroup><col style="width: 226.67px;"><col style="width: 226.67px;"><col style="width: 226.67px;"></colgroup><tbody><tr><th class="confluenceTh"><p><strong>Environement key</strong></p></th><th class="confluenceTh"><p><strong>Summary</strong></p></th><th class="confluenceTh"><p><strong>Required by</strong></p></th></tr><tr><td class="confluenceTd"><p><code>ARENA_URL</code></p></td><td class="confluenceTd"><p>Arena net service URL</p></td><td class="confluenceTd"><p>App</p></td></tr><tr><td class="confluenceTd"><p><code>BOTS_PUBLIC_KEY</code></p></td><td class="confluenceTd"><p>Public key to interact with bots net service</p></td><td class="confluenceTd"><p>App</p></td></tr><tr><td class="confluenceTd"><p><code>BOTS_URL</code></p></td><td class="confluenceTd"><p>Bots net service URL</p></td><td class="confluenceTd"><p>App</p></td></tr><tr><td class="confluenceTd"><p><code>AUTH_URL</code></p></td><td class="confluenceTd"><p>Auth net service URL</p></td><td class="confluenceTd"><p><code>@thefirstspine/auth-nest</code></p></td></tr><tr><td class="confluenceTd"><p><code>MESSAGING_PUBLIC_KEY</code></p></td><td class="confluenceTd"><p>Public key to interact with messaging net service</p></td><td class="confluenceTd"><p><code>@thefirstspine/messaging-nest</code></p></td></tr><tr><td class="confluenceTd"><p><code>MESSAGING_URL</code></p></td><td class="confluenceTd"><p>Messaging net service URL</p></td><td class="confluenceTd"><p><code>@thefirstspine/messaging-nest</code></p></td></tr><tr><td class="confluenceTd"><p><code>PRIVATE_KEY</code></p></td><td class="confluenceTd"><p>Private key to validate protected incoming requests</p></td><td class="confluenceTd"><p><code>@thefirstspine/certificate-authority</code></p></td></tr><tr><td class="confluenceTd"><p><code>PORT</code></p></td><td class="confluenceTd"><p>The port where to serve the app</p></td><td class="confluenceTd"><p>App</p></td></tr><tr><td class="confluenceTd"><p><code>REST_URL</code></p></td><td class="confluenceTd"><p>Rest net service URL</p></td><td class="confluenceTd"><p>App</p></td></tr><tr><td class="confluenceTd"><p><code>ROOMS_PUBLIC_KEY</code></p></td><td class="confluenceTd"><p>Public key to interact with rooms net service</p></td><td class="confluenceTd"><p>App</p></td></tr><tr><td class="confluenceTd"><p><code>ROOMS_URL</code></p></td><td class="confluenceTd"><p>Rooms net service URL</p></td><td class="confluenceTd"><p>App</p></td></tr><tr><td class="confluenceTd"><p><code>SHOP_PUBLIC_KEY</code></p></td><td class="confluenceTd"><p>Public key to interact with shops net service</p></td><td class="confluenceTd"><p>App</p></td></tr><tr><td class="confluenceTd"><p><code>SHOP_URL</code></p></td><td class="confluenceTd"><p>Shop net service URL</p></td><td class="confluenceTd"><p>App</p></td></tr><tr><td class="confluenceTd"><p><code>CALENDAR_URL</code></p></td><td class="confluenceTd"><p>Calendar net service URL</p></td><td class="confluenceTd"><p>App</p></td></tr></tbody></table></div><h2 id="Install&amp;runarenaservice-Runningtheapp">Running the app</h2><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
+<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">npm run start</pre>
+</div></div><h2 id="Install&amp;runarenaservice-Build&amp;runforproduction">Build &amp; run for production</h2><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
+<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">npm run build
+node dist/main.js</pre>
+</div></div><h2 id="Install&amp;runarenaservice-Test">Test</h2><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
+<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">npm run test:game</pre>
+</div></div><p>
+                    </p></div>
