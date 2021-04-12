@@ -331,14 +331,6 @@ export class GameService {
           await this.gameWorkerService.getWorker(pendingGameAction.type).delete(gameInstance, pendingGameAction);
           // Dispatch event after each action
           this.gameHookService.dispatch(gameInstance, `action:deleted:${pendingGameAction.type}`, {user: pendingGameAction.user});
-          // Refresh the other ones
-          const refreshPromises: Array<Promise<void>> = gameInstance.actions.current.map(async (action: IGameAction<IGameInteraction>) => {
-              this.gameWorkerService.getWorker(action.type).refresh(gameInstance, action);
-              // Dispatch event after each action
-              this.gameHookService.dispatch(gameInstance, `action:refreshed:${action.type}`, {user: action.user, action});
-              return;
-          });
-          await Promise.all(refreshPromises);
         } else {
           // Something's wrong, delete the response
           pendingGameAction.response = undefined;
@@ -365,6 +357,15 @@ export class GameService {
 
     // Wait for pending promises
     await Promise.all(promises);
+
+    // Refresh the pending actions
+    const refreshPromises: Array<Promise<void>> = gameInstance.actions.current.map(async (action: IGameAction<IGameInteraction>) => {
+        this.gameWorkerService.getWorker(action.type).refresh(gameInstance, action);
+        // Dispatch event after each action
+        this.gameHookService.dispatch(gameInstance, `action:refreshed:${action.type}`, {user: action.user, action});
+        return;
+    });
+    await Promise.all(refreshPromises);
 
     // Exit method when no changes
     if (JSON.stringify(gameInstance) === jsonHash) {
