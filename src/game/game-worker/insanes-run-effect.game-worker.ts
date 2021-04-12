@@ -59,8 +59,11 @@ export class InsanesRunEffectGameWorker implements IGameWorker, IHasGameHookServ
    * @inheritdoc
    */
   public async refresh(gameInstance: IGameInstance, gameAction: IGameAction<IInteractionChoseCardOnBoard>): Promise<void> {
-    gameAction.interaction.params.boardCoords =
-      this.getBoardCoords(gameInstance, gameAction.user);
+    gameAction.interaction.params.boardCoords = this.getBoardCoords(gameInstance, gameAction.user);
+    if (gameAction.interaction.params.boardCoords.length === 0) {
+      // We do not have available action, we should destroy this action
+      return this.delete(gameInstance, gameAction);
+    }
   }
 
   /**
