@@ -273,8 +273,8 @@ export class ConfrontsGameWorker implements IGameWorker, IHasGameHookService, IH
    */
   public async refresh(gameInstance: IGameInstance, gameAction: IGameAction<IInteractionSelectCoupleOnBoard>): Promise<void> {
     gameAction.interaction.params.possibilities = this.getPossibilities(gameInstance, gameAction.user);
-    this.delete(gameInstance, gameAction);
     if (gameAction.interaction.params.possibilities.length === 0) {
+      this.delete(gameInstance, gameAction);
       // No possibility, delete this action and ends the turn
       const endTurnAction: IGameAction<any> = await this.gameWorkerService.getWorker('end-turn').create(gameInstance, {user: gameAction.user});
       gameInstance.actions.current.push(endTurnAction);
