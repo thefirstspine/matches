@@ -61,6 +61,10 @@ export class VolkaEffectGameWorker implements IGameWorker, IHasGameHookService, 
    */
   public async refresh(gameInstance: IGameInstance, gameAction: IGameAction<IInteractionChoseSquareOnBoard>): Promise<void> {
     gameAction.interaction.params.boardCoords = this.getBoardCoords(gameInstance, gameAction.user);
+    if (gameAction.interaction.params.boardCoords.length === 0) {
+      // We do not have available action, we should destroy this action
+      return this.delete(gameInstance, gameAction);
+    }
   }
 
   /**

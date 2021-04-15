@@ -60,8 +60,11 @@ export class MonstrousPortalEffectGameWorker implements IGameWorker, IHasGameHoo
    * @inheritdoc
    */
   public async refresh(gameInstance: IGameInstance, gameAction: IGameAction<IInteractionPutCardOnBoard>): Promise<void> {
-    gameAction.interaction.params.handIndexes =
-      this.getHandIndexes(gameInstance, gameAction.user);
+    gameAction.interaction.params.handIndexes = this.getHandIndexes(gameInstance, gameAction.user);
+    if (gameAction.interaction.params.boardCoords.length === 0) {
+      // We do not have available action, we should destroy this action
+      return this.delete(gameInstance, gameAction);
+    }
   }
 
   /**
