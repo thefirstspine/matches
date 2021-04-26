@@ -156,7 +156,7 @@ export class ConfrontsGameWorker implements IGameWorker, IHasGameHookService, IH
     let isInConfront = true;
     for (let i = 0; i < 50 && i < gameInstance.actions.previous.length; i ++) {
       const prevAction = gameInstance.actions.previous[gameInstance.actions.previous.length - (i + 1)];
-      if (prevAction.type === this.type && isInConfront) {
+      if (prevAction.type !== 'start-confronts' && isInConfront) {
         alreadyConfront.push(prevAction.response.boardCoordsFrom);
       } else {
         isInConfront = false;
@@ -277,7 +277,7 @@ export class ConfrontsGameWorker implements IGameWorker, IHasGameHookService, IH
     let isInConfront = true;
     for (let i = 0; i < 50 && i < gameInstance.actions.previous.length; i ++) {
       const prevAction = gameInstance.actions.previous[gameInstance.actions.previous.length - (i + 1)];
-      if (prevAction.type === this.type && isInConfront) {
+      if (prevAction.type !== 'start-confronts' && isInConfront) {
         alreadyConfront.push(prevAction.response.boardCoordsFrom);
       } else {
         isInConfront = false;
