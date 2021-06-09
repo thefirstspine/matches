@@ -363,7 +363,10 @@ export class QueueService {
    * Spawn bots on all game types
    */
   async processBotSpawns() {
-    return Promise.all(this.queueInstances.map(this.processBotSpawnsFor.bind(this)));
+    return Promise.all(
+      this.queueInstances
+        .filter((q) => ['immediate', 'daily', 'cycle'].includes(q.key))
+        .map(this.processBotSpawnsFor.bind(this)));
   }
 
   /**
