@@ -150,6 +150,7 @@ export class QueueService {
       'great-ancient-2021': {theme: Themes.SPINE_S_CAVE, modifiers: [Modifiers.GREAT_ANCIENTS_EGGS]},
       'treasure-2021': {theme: Themes.DEAD_FOREST, modifiers: [Modifiers.GOLDEN_GALLEONS]},
       'souvenirs-2021': {theme: Themes.FORGOTTEN_CEMETERY, modifiers: [Modifiers.SOUVENIRS_FROM_YOUR_ENEMY]},
+      'fire-2021': {theme: Themes.SPINE_S_CAVE, modifiers: []},
     };
 
     const fixedDailyData: Array<{theme: string, modifier: string}> = [
