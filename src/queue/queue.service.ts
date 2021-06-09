@@ -151,6 +151,7 @@ export class QueueService {
       'treasure-2021': {theme: Themes.DEAD_FOREST, modifiers: [Modifiers.GOLDEN_GALLEONS]},
       'souvenirs-2021': {theme: Themes.FORGOTTEN_CEMETERY, modifiers: [Modifiers.SOUVENIRS_FROM_YOUR_ENEMY]},
       'fire-2021': {theme: Themes.SPINE_S_CAVE, modifiers: []},
+      'harvest-2021': {theme: Themes.WASTED_FIELDS, modifiers: [Modifiers.HARVESTING_SOULS]},
     };
 
     const fixedDailyData: Array<{theme: string, modifier: string}> = [
