@@ -150,6 +150,8 @@ export class QueueService {
       'great-ancient-2021': {theme: Themes.SPINE_S_CAVE, modifiers: [Modifiers.GREAT_ANCIENTS_EGGS]},
       'treasure-2021': {theme: Themes.DEAD_FOREST, modifiers: [Modifiers.GOLDEN_GALLEONS]},
       'souvenirs-2021': {theme: Themes.FORGOTTEN_CEMETERY, modifiers: [Modifiers.SOUVENIRS_FROM_YOUR_ENEMY]},
+      'fire-2021': {theme: Themes.SPINE_S_CAVE, modifiers: []},
+      'harvest-2021': {theme: Themes.WASTED_FIELDS, modifiers: [Modifiers.HARVESTING_SOULS]},
     };
 
     const fixedDailyData: Array<{theme: string, modifier: string}> = [
@@ -363,7 +365,10 @@ export class QueueService {
    * Spawn bots on all game types
    */
   async processBotSpawns() {
-    return Promise.all(this.queueInstances.map(this.processBotSpawnsFor.bind(this)));
+    return Promise.all(
+      this.queueInstances
+        .filter((q) => ['immediate', 'daily', 'cycle'].includes(q.key))
+        .map(this.processBotSpawnsFor.bind(this)));
   }
 
   /**

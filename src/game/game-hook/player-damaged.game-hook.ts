@@ -175,11 +175,7 @@ export class PlayerDamagedGameHook implements IGameHook {
       gameInstance.modifiers.includes(Modifiers.GREAT_ANCIENTS_EGGS)
     ) {
       loot.push({name: 'great-ancient-mark', num: 1});
-      if (victory) {
-        loot.push({name: 'holo-great-ancient-egg', num: 1}, {name: 'premium-great-ancient-egg', num: 1});
-      } else {
-        loot.push({name: 'holo-great-ancient-egg', num: 1});
-      }
+      loot.push({name: 'holo-great-ancient-egg', num: 1});
     }
 
     if (
@@ -187,25 +183,12 @@ export class PlayerDamagedGameHook implements IGameHook {
       gameInstance.modifiers.includes(Modifiers.SOUVENIRS_FROM_YOUR_ENEMY)
     ) {
       loot.push({name: 'souvenirs-mark', num: 1});
-      if (victory) {
-        loot.push(
-          {name: 'holo-conjurer-souvenir', num: 1},
-          {name: 'holo-summoner-souvenir', num: 1},
-          {name: 'holo-sorcerer-souvenir', num: 1},
-          {name: 'holo-hunter-souvenir', num: 1},
-        );
-      } else {
-        loot.push(
-          {name: 'holo-conjurer-souvenir', num: 1},
-          {name: 'premium-conjurer-souvenir', num: 1},
-          {name: 'holo-summoner-souvenir', num: 1},
-          {name: 'premium-summoner-souvenir', num: 1},
-          {name: 'holo-sorcerer-souvenir', num: 1},
-          {name: 'premium-sorcerer-souvenir', num: 1},
-          {name: 'holo-hunter-souvenir', num: 1},
-          {name: 'premium-hunter-souvenir', num: 1},
-        );
-      }
+      loot.push(
+        {name: 'holo-conjurer-souvenir', num: 1},
+        {name: 'holo-summoner-souvenir', num: 1},
+        {name: 'holo-sorcerer-souvenir', num: 1},
+        {name: 'holo-hunter-souvenir', num: 1},
+      );
     }
 
     if (
@@ -213,11 +196,7 @@ export class PlayerDamagedGameHook implements IGameHook {
       gameInstance.modifiers.includes(Modifiers.GOLDEN_GALLEONS)
     ) {
       loot.push({name: 'treasure-mark', num: 1});
-      if (victory) {
-        loot.push({name: 'holo-golden-galleon', num: 1}, {name: 'premium-golden-galleon', num: 1});
-      } else {
-        loot.push({name: 'holo-golden-galleon', num: 1});
-      }
+      loot.push({name: 'holo-golden-galleon', num: 1});
     }
 
     if (
@@ -225,11 +204,7 @@ export class PlayerDamagedGameHook implements IGameHook {
       gameInstance.modifiers.includes(Modifiers.ANNIHILATION_MATTS)
     ) {
       loot.push({name: 'souls-mark', num: 1});
-      if (victory) {
-        loot.push({name: 'holo-annihilation-matt', num: 1}, {name: 'premium-annihilation-matt', num: 1});
-      } else {
-        loot.push({name: 'holo-annihilation-matt', num: 1});
-      }
+      loot.push({name: 'holo-annihilation-matt', num: 1});
     }
 
     if (
@@ -237,11 +212,7 @@ export class PlayerDamagedGameHook implements IGameHook {
       gameInstance.modifiers.includes(Modifiers.HARVESTING_SOULS)
     ) {
       loot.push({name: 'harvester-mark', num: 1});
-      if (victory) {
-        loot.push({name: 'holo-blood-strength', num: 1}, {name: 'premium-blood-strength', num: 1});
-      } else {
-        loot.push({name: 'holo-blood-strength', num: 1});
-      }
+      loot.push({name: 'holo-blood-strength', num: 1});
     }
 
     if (
@@ -249,17 +220,10 @@ export class PlayerDamagedGameHook implements IGameHook {
       gameInstance.modifiers.includes(Modifiers.FROZEN_STATUES)
     ) {
       loot.push({name: 'snow-mark', num: 1});
-      if (victory) {
-        loot.push({name: 'holo-ice-statue', num: 1}, {name: 'premium-ice-statue', num: 1});
-        loot.push({name: 'holo-frozen-fox', num: 1}, {name: 'premium-frozen-fox', num: 1});
-        loot.push({name: 'holo-frozen-viper', num: 1}, {name: 'premium-frozen-viper', num: 1});
-        loot.push({name: 'holo-frozen-banshee', num: 1}, {name: 'premium-frozen-banshee', num: 1});
-      } else {
-        loot.push({name: 'holo-ice-statue', num: 1});
-        loot.push({name: 'holo-frozen-fox', num: 1});
-        loot.push({name: 'holo-frozen-viper', num: 1});
-        loot.push({name: 'holo-frozen-banshee', num: 1});
-      }
+      loot.push({name: 'holo-ice-statue', num: 1});
+      loot.push({name: 'holo-frozen-fox', num: 1});
+      loot.push({name: 'holo-frozen-viper', num: 1});
+      loot.push({name: 'holo-frozen-banshee', num: 1});
     }
 
     if (
@@ -267,17 +231,10 @@ export class PlayerDamagedGameHook implements IGameHook {
       gameInstance.modifiers.includes(Modifiers.MUTATIONS)
     ) {
       loot.push({name: 'mutation-mark', num: 1});
-      if (victory) {
-        loot.push({name: 'holo-mutate-fox', num: 1}, {name: 'premium-mutate-fox', num: 1});
-        loot.push({name: 'holo-mutate-banshee', num: 1}, {name: 'premium-mutate-banshee', num: 1});
-        loot.push({name: 'holo-mutate-tower', num: 1}, {name: 'premium-mutate-tower', num: 1});
-        loot.push({name: 'holo-mutate-barbed-wires', num: 1}, {name: 'premium-mutate-barbed-wires', num: 1});
-      } else {
-        loot.push({name: 'holo-mutate-fox', num: 1});
-        loot.push({name: 'holo-mutate-banshee', num: 1});
-        loot.push({name: 'holo-mutate-tower', num: 1});
-        loot.push({name: 'holo-mutate-barbed-wires', num: 1});
-      }
+      loot.push({name: 'holo-mutate-fox', num: 1});
+      loot.push({name: 'holo-mutate-banshee', num: 1});
+      loot.push({name: 'holo-mutate-tower', num: 1});
+      loot.push({name: 'holo-mutate-barbed-wires', num: 1});
     }
 
     // Register data in wizard's history
