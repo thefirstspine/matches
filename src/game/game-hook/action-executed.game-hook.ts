@@ -71,6 +71,12 @@ export class ActionExecutedGameHook implements IGameHook {
 
     // Main loop for cards on board
     cardsOnBoard.forEach((gameCard: IGameCard) => {
+      if (!gameCard.currentStats) {
+        // There is no stat in this game card
+        // No stat on board means a special square that has no effect in this loop
+        return;
+      }
+
       // Increase jester's strength
       if (gameCard.card.id === 'jester') {
         gameCard.currentStats.bottom.strength += jesters * 2;
