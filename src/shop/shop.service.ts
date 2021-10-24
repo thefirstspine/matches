@@ -149,14 +149,15 @@ export class ShopService {
     }
 
     // Call the shop endpoint
+    const domain = (process.env.ARENA_REALMS_URL).replace('{realm}', process.env.REALM);
     const body = {
       item: {
         name: 'Achat depuis Arena',
         description: 'Achat depuis Arena',
         price: purchase.price[0].num * 100,
       },
-      successUrl: `${process.env.ARENA_URL}/shop/v/success`,
-      cancelUrl: `${process.env.ARENA_URL}/shop/v/cancel`,
+      successUrl: `${domain}/shop/v/success`,
+      cancelUrl: `${domain}/shop/v/cancel`,
     };
     this.logsService.info('Send message to shop service', body);
     const result: Response = await fetch(

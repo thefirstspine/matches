@@ -95,7 +95,8 @@ export class ShopController {
         user: request.user,
         ...item,
       });
-      const url = `${process.env.ARENA_URL}/shop/v/go/${purchase.timestamp}`;
+      const domain = (process.env.ARENA_REALMS_URL).replace('{realm}', process.env.REALM);
+      const url = `${domain}/shop/v/go/${purchase.timestamp}`;
       return {
         status: true,
         url,
