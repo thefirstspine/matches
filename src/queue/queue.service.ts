@@ -152,6 +152,16 @@ export class QueueService {
       'souvenirs-2021': {theme: Themes.FORGOTTEN_CEMETERY, modifiers: [Modifiers.SOUVENIRS_FROM_YOUR_ENEMY]},
       'fire-2021': {theme: Themes.SPINE_S_CAVE, modifiers: []},
       'harvest-2021': {theme: Themes.WASTED_FIELDS, modifiers: [Modifiers.HARVESTING_SOULS]},
+      'crowned-souls-2021': {theme: Themes.SACRIFICE_CHURCH, modifiers: [Modifiers.ANNIHILATION_MATTS]},
+      'snow-man-2021': {theme: Themes.SNOW_MAN_LAIR, modifiers: [Modifiers.FROZEN_STATUES]},
+      'renewal-2022': [
+        {theme: Themes.SPINE_S_CAVE, modifiers: [Modifiers.GREAT_ANCIENTS_EGGS, Modifiers.HARVESTING_SOULS]},
+        {theme: Themes.FORGOTTEN_CEMETERY, modifiers: [Modifiers.SOUVENIRS_FROM_YOUR_ENEMY, Modifiers.ANNIHILATION_MATTS]},
+        {theme: Themes.SNOW_MAN_LAIR, modifiers: [Modifiers.GOLDEN_GALLEONS, Modifiers.FROZEN_STATUES]},
+        {theme: Themes.WASTED_FIELDS, modifiers: [Modifiers.GREAT_ANCIENTS_EGGS, Modifiers.HARVESTING_SOULS]},
+        {theme: Themes.SACRIFICE_CHURCH, modifiers: [Modifiers.SOUVENIRS_FROM_YOUR_ENEMY, Modifiers.ANNIHILATION_MATTS]},
+        {theme: Themes.DEAD_FOREST, modifiers: [Modifiers.GOLDEN_GALLEONS, Modifiers.FROZEN_STATUES]},
+      ][weekNumber],
     };
 
     const fixedDailyData: Array<{theme: string, modifier: string}> = [
