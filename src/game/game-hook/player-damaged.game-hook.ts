@@ -237,6 +237,19 @@ export class PlayerDamagedGameHook implements IGameHook {
       loot.push({name: 'holo-mutate-barbed-wires', num: 1});
     }
 
+    if (
+      gameInstance.modifiers.includes(Modifiers.CYCLE) &&
+      gameInstance.modifiers.includes(Modifiers.DRIFTER)
+    ) {
+      loot.push({name: 'drifter-mark', num: 1});
+      loot.push({name: 'holo-mara-fox', num: 1});
+      loot.push({name: 'holo-mara-banshee', num: 1});
+      loot.push({name: 'holo-argento-barbed-wires', num: 1});
+      loot.push({name: 'holo-argento-tower', num: 1});
+      loot.push({name: 'holo-insane-putrefaction', num: 1});
+      loot.push({name: 'holo-insane-ruin', num: 1});
+    }
+
     // Register data in wizard's history
     const historyItem: IWizardHistoryItem = {
       gameId: gameInstance.id,
