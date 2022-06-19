@@ -145,6 +145,130 @@ export class GameCreatedGameHook implements IGameHook {
       gameInstance.cards = shuffle(gameInstance.cards);
     }
 
+    if (gameInstance.modifiers.includes(Modifiers.DRIFTER)) {
+      // Get all the cards
+      const maraFoxCard: ICard = await this.restService.card('mara-fox');
+      const maraBansheeCard: ICard = await this.restService.card('mara-banshee');
+      const argentoBarbedWiresCard: ICard = await this.restService.card('argento-barbed-wires');
+      const argentoTowerCard: ICard = await this.restService.card('argento-tower');
+      const insanePutrefactionCard: ICard = await this.restService.card('insane-putrefaction');
+      const insaneRuinCard: ICard = await this.restService.card('insane-ruin');
+      gameInstance.users.forEach((u: IGameUser) => {
+        if (u.destiny === 'summoner') {
+          for (let i = 0; i < 3; i ++) {
+            gameInstance.cards.push({
+              card: maraFoxCard,
+              id: `${gameInstance.id}_${randBetween(0, Number.MAX_SAFE_INTEGER)}`,
+              location: 'deck',
+              user: u.user,
+              metadata: {},
+              currentStats: JSON.parse(JSON.stringify(maraFoxCard.stats)),
+            });
+            gameInstance.cards.push({
+              card: maraBansheeCard,
+              id: `${gameInstance.id}_${randBetween(0, Number.MAX_SAFE_INTEGER)}`,
+              location: 'deck',
+              user: u.user,
+              metadata: {},
+              currentStats: JSON.parse(JSON.stringify(maraBansheeCard.stats)),
+            });
+          }
+        }
+        if (u.destiny === 'conjurer') {
+          for (let i = 0; i < 3; i ++) {
+            gameInstance.cards.push({
+              card: argentoBarbedWiresCard,
+              id: `${gameInstance.id}_${randBetween(0, Number.MAX_SAFE_INTEGER)}`,
+              location: 'deck',
+              user: u.user,
+              metadata: {},
+              currentStats: JSON.parse(JSON.stringify(argentoBarbedWiresCard.stats)),
+            });
+            gameInstance.cards.push({
+              card: argentoTowerCard,
+              id: `${gameInstance.id}_${randBetween(0, Number.MAX_SAFE_INTEGER)}`,
+              location: 'deck',
+              user: u.user,
+              metadata: {},
+              currentStats: JSON.parse(JSON.stringify(argentoTowerCard.stats)),
+            });
+          }
+        }
+        if (u.destiny === 'sorcerer') {
+          for (let i = 0; i < 3; i ++) {
+            gameInstance.cards.push({
+              card: insanePutrefactionCard,
+              id: `${gameInstance.id}_${randBetween(0, Number.MAX_SAFE_INTEGER)}`,
+              location: 'deck',
+              user: u.user,
+              metadata: {},
+              currentStats: undefined,
+            });
+            gameInstance.cards.push({
+              card: insaneRuinCard,
+              id: `${gameInstance.id}_${randBetween(0, Number.MAX_SAFE_INTEGER)}`,
+              location: 'deck',
+              user: u.user,
+              metadata: {},
+              currentStats: undefined,
+            });
+          }
+        }
+        if (u.destiny === 'hunter') {
+          gameInstance.cards.push({
+            card: insanePutrefactionCard,
+            id: `${gameInstance.id}_${randBetween(0, Number.MAX_SAFE_INTEGER)}`,
+            location: 'deck',
+            user: u.user,
+            metadata: {},
+            currentStats: undefined,
+          });
+          gameInstance.cards.push({
+            card: insaneRuinCard,
+            id: `${gameInstance.id}_${randBetween(0, Number.MAX_SAFE_INTEGER)}`,
+            location: 'deck',
+            user: u.user,
+            metadata: {},
+            currentStats: undefined,
+          });
+          gameInstance.cards.push({
+            card: argentoBarbedWiresCard,
+            id: `${gameInstance.id}_${randBetween(0, Number.MAX_SAFE_INTEGER)}`,
+            location: 'deck',
+            user: u.user,
+            metadata: {},
+            currentStats: JSON.parse(JSON.stringify(argentoBarbedWiresCard.stats)),
+          });
+          gameInstance.cards.push({
+            card: argentoTowerCard,
+            id: `${gameInstance.id}_${randBetween(0, Number.MAX_SAFE_INTEGER)}`,
+            location: 'deck',
+            user: u.user,
+            metadata: {},
+            currentStats: JSON.parse(JSON.stringify(argentoTowerCard.stats)),
+          });
+          gameInstance.cards.push({
+            card: maraFoxCard,
+            id: `${gameInstance.id}_${randBetween(0, Number.MAX_SAFE_INTEGER)}`,
+            location: 'deck',
+            user: u.user,
+            metadata: {},
+            currentStats: JSON.parse(JSON.stringify(maraFoxCard.stats)),
+          });
+          gameInstance.cards.push({
+            card: maraBansheeCard,
+            id: `${gameInstance.id}_${randBetween(0, Number.MAX_SAFE_INTEGER)}`,
+            location: 'deck',
+            user: u.user,
+            metadata: {},
+            currentStats: JSON.parse(JSON.stringify(maraBansheeCard.stats)),
+          });
+        }
+      });
+      // Shuffle the cards
+      gameInstance.cards = shuffle(gameInstance.cards);
+    }
+
     if (gameInstance.modifiers.includes(Modifiers.TRICK_OR_TREAT)) {
       // Get the "trick-or-treat" card
       const trickOrTreatCard: ICard = await this.restService.card('trick-or-treat');

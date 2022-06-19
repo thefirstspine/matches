@@ -162,6 +162,7 @@ export class QueueService {
         {theme: Themes.SACRIFICE_CHURCH, modifiers: [Modifiers.SOUVENIRS_FROM_YOUR_ENEMY, Modifiers.ANNIHILATION_MATTS]},
         {theme: Themes.DEAD_FOREST, modifiers: [Modifiers.GOLDEN_GALLEONS, Modifiers.FROZEN_STATUES]},
       ][weekNumber],
+      'drifter': {theme: Themes.DEAD_FOREST, modifiers: [Modifiers.DRIFTER]},
     };
 
     const fixedDailyData: Array<{theme: string, modifier: string}> = [

@@ -7,6 +7,7 @@ export class Modifiers {
   static readonly FROZEN_STATUES: string = 'frozen-statues';
   static readonly MUTATIONS: string = 'mutations';
   static readonly GOLDEN_GALLEONS: string = 'golden-galleons';
+  static readonly DRIFTER: string = 'drifter';
   static readonly TRICK_OR_TREAT: string = 'trick-or-treat';
   static readonly TRIPLE_SHARDS: string = 'triple-shards';
   static readonly IMMEDIATE: string = 'immediate';
@@ -23,6 +24,7 @@ export class Modifiers {
       Modifiers.MUTATIONS,
       Modifiers.GOLDEN_GALLEONS,
       Modifiers.TRICK_OR_TREAT,
+      Modifiers.DRIFTER,
       Modifiers.IMMEDIATE,
       Modifiers.DAILY,
       Modifiers.CYCLE,
