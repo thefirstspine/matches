@@ -52,6 +52,7 @@ import { SpellMutateFoxGameWorker } from './spell-mutate-fox.game-worker';
 import { SpellMutateBansheeGameWorker } from './spell-mutate-banshee.game-worker';
 import { SpellMutateBarbedWiresGameWorker } from './spell-mutate-barbers.game-worker';
 import { SpellMutateTowerGameWorker } from './spell-mutate-tower.game-worker';
+import { SpellInsaneRuinGameWorker } from './spell-insane-ruin.game-worker';
 
 /**
  * Main service that manages game workers. Each game worker is responsible of a game action type. This service
@@ -101,6 +102,7 @@ export class GameWorkerService extends BaseGameService<IGameWorker> {
     this.createInjectable(SpellPutrefactionGameWorker, injectedProps);
     this.createInjectable(SpellReconstructGameWorker, injectedProps);
     this.createInjectable(SpellRuinGameWorker, injectedProps);
+    this.createInjectable(SpellInsaneRuinGameWorker, injectedProps);
     this.createInjectable(SpellThunderGameWorker, injectedProps);
     this.createInjectable(StartConfrontsGameWorker, injectedProps);
     this.createInjectable(ThrowCardsGameWorker, injectedProps);
