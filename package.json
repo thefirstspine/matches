@@ -21,7 +21,7 @@
   },
   "dependencies": {
     "@nestjs/common": "^6.11.11",
-    "@nestjs/core": "^6.11.11",
+    "@nestjs/core": "^9.0.5",
     "@nestjs/mongoose": "^7.0.2",
     "@nestjs/platform-express": "^9.2.1",
     "@thefirstspine/auth": "^2.0.0",
