@@ -38,7 +38,7 @@ export class CardPlacedGameHook implements IGameHook {
         'play:creaturesOrArtifacts',
         1);
     }
-    if (params.gameCard.card?.stats?.effects?.includes('soul-of-a-sacrified-hunter')) {
+    if (params.gameCard.currentStats?.effects?.includes('soul-of-a-sacrified-hunter')) {
       let life: number = 0;
       let str: number = 0;
 

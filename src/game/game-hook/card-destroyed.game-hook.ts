@@ -84,7 +84,7 @@ export class CardDestroyedGameHook implements IGameHook {
       }
     }
 
-    if (params.gameCard?.card?.stats?.effects?.includes('insanes-run')) {
+    if (params.gameCard?.currentStats?.effects?.includes('insanes-run')) {
       // Create a new action
       const action: IGameAction<any> = await this.gameWorkerService.getWorker('insanes-run-effect')
         .create(gameInstance, {user: params.gameCard.user});
