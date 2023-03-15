@@ -13,7 +13,6 @@ import { SpellUsedGameHook } from './spell-used.game-hook';
 import { GameWorkerService } from '../game-worker/game-worker.service';
 import { CardDestroyedGameHook } from './card-destroyed.game-hook';
 import { ActionExecutedGameHook } from './action-executed.game-hook';
-import { MonstrousPortalDamagedGameHook } from './monstrous-portal-damaged.game-hook';
 import { VolkhaDestroyedGameHook } from './volkha-destroyed.game-hook';
 import { FpeCreatedGameHook } from './fpe/fpe-created.game-hook';
 import { GuardianDestroyedGameHook } from './guardian-destroyed.game-hook';
@@ -79,7 +78,6 @@ export class GameHookService extends BaseGameService<IGameHook> {
     this.subscribe('card:lifeChanged:damaged:sorcerer', this.createInjectable(PlayerDamagedGameHook, injectedProps));
     this.subscribe('card:lifeChanged:damaged:conjurer', this.createInjectable(PlayerDamagedGameHook, injectedProps));
     this.subscribe('card:lifeChanged:damaged:summoner', this.createInjectable(PlayerDamagedGameHook, injectedProps));
-    this.subscribe('card:lifeChanged:damaged:monstrous-portal', this.createInjectable(MonstrousPortalDamagedGameHook, injectedProps));
     this.subscribe('card:lifeChanged:healed', this.createInjectable(CardHealedGameHook, injectedProps));
     this.subscribe('card:spell:used', this.createInjectable(SpellUsedGameHook, injectedProps));
     this.subscribe('card:destroyed', this.createInjectable(CardDestroyedGameHook, injectedProps));
