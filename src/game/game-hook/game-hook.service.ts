@@ -12,9 +12,7 @@ import { PhaseActionsGameHook } from './phase-actions.game-hook';
 import { SpellUsedGameHook } from './spell-used.game-hook';
 import { GameWorkerService } from '../game-worker/game-worker.service';
 import { CardDestroyedGameHook } from './card-destroyed.game-hook';
-import { SoulOfASacrifiedHunterPlacesGameHook } from './soul-of-a-sacrified-hunter-placed.game-hook';
 import { ActionExecutedGameHook } from './action-executed.game-hook';
-import { InsanesRunDestroyedGameHook } from './insanes-run-destroyed.game-hook';
 import { MonstrousPortalDamagedGameHook } from './monstrous-portal-damaged.game-hook';
 import { VolkhaDestroyedGameHook } from './volkha-destroyed.game-hook';
 import { FpeCreatedGameHook } from './fpe/fpe-created.game-hook';
@@ -85,7 +83,6 @@ export class GameHookService extends BaseGameService<IGameHook> {
     this.subscribe('card:lifeChanged:healed', this.createInjectable(CardHealedGameHook, injectedProps));
     this.subscribe('card:spell:used', this.createInjectable(SpellUsedGameHook, injectedProps));
     this.subscribe('card:destroyed', this.createInjectable(CardDestroyedGameHook, injectedProps));
-    this.subscribe('card:destroyed:insanes-run', this.createInjectable(InsanesRunDestroyedGameHook, injectedProps));
     this.subscribe('card:destroyed:volkha', this.createInjectable(VolkhaDestroyedGameHook, injectedProps));
     this.subscribe('card:destroyed:guardian', this.createInjectable(GuardianDestroyedGameHook, injectedProps));
     this.subscribe('card:destroyed:caduceus', this.createInjectable(CaduceusDestroyedGameHook, injectedProps));
@@ -94,7 +91,6 @@ export class GameHookService extends BaseGameService<IGameHook> {
     this.subscribe('card:destroyed:annihilation-matt', this.createInjectable(AnnihilationMattDestroyedGameHook, injectedProps));
     this.subscribe('card:destroyed:ice-statue', this.createInjectable(IceStatueDestroyedGameHook, injectedProps));
     this.subscribe('card:placed', this.createInjectable(CardPlacedGameHook, injectedProps));
-    this.subscribe('card:placed:soul-of-a-sacrified-hunter', this.createInjectable(SoulOfASacrifiedHunterPlacesGameHook, injectedProps));
     this.subscribe('card:placed:caduceus', this.createInjectable(CaduceusPlacesGameHook, injectedProps));
     this.subscribe('card:placed:torturer', this.createInjectable(TorturerPlacesGameHook, injectedProps));
     this.subscribe('card:placed:chimera', this.createInjectable(ChimeraPlacesGameHook, injectedProps));

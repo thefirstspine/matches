@@ -1,12 +1,13 @@
 import { IGameHook } from './game-hook.interface';
 import { Injectable } from '@nestjs/common';
-import { IGameInstance, IGameCard } from '@thefirstspine/types-arena';
+import { IGameInstance, IGameCard, IGameAction } from '@thefirstspine/types-arena';
 import { GameHookService } from './game-hook.service';
 import { ICard } from '@thefirstspine/types-rest';
 import { RestService } from '../../rest/rest.service';
 import { randBetween } from '../../utils/maths.utils';
 import { Modifiers } from '../modifiers';
 import { QuestService } from '../../wizard/quest/quest.service';
+import { GameWorkerService } from '../game-worker/game-worker.service';
 
 /**
  * This subscriber is executed once a 'game:card:destroyed' event is thrown. It will look for dead
@@ -21,6 +22,7 @@ export class CardDestroyedGameHook implements IGameHook {
     private readonly gameHookService: GameHookService,
     private readonly restService: RestService,
     private readonly questService: QuestService,
+    private readonly gameWorkerService: GameWorkerService,
   ) {}
 
   async execute(gameInstance: IGameInstance, params: {gameCard: IGameCard, source: IGameCard}): Promise<boolean> {
@@ -79,6 +81,16 @@ export class CardDestroyedGameHook implements IGameHook {
             `card:lifeChanged:healed:${playerCard.card.id}`,
             {gameCard: playerCard, source: null, lifeChanged: 1});
         }
+      }
+    }
+
+    if (params.gameCard?.card?.stats?.effects?.includes('insanes-run')) {
+      // Create a new action
+      const action: IGameAction<any> = await this.gameWorkerService.getWorker('insanes-run-effect')
+        .create(gameInstance, {user: params.gameCard.user});
+      // Add it to the current actions
+      if (action.interaction.params.boardCoords.length > 0) {
+        gameInstance.actions.current.push(action);
       }
     }
 
