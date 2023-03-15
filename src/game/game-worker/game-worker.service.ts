@@ -1,7 +1,6 @@
 import { Injectable, forwardRef, Inject } from '@nestjs/common';
 import { ArenaRoomsService } from '../../rooms/arena-rooms.service';
 import { RestService } from '../../rest/rest.service';
-import { WizardService } from '../../wizard/wizard.service';
 import { IGameWorker } from './game-worker.interface';
 import { ThrowCardsGameWorker } from './throw-cards.game-worker';
 import { MoveCreatureGameWorker } from './move-creature.game-worker';
@@ -45,8 +44,6 @@ import { LogsService } from '@thefirstspine/logs-nest';
 import { MessagingService } from '@thefirstspine/messaging-nest';
 import { SpellReinforcementGameWorker } from './spell-reinforcement.game-worker';
 import { SpellTrickOrTreatGameWorker } from './spell-trick-or-treat.game-worker';
-import { QuestService } from '../../wizard/quest/quest.service';
-import { TriumphService } from '../../wizard/triumph/triumph.service';
 import { SpellBloodStrengthGameWorker } from './spell-blood-strength.game-worker';
 import { SpellMutateFoxGameWorker } from './spell-mutate-fox.game-worker';
 import { SpellMutateBansheeGameWorker } from './spell-mutate-banshee.game-worker';
@@ -67,11 +64,8 @@ export class GameWorkerService extends BaseGameService<IGameWorker> {
   constructor(
     private readonly messagingService: MessagingService,
     private readonly logsService: LogsService,
-    private readonly wizardService: WizardService,
     private readonly restService: RestService,
     private readonly arenaRoomsService: ArenaRoomsService,
-    private readonly questService: QuestService,
-    private readonly triumphService: TriumphService,
     @Inject(forwardRef(() => GameHookService)) private readonly gameHookService: GameHookService,
   ) {
     super();
@@ -86,12 +80,9 @@ export class GameWorkerService extends BaseGameService<IGameWorker> {
     // Defer injections for game workers constructions
     this.deferInjection(this.messagingService);
     this.deferInjection(this.logsService);
-    this.deferInjection(this.wizardService);
     this.deferInjection(this.restService);
     this.deferInjection(this.arenaRoomsService);
     this.deferInjection(this.gameHookService);
-    this.deferInjection(this.questService);
-    this.deferInjection(this.triumphService);
     this.deferInjection(this); // haya!
 
     // Create workers

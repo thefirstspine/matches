@@ -3,13 +3,11 @@ import { Injectable } from '@nestjs/common';
 import { IGameInstance, IGameCard, IGameAction, IWizard } from '@thefirstspine/types-arena';
 import { ICardCoords } from '@thefirstspine/types-rest';
 import { rotateCard } from '../../utils/game.utils';
-import { TriumphService } from '../../wizard/triumph/triumph.service';
 
 @Injectable()
 export class ActionExecutedGameHook implements IGameHook {
 
   constructor(
-    private readonly triumphService: TriumphService,
   ) {}
 
   async execute(gameInstance: IGameInstance, params: {user: number, action: IGameAction<any>}): Promise<boolean> {
@@ -50,10 +48,6 @@ export class ActionExecutedGameHook implements IGameHook {
 
     // Count the jesters
     const jesters: number = cardsOnBoard.filter((c) => c.card.id === 'jester').length;
-    if (jesters >= 5) {
-      // Unlock the "comic" title
-      await this.triumphService.unlockTriumph(params.user, 'comic');
-    }
 
     // Count the hammers & anvils
     const hammersPerUsers: {[key: number]: number} = {};

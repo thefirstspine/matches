@@ -6,7 +6,6 @@ import { GameHookService } from '../game-hook/game-hook.service';
 import { IHasGameHookService } from '../injections.interface';
 import { ArenaRoomsService } from '../../rooms/arena-rooms.service';
 import { LogsService } from '@thefirstspine/logs-nest';
-import { QuestService } from '../../wizard/quest/quest.service';
 
 /**
  * At the beggining of his turn, the player can throw to the discard one or more cards.
@@ -21,7 +20,6 @@ export class ThrowCardsGameWorker implements IGameWorker, IHasGameHookService {
   constructor(
     private readonly logsService: LogsService,
     private readonly arenaRoomsService: ArenaRoomsService,
-    private readonly questService: QuestService,
   ) {}
 
   /**
@@ -133,11 +131,6 @@ export class ThrowCardsGameWorker implements IGameWorker, IHasGameHookService {
         en: `Discard ${numCards} card${(numCards > 1 ? 's' : '')}`,
       },
       gameAction.user);
-
-    await this.questService.progressQuest(
-      gameAction.user,
-      `discard`,
-      responseHandIndexes.length);
 
     return true;
   }

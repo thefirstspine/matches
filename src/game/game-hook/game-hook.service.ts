@@ -1,7 +1,6 @@
 import { Injectable, Inject, forwardRef } from '@nestjs/common';
 import { ArenaRoomsService } from '../../rooms/arena-rooms.service';
 import { RestService } from '../../rest/rest.service';
-import { WizardService } from '../../wizard/wizard.service';
 import { BaseGameService } from '../base.game.service';
 import { IGameHook } from './game-hook.interface';
 import { IGameInstance } from '@thefirstspine/types-arena';
@@ -26,9 +25,7 @@ import { LogsService } from '@thefirstspine/logs-nest';
 import { MessagingService } from '@thefirstspine/messaging-nest';
 import { GameCreatedGameHook } from './game-created.game-hook';
 import { CardPlacedGameHook } from './card-placed.game-hook';
-import { QuestService } from '../../wizard/quest/quest.service';
 import { AnnihilationMattDestroyedGameHook } from './annihilation-matt-destroyed.game-hook';
-import { TriumphService } from '../../wizard/triumph/triumph.service';
 import { IceStatueDestroyedGameHook } from './ice-statue-destroyed.game-hook';
 
 /**
@@ -44,11 +41,8 @@ export class GameHookService extends BaseGameService<IGameHook> {
   constructor(
     private readonly messagingService: MessagingService,
     private readonly logsService: LogsService,
-    private readonly wizardService: WizardService,
     private readonly restService: RestService,
     private readonly arenaRoomsService: ArenaRoomsService,
-    private readonly questService: QuestService,
-    private readonly triumphService: TriumphService,
     @Inject(forwardRef(() => GameWorkerService)) public readonly gameWorkerService: GameWorkerService,
   ) {
     super();
@@ -63,11 +57,8 @@ export class GameHookService extends BaseGameService<IGameHook> {
     // Defer injections for game workers constructions
     this.deferInjection(this.messagingService);
     this.deferInjection(this.logsService);
-    this.deferInjection(this.wizardService);
     this.deferInjection(this.restService);
     this.deferInjection(this.arenaRoomsService);
-    this.deferInjection(this.questService);
-    this.deferInjection(this.triumphService);
     this.deferInjection(this); // haya!
 
     // Create hooks

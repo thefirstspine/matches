@@ -3,7 +3,6 @@ import { Injectable } from '@nestjs/common';
 import { IGameInstance, IGameUser, IGameCard, IGameAction } from '@thefirstspine/types-arena';
 import { GameHookService } from './game-hook.service';
 import { MessagingService } from '@thefirstspine/messaging-nest';
-import { TriumphService } from '../../wizard/triumph/triumph.service';
 import { GameWorkerService } from '../game-worker/game-worker.service';
 
 /**
@@ -18,7 +17,6 @@ export class CardDamagedGameHook implements IGameHook {
   constructor(
     private readonly messagingService: MessagingService,
     private readonly gameHookService: GameHookService,
-    private readonly triumphService: TriumphService,
     private readonly gameWorkerService: GameWorkerService,
   ) {}
 
@@ -52,12 +50,6 @@ export class CardDamagedGameHook implements IGameHook {
 
     if (params.gameCard?.currentStats?.effects?.includes('monstrous-portal')) {
       if (params.lifeChanged <= -1) {
-
-        // Unlock title "transporter"
-        if (params.source.user === params.gameCard.user) {
-          await this.triumphService.unlockTriumph(params.gameCard.user, 'transporter');
-        }
-  
         const action: IGameAction<any> = await this.gameWorkerService.getWorker('monstrous-portal-effect')
           .create(gameInstance, {user: params.gameCard.user});
         if (

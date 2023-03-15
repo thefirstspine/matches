@@ -6,7 +6,6 @@ import { ICard } from '@thefirstspine/types-rest';
 import { RestService } from '../../rest/rest.service';
 import { randBetween } from '../../utils/maths.utils';
 import { Modifiers } from '../modifiers';
-import { QuestService } from '../../wizard/quest/quest.service';
 import { GameWorkerService } from '../game-worker/game-worker.service';
 
 /**
@@ -21,7 +20,6 @@ export class CardDestroyedGameHook implements IGameHook {
   constructor(
     private readonly gameHookService: GameHookService,
     private readonly restService: RestService,
-    private readonly questService: QuestService,
     private readonly gameWorkerService: GameWorkerService,
   ) {}
 
@@ -98,14 +96,6 @@ export class CardDestroyedGameHook implements IGameHook {
     if (discard) {
       params.gameCard.location = 'discard';
       await this.gameHookService.dispatch(gameInstance, `card:discarded:${params.gameCard.card.id}`, {gameCard: params.gameCard});
-    }
-
-    // Quest
-    if (params?.source?.user) {
-      await this.questService.progressQuest(
-        params?.source?.user,
-        `destroye:${params.gameCard.card.type}s`,
-        1);
     }
 
     return true;

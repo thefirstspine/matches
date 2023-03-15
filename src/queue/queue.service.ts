@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { GameService } from '../game/game.service';
-import { WizardService } from '../wizard/wizard.service';
 import { IGameUser, IGameInstance, IWizardItem, IWizard, IWizardHistoryItem, IQueueInstance, IQueueUser } from '@thefirstspine/types-arena';
 import { IGameType } from '@thefirstspine/types-rest';
 import { RestService } from '../rest/rest.service';
@@ -35,7 +34,6 @@ export class QueueService {
   constructor(
     private readonly messagingService: MessagingService,
     private readonly gameService: GameService,
-    private readonly wizardService: WizardService,
     private readonly restService: RestService,
     private readonly botsService: BotsService,
     private readonly calendarService: CalendarService,
@@ -243,21 +241,6 @@ export class QueueService {
       throw new Error('User already in a game instance.');
     }
 
-    // Get the wizard to validate data
-    const wizard: IWizard = await this.wizardService.getOrCreateWizard(user);
-
-    // Exit method if user has not the style
-    style = style ? style : '';
-    if (style !== '' && !wizard.items.find((i: IWizardItem) => i.name === `style-${style}`)) {
-      throw new Error('User does not own the style.');
-    }
-
-    // Exit method if user has not the cover
-    cover = cover ? cover : '';
-    if (cover !== '' && !wizard.items.find((i: IWizardItem) => i.name === `cover-${cover}`)) {
-      throw new Error('User does not own the cover.');
-    }
-
     // Check queue availability
     const queue: IQueueInstance|undefined = this.queueInstances.find((q) => q.key === key);
     if (!queue) {
@@ -427,23 +410,8 @@ export class QueueService {
 
     // Get users in queue
     const queueUsers: IQueueUser[] = queueInstance.users;
-    const queueWizzards: IWizard[] = await Promise.all(queueUsers.map(async (u: IGameUser) => {
-      return await this.wizardService.getOrCreateWizard(u.user);
-    }));
 
     if (queueUsers.length >= gameType.players.length) {
-      // We have to sort the users here in a ranked matchmaking type
-      queueUsers.sort((a: IGameUser, b: IGameUser) => {
-        const aIndex: number = queueUsers.findIndex((u) => u === a);
-        const aScore: number = getScore(queueWizzards[aIndex].history.filter((h: IWizardHistoryItem) => h.gameTypeId === queueInstance.gameTypeId));
-        const bIndex: number = queueUsers.findIndex((u) => u === b);
-        const bScore: number = getScore(queueWizzards[bIndex].history.filter((h: IWizardHistoryItem) => h.gameTypeId === queueInstance.gameTypeId));
-        if (aScore === bScore) {
-          return 0;
-        }
-        return aScore > bScore ? 1 : -1;
-      });
-
       // Extract the users needed from the queue
       const queueUsersNeeded: IGameUser[] = queueUsers.splice(0, gameType.players.length);
 

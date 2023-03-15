@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { QueueService } from './../queue/queue.service';
 import { GameService } from '../game/game.service';
-import { ShopService } from '../shop/shop.service';
 import { LogsService } from '@thefirstspine/logs-nest';
 
 /**
@@ -16,7 +15,6 @@ export class TickerService {
   constructor(
     private readonly queueService: QueueService,
     private readonly gameService: GameService,
-    private readonly shopService: ShopService,
     private readonly logsService: LogsService,
   ) {}
 
@@ -76,13 +74,6 @@ export class TickerService {
       await this.gameService.lookForPendingActions();
     } catch (e) {
       this.logsService.error(`Ticker game actions error`, {name: e.name, message: e.message, stack: e.stack});
-    }
-
-    // Manages purshases from shop service every tick
-    try {
-      await this.shopService.lookForCompletePurchases();
-    } catch (e) {
-      this.logsService.error(`Ticker shop purshases error`, {name: e.name, message: e.message, stack: e.stack});
     }
   }
 

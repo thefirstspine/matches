@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { IWizard, IGameInstance, IGameUser } from '@thefirstspine/types-arena';
 import { RoomsService, IRoom, IRoomCreated, ISender } from './rooms.service';
-import { WizardService } from '../wizard/wizard.service';
 import { ILocalized } from '@thefirstspine/types-rest';
 
 /**
@@ -14,7 +13,6 @@ export class ArenaRoomsService {
 
   constructor(
       private readonly roomsService: RoomsService,
-      private readonly wizardService: WizardService,
   ) {
     this.roomsService.createRoom(
       ArenaRoomsService.SUBJECT,
@@ -30,10 +28,9 @@ export class ArenaRoomsService {
    */
   async createRoomForGame(game: IGameInstance): Promise<IRoomCreated> {
     const senders: ISender[] = await Promise.all(game.users.map(async (user: IGameUser) => {
-      const wizzard: IWizard = await this.wizardService.getOrCreateWizard(user.user);
       return {
         user: user.user,
-        displayName: wizzard.name,
+        displayName: "#" + user.user,
       };
     }));
     const room: IRoom = {

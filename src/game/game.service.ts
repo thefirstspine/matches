@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { shuffle } from '../utils/array.utils';
 import { randBetween } from '../utils/maths.utils';
-import { WizardService } from '../wizard/wizard.service';
 import { IGameInstance, IGameUser, IGameCard, IGameAction, IWizardItem, IGameInteraction } from '@thefirstspine/types-arena';
 import { RestService } from '../rest/rest.service';
 import { ICard } from '@thefirstspine/types-rest';
@@ -33,7 +32,6 @@ export class GameService {
   constructor(
     private readonly messagingService: MessagingService,
     private readonly logsService: LogsService,
-    private readonly wizardService: WizardService,
     private readonly restService: RestService,
     private readonly arenaRoomsService: ArenaRoomsService,
     private readonly gameWorkerService: GameWorkerService,
@@ -112,21 +110,6 @@ export class GameService {
     const curseCard: ICard = await this.restService.card('curse-of-mara');
 
     await Promise.all(users.map(async (gameUser: IGameUser, index: number) => {
-      // Add the cursed cards
-      const wizzard = await this.wizardService.getOrCreateWizard(gameUser.user);
-      const curseItem: IWizardItem|undefined = wizzard.items.find((item: IWizardItem) => item.name === 'curse');
-      if (curseItem) {
-        for (let i = 0; i < curseItem.num; i ++) {
-          const randomId: number = randBetween(0, Number.MAX_SAFE_INTEGER);
-          shuffledCards.unshift({
-            card: JSON.parse(JSON.stringify(curseCard)),
-            user: gameUser.user,
-            location: 'deck',
-            id: `${gameInstanceId}_${randomId}`,
-          });
-        }
-      }
-
       // Get the first 6 cards in the hand of each player
       let cardsTook: number = 0;
       shuffledCards.forEach((card: IGameCard) => {
