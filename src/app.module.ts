@@ -15,8 +15,6 @@ import { GameWorkerService } from './game/game-worker/game-worker.service';
 import { GameHookService } from './game/game-hook/game-hook.service';
 import { BotsService } from './bots/bots.service';
 import { IndexController } from './index/index.controller';
-import { FileSocketModule } from 'nest-filesocket';
-import { FileSocketMethodsService } from './file-socket-methods/file-socket-methods.service';
 import { AuthService } from '@thefirstspine/auth-nest';
 import { LogsService } from '@thefirstspine/logs-nest';
 import { MessagingService } from '@thefirstspine/messaging-nest';
@@ -46,7 +44,6 @@ import { CalendarService } from './calendar/calendar.service';
     GameWorkerService,
     GameHookService,
     BotsService,
-    FileSocketMethodsService,
     QuestService,
     TriumphService,
     CalendarService,
@@ -57,10 +54,6 @@ export class AppModule {
     return {
       module: AppModule,
       imports: [
-        FileSocketModule.forRoot({
-          methodsMap: FileSocketMethodsService.fileSocketMethods,
-          socketFile: __dirname + '/../socket',
-        }),
         MongooseModule.forRoot(`mongodb://${process.env.MONGO_HOST}/${process.env.MONGO_DB}`),
         MongooseModule.forFeature([
           { name: Wizard.name, schema: WizardSchema },

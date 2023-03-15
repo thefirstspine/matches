@@ -27,7 +27,9 @@ export class GameInstance implements IGameInstance {
   @Prop()
   cards: IGameCard[];
 
-  @Prop()
+  @Prop({
+    type: Object
+  })
   actions: {
       current: Array<IGameAction<IGameInteraction>>;
       previous: Array<IGameActionPassed<IGameInteraction>>;

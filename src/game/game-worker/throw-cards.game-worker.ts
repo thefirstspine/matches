@@ -69,7 +69,7 @@ export class ThrowCardsGameWorker implements IGameWorker, IHasGameHookService {
 
     // Validate response inputs
     const allowedHandIndexes: number[] = gameAction.interaction.params.handIndexes;
-    const responseHandIndexes: number[] = gameAction.response.handIndexes;
+    const responseHandIndexes: number[] = gameAction.response.handIndexes as number[];
     const falseIndex: number[] = responseHandIndexes.filter((i: number) => !allowedHandIndexes.includes(i));
     if (falseIndex.length) {
       this.logsService.warning('Not allowed hand index', gameAction);

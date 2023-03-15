@@ -60,7 +60,7 @@ export class WizardService {
 
   async saveWizard(wizard: IWizard): Promise<boolean> {
     const model = await this.wizardModel.updateOne({id: wizard.id}, wizard).exec();
-    if (model.ok) {
+    if (model.acknowledged) {
       return true;
     }
 
