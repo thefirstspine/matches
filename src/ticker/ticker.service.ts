@@ -26,15 +26,6 @@ export class TickerService {
     // Increase tick count
     this.tickCount ++;
 
-    // Update queue data every 120 ticks
-    if (this.tickCount % 120 === 0) {
-      try {
-        await this.queueService.updateQueueInstancesData();
-      } catch (e) {
-        this.logsService.error(`Ticker matchmaking error`, {name: e.name, message: e.message, stack: e.stack});
-      }
-    }
-
     // Check expired queue asks every tick
     try {
       await this.queueService.processExpiredQueueAsks();

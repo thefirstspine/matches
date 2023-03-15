@@ -17,7 +17,6 @@ import { LogsService } from '@thefirstspine/logs-nest';
 import { MessagingService } from '@thefirstspine/messaging-nest';
 import { MongooseModule } from '@nestjs/mongoose';
 import { GameInstance, GameInstanceSchema } from './game/game-instance.schema';
-import { CalendarService } from './calendar/calendar.service';
 
 @Module({
   controllers: [ApiController, TickerController, IndexController],
@@ -35,7 +34,6 @@ import { CalendarService } from './calendar/calendar.service';
     GameWorkerService,
     GameHookService,
     BotsService,
-    CalendarService,
   ],
 })
 export class AppModule {

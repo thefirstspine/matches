@@ -10,7 +10,6 @@ import { Modifiers } from '../game/modifiers';
 import { Themes } from '../game/themes';
 import { randBetween } from '../utils/maths.utils';
 import fetch from 'node-fetch';
-import { CalendarService, ICycle, IEvent } from '../calendar/calendar.service';
 
 /**
  * Service to manage the game queue
@@ -36,7 +35,6 @@ export class QueueService {
     private readonly gameService: GameService,
     private readonly restService: RestService,
     private readonly botsService: BotsService,
-    private readonly calendarService: CalendarService,
   ) {
     // Create base queues instances
     this.queueInstances.push(
@@ -69,7 +67,6 @@ export class QueueService {
         createdAt: Date.now(),
       },
     );
-    this.updateQueueInstancesData();
   }
 
   /**
@@ -111,107 +108,6 @@ export class QueueService {
    */
   getQueueInstance(key: string): IQueueInstance|undefined {
     return this.queueInstances.find((q) => q.key === key);
-  }
-
-  /**
-   * Update the instances data based on cycle & day
-   */
-  async updateQueueInstancesData() {
-    const currentCycle: ICycle|null = await this.calendarService.getCurrentCycle();
-    if (!currentCycle) {
-      // Exit update method on not found cycle
-      return;
-    }
-
-    // Get the week number
-    const weekNumber: number = Math.floor((Date.now() - new Date(currentCycle.datetimeFrom).getTime()) / (1000 * 60 * 60 * 24 * 7));
-
-    const fixedCycleData: {
-      [key: string]: {theme: string, modifiers: string[]},
-    } = {
-      'renewal-2020': {theme: '', modifiers: ['']},
-      'great-ancient-2020': {theme: Themes.SPINE_S_CAVE, modifiers: [Modifiers.GREAT_ANCIENTS_EGGS]},
-      'treasure-2020': {theme: '', modifiers: ['']},
-      'souvenirs-2020': {theme: Themes.FORGOTTEN_CEMETERY, modifiers: [Modifiers.SOUVENIRS_FROM_YOUR_ENEMY]},
-      'harvest-2020': {theme: Themes.WASTED_FIELDS, modifiers: [Modifiers.HARVESTING_SOULS]},
-      'crowned-souls-2020': {theme: Themes.SACRIFICE_CHURCH, modifiers: [Modifiers.ANNIHILATION_MATTS]},
-      'snow-man-2020': {theme: Themes.SNOW_MAN_LAIR, modifiers: [Modifiers.FROZEN_STATUES]},
-      'renewal-2021': [
-        {theme: Themes.SPINE_S_CAVE, modifiers: [Modifiers.GREAT_ANCIENTS_EGGS, Modifiers.HARVESTING_SOULS]},
-        {theme: Themes.FORGOTTEN_CEMETERY, modifiers: [Modifiers.SOUVENIRS_FROM_YOUR_ENEMY, Modifiers.ANNIHILATION_MATTS]},
-        {theme: Themes.SNOW_MAN_LAIR, modifiers: [Modifiers.GOLDEN_GALLEONS, Modifiers.FROZEN_STATUES]},
-        {theme: Themes.WASTED_FIELDS, modifiers: [Modifiers.GREAT_ANCIENTS_EGGS, Modifiers.HARVESTING_SOULS]},
-        {theme: Themes.SACRIFICE_CHURCH, modifiers: [Modifiers.SOUVENIRS_FROM_YOUR_ENEMY, Modifiers.ANNIHILATION_MATTS]},
-        {theme: Themes.DEAD_FOREST, modifiers: [Modifiers.GOLDEN_GALLEONS, Modifiers.FROZEN_STATUES]},
-      ][weekNumber],
-      'absurdal-2021': {theme: Themes.RUINED_LABORATORY, modifiers: [Modifiers.MUTATIONS]},
-      'great-ancient-2021': {theme: Themes.SPINE_S_CAVE, modifiers: [Modifiers.GREAT_ANCIENTS_EGGS]},
-      'treasure-2021': {theme: Themes.DEAD_FOREST, modifiers: [Modifiers.GOLDEN_GALLEONS]},
-      'souvenirs-2021': {theme: Themes.FORGOTTEN_CEMETERY, modifiers: [Modifiers.SOUVENIRS_FROM_YOUR_ENEMY]},
-      'fire-2021': {theme: Themes.SPINE_S_CAVE, modifiers: []},
-      'harvest-2021': {theme: Themes.WASTED_FIELDS, modifiers: [Modifiers.HARVESTING_SOULS]},
-      'crowned-souls-2021': {theme: Themes.SACRIFICE_CHURCH, modifiers: [Modifiers.ANNIHILATION_MATTS]},
-      'snow-man-2021': {theme: Themes.SNOW_MAN_LAIR, modifiers: [Modifiers.FROZEN_STATUES]},
-      'renewal-2022': [
-        {theme: Themes.SPINE_S_CAVE, modifiers: [Modifiers.GREAT_ANCIENTS_EGGS, Modifiers.HARVESTING_SOULS]},
-        {theme: Themes.FORGOTTEN_CEMETERY, modifiers: [Modifiers.SOUVENIRS_FROM_YOUR_ENEMY, Modifiers.ANNIHILATION_MATTS]},
-        {theme: Themes.SNOW_MAN_LAIR, modifiers: [Modifiers.GOLDEN_GALLEONS, Modifiers.FROZEN_STATUES]},
-        {theme: Themes.WASTED_FIELDS, modifiers: [Modifiers.GREAT_ANCIENTS_EGGS, Modifiers.HARVESTING_SOULS]},
-        {theme: Themes.SACRIFICE_CHURCH, modifiers: [Modifiers.SOUVENIRS_FROM_YOUR_ENEMY, Modifiers.ANNIHILATION_MATTS]},
-        {theme: Themes.DEAD_FOREST, modifiers: [Modifiers.GOLDEN_GALLEONS, Modifiers.FROZEN_STATUES]},
-      ][weekNumber],
-      'drifter': {theme: Themes.DEAD_FOREST, modifiers: [Modifiers.DRIFTER]},
-    };
-
-    const fixedDailyData: Array<{theme: string, modifier: string}> = [
-      {theme: Themes.SPINE_S_CAVE, modifier: Modifiers.GREAT_ANCIENTS_EGGS},
-      {theme: Themes.FORGOTTEN_CEMETERY, modifier: Modifiers.SOUVENIRS_FROM_YOUR_ENEMY},
-      {theme: Themes.WASTED_FIELDS, modifier: Modifiers.HARVESTING_SOULS},
-      {theme: Themes.SNOW_MAN_LAIR, modifier: Modifiers.FROZEN_STATUES},
-    ];
-
-    // Get current events
-    const events: IEvent[] = await this.calendarService.getCurrentEvents();
-    const eventsString: string[] = events.map((e: IEvent) => e.type);
-
-    this.queueInstances.forEach((instance: IQueueInstance) => {
-      if (instance.key === 'immediate') {
-        instance.theme = undefined;
-        instance.modifiers = [Modifiers.IMMEDIATE];
-        if (eventsString.includes('corsairs')) {
-          instance.modifiers.push(Modifiers.GOLDEN_GALLEONS);
-        }
-        if (eventsString.includes('tricks-celebration')) {
-          instance.modifiers.push(Modifiers.TRICK_OR_TREAT);
-        }
-        if (eventsString.includes('triple-shards')) {
-          instance.modifiers.push(Modifiers.TRIPLE_SHARDS);
-        }
-      }
-      if (instance.key === 'daily') {
-        instance.theme = fixedDailyData[(new Date()).getDay() % fixedDailyData.length].theme;
-        instance.modifiers = [
-          Modifiers.DAILY,
-          fixedDailyData[(new Date()).getDay() % fixedDailyData.length].modifier,
-        ];
-        if (eventsString.includes('corsairs')) {
-          instance.modifiers.push(Modifiers.GOLDEN_GALLEONS);
-        }
-        if (eventsString.includes('tricks-celebration')) {
-          instance.modifiers.push(Modifiers.TRICK_OR_TREAT);
-        }
-        if (eventsString.includes('triple-shards')) {
-          instance.modifiers.push(Modifiers.TRIPLE_SHARDS);
-        }
-      }
-      if (instance.key === 'cycle') {
-        instance.theme = fixedCycleData[currentCycle.name].theme;
-        instance.modifiers = [
-          Modifiers.CYCLE,
-          ...fixedCycleData[currentCycle.name].modifiers,
-        ];
-      }
-    });
   }
 
   /**
