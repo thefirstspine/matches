@@ -52,7 +52,7 @@ export class ApiService {
     }
 
     // Generate key
-    const key: string = randBetween(1111, 9999).toString(10);
+    const key: string = request.params.key ? request.params.key : randBetween(1111, 9999).toString(10);
 
     // Create the the instance
     const queue: IQueueInstance = await this.queueService.create(
