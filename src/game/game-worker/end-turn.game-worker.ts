@@ -136,7 +136,7 @@ export class EndTurnGameWorker implements IGameWorker, IHasGameHookService, IHas
       }
 
       // Replace the "Great Old" cards
-      if (c.location === 'board' && c.user === nextUser && c.currentStats?.effects?.includes('great-ancient-egg')) {
+      if (c.location === 'board' && c.user === nextUser && c.card.id === 'great-ancient-egg') {
         const juvenilegreatAncientPromise: Promise<ICard> = this.restService.card('juvenile-great-ancient');
         juvenilegreatAncientPromise.then((replacement: ICard) => {
           c.card = replacement;
@@ -144,7 +144,7 @@ export class EndTurnGameWorker implements IGameWorker, IHasGameHookService, IHas
         });
         promisesEffects.push(juvenilegreatAncientPromise);
       }
-      if (c.location === 'board' && c.user === nextUser && c.currentStats?.effects?.includes('juvenile-great-ancient')) {
+      if (c.location === 'board' && c.user === nextUser && c.card.id === 'juvenile-great-ancient') {
         const greatAncientPromise: Promise<ICard> = this.restService.card('great-ancient');
         greatAncientPromise.then((replacement: ICard) => {
           c.card = replacement;
