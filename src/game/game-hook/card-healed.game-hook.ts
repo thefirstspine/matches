@@ -35,11 +35,11 @@ export class CardHealedGameHook implements IGameHook {
   }
 
   protected shouldLimitMaxLife(target: IGameCard, source: IGameCard|null): boolean {
-    if (target.card.id === 'anvil-of-xiarmha' && source === null) {
+    if (target?.currentStats?.effects?.includes('anvil-of-xiarmha') && source === null) {
       // Anvil of Xiarm'ha can have more than the starting value in case of new turn
       return false;
     }
-    if (target.card.id === 'anvil-of-xiarmha' && source?.card.id === 'reinforcement') {
+    if (target?.currentStats?.effects?.includes('anvil-of-xiarmha') && source?.card.id === 'reinforcement') {
       // Anvil of Xiarm'ha can have more than the starting value when reinforcement is used
       return false;
     }

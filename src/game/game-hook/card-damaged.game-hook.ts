@@ -1,9 +1,10 @@
 import { IGameHook } from './game-hook.interface';
 import { Injectable } from '@nestjs/common';
-import { IGameInstance, IGameUser, IGameCard } from '@thefirstspine/types-arena';
+import { IGameInstance, IGameUser, IGameCard, IGameAction } from '@thefirstspine/types-arena';
 import { GameHookService } from './game-hook.service';
-import { RestService } from '../../rest/rest.service';
 import { MessagingService } from '@thefirstspine/messaging-nest';
+import { TriumphService } from '../../wizard/triumph/triumph.service';
+import { GameWorkerService } from '../game-worker/game-worker.service';
 
 /**
  * This subscriber is executed once a 'card:lifeChanged:damaged' event is thrown. It will look for dead
@@ -17,6 +18,8 @@ export class CardDamagedGameHook implements IGameHook {
   constructor(
     private readonly messagingService: MessagingService,
     private readonly gameHookService: GameHookService,
+    private readonly triumphService: TriumphService,
+    private readonly gameWorkerService: GameWorkerService,
   ) {}
 
   async execute(gameInstance: IGameInstance, params: {gameCard: IGameCard, source: IGameCard, lifeChanged: number}): Promise<boolean> {
@@ -45,6 +48,25 @@ export class CardDamagedGameHook implements IGameHook {
       params.source.location = 'discard';
       await this.gameHookService
         .dispatch(gameInstance, `card:destroyed:${params.source.card.id}`, {gameCard: params.source, source: params.gameCard});
+    }
+
+    if (params.gameCard?.currentStats?.effects?.includes('monstrous-portal')) {
+      if (params.lifeChanged <= -1) {
+
+        // Unlock title "transporter"
+        if (params.source.user === params.gameCard.user) {
+          await this.triumphService.unlockTriumph(params.gameCard.user, 'transporter');
+        }
+  
+        const action: IGameAction<any> = await this.gameWorkerService.getWorker('monstrous-portal-effect')
+          .create(gameInstance, {user: params.gameCard.user});
+        if (
+          action.interaction.params.boardCoords.length > 0 &&
+          action.interaction.params.handIndexes.length > 0
+        ) {
+          gameInstance.actions.current.push(action);
+        }
+      }
     }
 
     if (params.gameCard.location !== 'discard' && params.gameCard && params.gameCard.currentStats.life <= 0) {
