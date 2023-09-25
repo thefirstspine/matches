@@ -1,0 +1,58 @@
+name: Deploy app
+on:
+  release:
+    types:
+      - published
+  workflow_dispatch:
+jobs:
+  tests:
+    name: Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Install
+        run: npm install
+      - name: Launch tests
+        run: npm run test
+  deploy:
+    name: Deploy app
+    runs-on: ubuntu-latest
+    needs: [tests]
+    matrix:
+      include:
+      - realm: red
+        port: 9000
+      - realm: orange
+        port: 9001
+    steps:
+      - name: Checkout Ansible
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          repository: thefirstspine/ansible
+      - name: Get config
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          repository: thefirstspine/ansible-secrets
+          path: tmp
+          token: ${{ secrets.ACCESS_TOKEN }}
+      - name: Get inventory
+        run: |
+          rm -rf volume/conf
+          rm -rf volume/keys
+          mv tmp/conf volume/conf
+          mv tmp/keys volume/keys
+      - name: Map realm {{ realm }}
+        run: |
+          sed -i 's/service_matches_domain: matches.thefirstspine.fr/service_matches_domain: ${{ realm }}.matches.thefirstspine.fr/g' volume/conf/inventory.yaml
+          sed -i 's/service_matches_internal_port: 8081/service_matches_internal_port: ${{ port }}/g' volume/conf/inventory.yaml
+      - name: Build Docker image
+        run: |
+          docker build -t thefirstspine/ansible .
+#      - name: Run thefirstspine/ansible image
+#        run: |
+#          docker run --rm -v ./volume:/volume thefirstspine/ansible ansible-playbook -i /volume/conf/inventory.yaml /volume/playbooks/deploy-matches.yaml
