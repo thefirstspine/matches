@@ -27,11 +27,11 @@ jobs:
     steps:
       - name: Get realm name & port
         uses: jungwinter/split@master
-          id: split
-          with:
-            msg: ${{ matrix.realm }}
-            separator: ":"
-            maxsplit: -1
+        id: split
+        with:
+          msg: ${{ matrix.realm }}
+          separator: ':'
+          maxsplit: -1
       - name: Checkout Ansible
         uses: actions/checkout@v3
         with:
