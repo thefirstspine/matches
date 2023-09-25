@@ -1,15 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { GameService } from '../game/game.service';
-import { IGameUser, IGameInstance, IWizardItem, IWizard, IWizardHistoryItem, IQueueInstance, IQueueUser } from '@thefirstspine/types-arena';
+import { IGameUser, IGameInstance, IQueueInstance, IQueueUser } from '@thefirstspine/types-arena';
 import { IGameType } from '@thefirstspine/types-rest';
 import { RestService } from '../rest/rest.service';
-import { getScore } from '../utils/game.utils';
 import { BotsService } from '../bots/bots.service';
 import { MessagingService } from '@thefirstspine/messaging-nest';
 import { Modifiers } from '../game/modifiers';
 import { Themes } from '../game/themes';
 import { randBetween } from '../utils/maths.utils';
-import fetch from 'node-fetch';
 
 /**
  * Service to manage the game queue

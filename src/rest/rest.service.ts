@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { ICard, IGameType, IDeck, IShopItem, IAvatar, IQuest } from '@thefirstspine/types-rest';
-import fetch, { Response } from 'node-fetch';
+import axios from 'axios';
 
 @Injectable()
 export class RestService {
@@ -41,20 +41,20 @@ export class RestService {
   }
 
   public async list<T>(resource: string): Promise<T[]> {
-    const response: Response = await fetch(`${process.env.REST_URL}/rest/${resource}`);
-    const json = await response.json();
+    const response = await axios.get(`${process.env.REST_URL}/rest/${resource}`);
+    const json = await response.data;
     return json as T[];
   }
 
   public async single<T>(resource: string, id: string): Promise<T> {
-    const response: Response = await fetch(`${process.env.REST_URL}/rest/${resource}/${id}`);
-    const json = await response.json();
+    const response = await axios.get(`${process.env.REST_URL}/rest/${resource}/${id}`);
+    const json = await response.data;
     return json as T;
   }
 
   public async listAdSingle<T>(resource: string): Promise<T> {
-    const response: Response = await fetch(`${process.env.REST_URL}/rest/${resource}`);
-    const json = await response.json();
+    const response = await axios.get(`${process.env.REST_URL}/rest/${resource}`);
+    const json = await response.data;
     return json as T;
   }
 }
