@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { LogsService } from '@thefirstspine/logs-nest';
-import fetch, { Response } from 'node-fetch';
+import axios from 'axios';
 
 @Injectable()
 export class CalendarService {
@@ -10,8 +10,8 @@ export class CalendarService {
   async getPassedCycles(): Promise<ICycle[]> {
     try {
       const date: string = (new Date()).toISOString();
-      const response: Response = await fetch(`${process.env.CALENDAR_URL}/cycles?filter=datetimeFrom||lt||${date}`);
-      return response.json();
+      const response = await axios.get(`${process.env.CALENDAR_URL}/cycles?filter=datetimeFrom||lt||${date}`);
+      return response.data;
     } catch (e) {
       this.logsService.error(`Cannot fetch cycles`, e);
       return [];
@@ -20,8 +20,8 @@ export class CalendarService {
 
   async getCurrentCycle(): Promise<ICycle|null> {
     try {
-      const response: Response = await fetch(`${process.env.CALENDAR_URL}/cycles/current`);
-      return response.json();
+      const response = await axios.get(`${process.env.CALENDAR_URL}/cycles/current`);
+      return response.data;
     } catch (e) {
       this.logsService.error(`Cannot fetch cycle`, e);
       return null;
@@ -31,8 +31,8 @@ export class CalendarService {
   async getCurrentEvents(): Promise<IEvent[]> {
     try {
       const date: string = (new Date()).toISOString();
-      const response: Response = await fetch(`${process.env.CALENDAR_URL}/events?filter=datetimeFrom||lt||${date}&filter=datetimeTo||gt||${date}`);
-      return response.json();
+      const response = await axios.get(`${process.env.CALENDAR_URL}/events?filter=datetimeFrom||lt||${date}&filter=datetimeTo||gt||${date}`);
+      return response.data;
     } catch (e) {
       this.logsService.error(`Cannot fetch events`, e);
       return [];

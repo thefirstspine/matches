@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import fetch, { Response } from 'node-fetch';
+import axios from 'axios';
 
 /**
  * Bots service to ask for a bot on a game type
@@ -9,17 +9,16 @@ export class BotsService {
 
   public async askForABot(key: string): Promise<IApiResponse> {
     // Call the bots service
-    const ret: Response = await fetch(
+    const ret = await axios.post(
       `${process.env.BOTS_URL}/api/spawn`,
       {
-        method: 'post',
-        body: JSON.stringify({
-          type: 'arena',
-          metadata: {
-            key,
-            realm: process.env.REALM,
-          },
-        }),
+        type: 'arena',
+        metadata: {
+          key,
+          realm: process.env.REALM,
+        },
+      },
+      {
         headers: {
           'X-Client-Cert': Buffer.from(process.env.BOTS_PUBLIC_KEY.replace(/\\n/gm, '\n')).toString('base64'),
           'Content-Type': 'application/json',
@@ -28,7 +27,7 @@ export class BotsService {
     );
 
     // Process response
-    const json = await ret.json();
+    const json = ret.data;
     if (json.error) {
       throw new Error(json.error.message);
     }

@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { WizardService } from '../wizard/wizard.service';
-import fetch, { Response } from 'node-fetch';
 import { IWizard, IWizardItem } from '@thefirstspine/types-arena';
 import { IShopItem, ILoot } from '@thefirstspine/types-rest';
 import { mergeLootsInItems } from '../utils/game.utils';
