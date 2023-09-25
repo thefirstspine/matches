@@ -50,10 +50,10 @@ jobs:
           rm -rf volume/keys
           mv tmp/conf volume/conf
           mv tmp/keys volume/keys
-      - name: Map realm ${{ steps.branch.outputs._0 }}
+      - name: Map realm ${{ steps.split.outputs._0 }}
         run: |
-          sed -i 's/service_matches_domain: matches.thefirstspine.fr/service_matches_domain: ${{ steps.branch.outputs._0 }}.matches.thefirstspine.fr/g' volume/conf/inventory.yaml
-          sed -i 's/service_matches_internal_port: 8081/service_matches_internal_port: ${{ steps.branch.outputs._1 }}/g' volume/conf/inventory.yaml
+          sed -i 's/service_matches_domain: matches.thefirstspine.fr/service_matches_domain: ${{ steps.split.outputs._0 }}.matches.thefirstspine.fr/g' volume/conf/inventory.yaml
+          sed -i 's/service_matches_internal_port: 8081/service_matches_internal_port: ${{ steps.split.outputs._1 }}/g' volume/conf/inventory.yaml
       - name: Build Docker image
         run: |
           docker build -t thefirstspine/ansible .
