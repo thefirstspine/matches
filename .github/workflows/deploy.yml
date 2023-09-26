@@ -57,6 +57,6 @@ jobs:
       - name: Build Docker image
         run: |
           docker build -t thefirstspine/ansible .
-#      - name: Run thefirstspine/ansible image
-#        run: |
-#          docker run --rm -v ./volume:/volume thefirstspine/ansible ansible-playbook -i /volume/conf/inventory.yaml /volume/playbooks/deploy-matches.yaml
+      - name: Run thefirstspine/ansible image
+        run: |
+          docker run --rm -v ./volume:/volume thefirstspine/ansible ansible-playbook -i /volume/conf/inventory.yaml /volume/playbooks/deploy-matches.yaml
