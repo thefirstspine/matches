@@ -22,6 +22,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: [tests]
     strategy:
+      max-parallel: 1
       matrix:
         realm: ['red:9000', 'orange:9001']
     steps:
