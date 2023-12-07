@@ -13,6 +13,9 @@ export class GameInstance implements IGameInstance {
   id: number;
 
   @Prop()
+  queueKey: string;
+
+  @Prop()
   modifiers: string[];
 
   @Prop()
