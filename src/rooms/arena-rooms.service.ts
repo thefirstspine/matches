@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { IWizard, IGameInstance, IGameUser } from '@thefirstspine/types-arena';
+import { IGameInstance, IGameUser } from '@thefirstspine/types-matches';
 import { RoomsService, IRoom, IRoomCreated, ISender } from './rooms.service';
-import { ILocalized } from '@thefirstspine/types-rest';
+import { ILocalized } from '@thefirstspine/types-game';
 
 /**
  * Manages rooms for games inside the rooms service
@@ -27,7 +27,7 @@ export class ArenaRoomsService {
    * @param game
    */
   async createRoomForGame(game: IGameInstance): Promise<IRoomCreated> {
-    const senders: ISender[] = await Promise.all(game.users.map(async (user: IGameUser) => {
+    const senders: ISender[] = await Promise.all(game.gameUsers.map(async (user: IGameUser) => {
       return {
         user: user.user,
         displayName: "#" + user.user,

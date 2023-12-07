@@ -3,7 +3,7 @@ import { ArenaRoomsService } from '../../rooms/arena-rooms.service';
 import { RestService } from '../../rest/rest.service';
 import { BaseGameService } from '../base.game.service';
 import { IGameHook } from './game-hook.interface';
-import { IGameInstance } from '@thefirstspine/types-arena';
+import { IGameInstance } from '@thefirstspine/types-matches';
 import { CardDamagedGameHook } from './card-damaged.game-hook';
 import { CardHealedGameHook } from './card-healed.game-hook';
 import { PlayerDamagedGameHook } from './player-damaged.game-hook';
@@ -12,7 +12,6 @@ import { SpellUsedGameHook } from './spell-used.game-hook';
 import { GameWorkerService } from '../game-worker/game-worker.service';
 import { CardDestroyedGameHook } from './card-destroyed.game-hook';
 import { ActionExecutedGameHook } from './action-executed.game-hook';
-import { FpeCreatedGameHook } from './fpe/fpe-created.game-hook';
 import { LogsService } from '@thefirstspine/logs-nest';
 import { MessagingService } from '@thefirstspine/messaging-nest';
 import { GameCreatedGameHook } from './game-created.game-hook';
@@ -63,7 +62,6 @@ export class GameHookService extends BaseGameService<IGameHook> {
     this.subscribe('card:spell:used', this.createInjectable(SpellUsedGameHook, injectedProps));
     this.subscribe('card:destroyed', this.createInjectable(CardDestroyedGameHook, injectedProps));
     this.subscribe('card:placed', this.createInjectable(CardPlacedGameHook, injectedProps));
-    this.subscribe('game:created:fpe', this.createInjectable(FpeCreatedGameHook, injectedProps));
     this.subscribe('game:phaseChanged:actions', this.createInjectable(PhaseActionsGameHook, injectedProps));
     this.subscribe('game:created', this.createInjectable(GameCreatedGameHook, injectedProps));
   }

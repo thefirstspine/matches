@@ -1,13 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { GameService } from '../game/game.service';
-import { IGameUser, IGameInstance, IQueueInstance, IQueueUser } from '@thefirstspine/types-arena';
-import { IGameType } from '@thefirstspine/types-rest';
+import { IGameUser, IGameInstance, IQueueInstance } from '@thefirstspine/types-matches';
+import { ICard, IGameType } from '@thefirstspine/types-game';
 import { RestService } from '../rest/rest.service';
 import { BotsService } from '../bots/bots.service';
 import { MessagingService } from '@thefirstspine/messaging-nest';
 import { Modifiers } from '../game/modifiers';
 import { Themes } from '../game/themes';
 import { randBetween } from '../utils/maths.utils';
+import { IQueueUser } from '@thefirstspine/types-matches/lib/queue-user.interface';
 
 /**
  * Service to manage the game queue
@@ -37,31 +38,9 @@ export class QueueService {
     // Create base queues instances
     this.queueInstances.push(
       {
-        key: 'fpe',
-        gameTypeId: 'fpe',
-        users: [],
+        key: 'default',
+        queueUsers: [],
         modifiers: [],
-        createdAt: Date.now(),
-      },
-      {
-        key: 'immediate',
-        gameTypeId: 'standard',
-        users: [],
-        modifiers: [Modifiers.IMMEDIATE],
-        createdAt: Date.now(),
-      },
-      {
-        key: 'daily',
-        gameTypeId: 'standard',
-        users: [],
-        modifiers: [Modifiers.DAILY],
-        createdAt: Date.now(),
-      },
-      {
-        key: 'cycle',
-        gameTypeId: 'standard',
-        users: [],
-        modifiers: [Modifiers.CYCLE],
         createdAt: Date.now(),
       },
     );
@@ -86,9 +65,7 @@ export class QueueService {
 
     const instance: IQueueInstance = {
       key,
-      gameTypeId,
-      users: [],
-      theme,
+      queueUsers: [],
       modifiers,
       expirationTimeModifier,
       createdAt: Date.now(),
@@ -120,10 +97,7 @@ export class QueueService {
   async join(
     key: string,
     user: number,
-    destiny: string,
-    origin?: string,
-    style?: string,
-    cover?: string,
+    cards: ICard[],
   ): Promise<IQueueInstance> {
     // Exit method if user is in a queue
     if (this.isUserInAllQueues(user)) {
@@ -141,31 +115,11 @@ export class QueueService {
       throw new Error('Queue instance not available. Check the key or retry in a few minutes.');
     }
 
-    // Get the game type
-    const gameType: IGameType = await this.restService.gameType(queue.gameTypeId);
-    if (!gameType) {
-      throw new Error('Cannot load game type associated withthe queue.');
-    }
-
-    // Check destiny
-    if (!gameType.destinies.includes(destiny)) {
-      throw new Error('Destiny not allowed in that game type.');
-    }
-
-    // Check origin
-    if (gameType.origins.length > 0 && !(gameType.origins.includes(origin))) {
-      throw new Error('Origin not allowed in that game type.');
-    }
-
     // Add the user in the queue
-    queue.users.push({
+    queue.queueUsers.push({
+      cards,
       user,
-      destiny,
-      origin,
-      style,
-      cover,
       queueExpiresAt: Date.now() + (QueueService.QUEUE__EXPIRATION_TIME * 1000),
-      queueEnteredAt: Date.now(),
     });
 
     // Send message
@@ -175,8 +129,7 @@ export class QueueService {
       'TheFirstSpine:queue',
       {
         event: 'joined',
-        gameType,
-        queue: queue.users.length,
+        queue: queue.queueUsers.length,
       },
     );
     this.messagingService.sendMessage(
@@ -207,13 +160,8 @@ export class QueueService {
       throw new Error('Queue instance not available. Check the key or retry in a few minutes.');
     }
 
-    const gameType: IGameType = await this.restService.gameType(queue.gameTypeId);
-    if (!gameType) {
-      throw new Error('Cannot find this game type.');
-    }
-
     // Refresh user queue's expiration date
-    queue.users.forEach((queueUser: IQueueUser) => {
+    queue.queueUsers.forEach((queueUser: IQueueUser) => {
       if (queueUser.user === user) {
         queueUser.queueExpiresAt = Date.now() + (QueueService.QUEUE__EXPIRATION_TIME * 1000);
       }
@@ -245,46 +193,8 @@ export class QueueService {
       queue);
 
     // Remove the user from the queue
-    queue.users = queue.users.filter(u => u.user !== user);
+    queue.queueUsers = queue.queueUsers.filter(u => u.user !== user);
     return queue;
-  }
-
-  /**
-   * Spawn bots on all game types
-   */
-  async processBotSpawns() {
-    return Promise.all(
-      this.queueInstances
-        .filter((q) => ['immediate', 'daily', 'cycle'].includes(q.key))
-        .map(this.processBotSpawnsFor.bind(this)));
-  }
-
-  /**
-   * Spawn bots when needed for a particular game type
-   * @param queueInstance
-   */
-  async processBotSpawnsFor(queueInstance: IQueueInstance): Promise<void> {
-    // Get users in queue
-    const queueUsers: IQueueUser[] = queueInstance.users;
-
-    // On empty queue exit method
-    if (queueUsers.length <= 0) {
-      return;
-    }
-
-    // On queue with more than two users, exit method
-    if (queueUsers.length >= 2) {
-      return;
-    }
-
-    // Spawn bot only on queue older than 31 seconds
-    const timeToMatch = queueInstance.modifiers?.includes(Modifiers.IMMEDIATE) ? 10 : 31;
-    if (Date.now() - queueUsers[0].queueEnteredAt < (timeToMatch * 1000)) {
-      return;
-    }
-
-    // On empty queue and user is waiting for more than 60 seconds, call a bot
-    this.botsService.askForABot(queueInstance.key);
   }
 
   /**
@@ -299,22 +209,17 @@ export class QueueService {
    * @param queueInstance
    */
   async processMatchmakingFor(queueInstance: IQueueInstance): Promise<void> {
-    // Load game type
-    const gameType: IGameType = await this.restService.gameType(queueInstance.gameTypeId);
-
     // Get users in queue
-    const queueUsers: IQueueUser[] = queueInstance.users;
+    const queueUsers: IQueueUser[] = queueInstance.queueUsers;
 
-    if (queueUsers.length >= gameType.players.length) {
+    if (queueUsers.length >= 2) {
       // Extract the users needed from the queue
-      const queueUsersNeeded: IGameUser[] = queueUsers.splice(0, gameType.players.length);
+      const queueUsersNeeded: IQueueUser[] = queueUsers.splice(0, 2);
 
       // Create a game
       const game: IGameInstance = await this.gameService.createGameInstance(
-        gameType.id,
         queueUsersNeeded,
         queueInstance.modifiers ? queueInstance.modifiers : [],
-        queueInstance.theme ? queueInstance.theme : Themes.user[randBetween(0, Themes.user.length - 1)],
         queueInstance.expirationTimeModifier ? queueInstance.expirationTimeModifier : 1);
 
       // Make them quit from the queue
@@ -327,7 +232,6 @@ export class QueueService {
         'TheFirstSpine:game',
         {
           event: 'created',
-          gameType,
           gameId: game.id,
         },
       );
@@ -335,7 +239,6 @@ export class QueueService {
         queueUsersNeeded.map(e => e.user),
         'TheFirstSpine:game:created',
         {
-          gameType,
           gameId: game.id,
         },
       );
@@ -355,18 +258,14 @@ export class QueueService {
    * @param queueInstance
    */
   async processExpiredQueueAsksFor(queueInstance: IQueueInstance) {
-    // Load game type
-    const gameType: IGameType = await this.restService.gameType(queueInstance.gameTypeId);
-
-    queueInstance.users = queueInstance.users.filter((queueUser: IQueueUser) => {
+    queueInstance.queueUsers = queueInstance.queueUsers.filter((queueUser: IQueueUser) => {
       if (queueUser.queueExpiresAt < Date.now()) {
         this.messagingService.sendMessage(
           [queueUser.user],
           'TheFirstSpine:queue',
           {
             event: 'expired',
-            gameType,
-            queue: queueInstance.users.length,
+            queue: queueInstance.queueUsers.length,
           },
         );
         return false;
@@ -390,7 +289,7 @@ export class QueueService {
    * @param user
    */
   isUserInQueue(key: string, user: number): boolean {
-    return !!this.queueInstances.find((q) => q.key === key)?.users.find(u => u.user === user);
+    return !!this.queueInstances.find((q) => q.key === key)?.queueUsers.find((u: IQueueUser) => u.user === user);
   }
 
   /**

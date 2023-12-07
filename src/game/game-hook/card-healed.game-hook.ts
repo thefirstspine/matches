@@ -1,6 +1,6 @@
 import { IGameHook } from './game-hook.interface';
 import { Injectable } from '@nestjs/common';
-import { IGameInstance, IGameUser, IGameCard } from '@thefirstspine/types-arena';
+import { IGameInstance, IGameUser, IGameCard } from '@thefirstspine/types-matches';
 import { MessagingService } from '@thefirstspine/messaging-nest';
 
 /**
@@ -18,7 +18,7 @@ export class CardHealedGameHook implements IGameHook {
 
   async execute(gameInstance: IGameInstance, params: {gameCard: IGameCard, source: IGameCard|null, lifeChanged: number}): Promise<boolean> {
     await this.messagingService.sendMessage(
-      gameInstance.users.map((u: IGameUser) => u.user),
+      gameInstance.gameUsers.map((u: IGameUser) => u.user),
       `TheFirstSpine:game:${gameInstance.id}:cardChanged`,
       {
         changes: {

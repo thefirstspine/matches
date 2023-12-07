@@ -4,9 +4,9 @@ import {
   IGameAction,
   IGameCard,
   IInteractionMoveCardOnBoard,
-  IInteractionMoveCardOnBoardPossibility } from '@thefirstspine/types-arena';
+  IInteractionMoveCardOnBoardPossibility } from '@thefirstspine/types-matches';
 import { Injectable } from '@nestjs/common';
-import { ICardCoords } from '@thefirstspine/types-rest';
+import { ICardCoords } from '@thefirstspine/types-game';
 import { GameHookService } from '../game-hook/game-hook.service';
 import { IHasGameHookService } from '../injections.interface';
 import { ArenaRoomsService } from '../../rooms/arena-rooms.service';

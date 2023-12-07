@@ -1,4 +1,4 @@
-import { IGameAction, IGameInstance, IGameInteraction } from '@thefirstspine/types-arena';
+import { IGameAction, IGameInstance, IGameInteraction } from '@thefirstspine/types-matches';
 
 export interface IGameWorker {
 

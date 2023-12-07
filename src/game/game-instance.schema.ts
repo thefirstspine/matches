@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { IGameAction, IGameActionPassed, IGameCard, IGameInstance, IGameInteraction, IGameResult, IGameUser } from '@thefirstspine/types-arena';
+import { IGameAction, IGameActionPassed, IGameCard, IGameInstance, IGameInteraction, IGameResult, IGameUser } from '@thefirstspine/types-matches';
 import { Document } from 'mongoose';
 
 export type GameInstanceDocument = IGameInstance & Document;
@@ -13,16 +13,10 @@ export class GameInstance implements IGameInstance {
   id: number;
 
   @Prop()
-  theme: string;
-
-  @Prop()
   modifiers: string[];
 
   @Prop()
-  users: IGameUser[];
-
-  @Prop()
-  gameTypeId: string;
+  gameUsers: IGameUser[];
 
   @Prop()
   cards: IGameCard[];

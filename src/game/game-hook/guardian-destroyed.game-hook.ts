@@ -1,6 +1,6 @@
 import { IGameHook } from './game-hook.interface';
 import { Injectable } from '@nestjs/common';
-import { IGameInstance, IGameCard } from '@thefirstspine/types-arena';
+import { IGameInstance, IGameCard } from '@thefirstspine/types-matches';
 import { IHasGameHookService } from '../injections.interface';
 import { GameHookService } from './game-hook.service';
 

@@ -1,11 +1,11 @@
 import { IGameWorker } from './game-worker.interface';
-import { IGameInstance, IGameAction, IGameCard, IInteractionChoseSquareOnBoard } from '@thefirstspine/types-arena';
+import { IGameInstance, IGameAction, IGameCard, IInteractionChoseSquareOnBoard } from '@thefirstspine/types-matches';
 import { Injectable } from '@nestjs/common';
 import { GameHookService } from '../game-hook/game-hook.service';
 import { IHasGameHookService, IHasGameWorkerService } from '../injections.interface';
 import { ArenaRoomsService } from '../../rooms/arena-rooms.service';
 import { GameWorkerService } from './game-worker.service';
-import { ICardCoords } from '@thefirstspine/types-rest';
+import { ICardCoords } from '@thefirstspine/types-game';
 import { randBetween } from '../../utils/maths.utils';
 import { LogsService } from '@thefirstspine/logs-nest';
 

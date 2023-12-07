@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { ICard, IGameType, IDeck, IShopItem, IAvatar, IQuest } from '@thefirstspine/types-rest';
+import { ICard, IGameType, IDeck } from '@thefirstspine/types-game';
 import axios from 'axios';
 
 @Injectable()
@@ -23,21 +23,6 @@ export class RestService {
 
   public async gameType(id: string): Promise<IGameType> {
     return this.single('game-types', id);
-  }
-
-  public async shopItem(id: string): Promise<IShopItem> {
-    return this.single('shop-items', id);
-  }
-
-  public async avatar(id: string): Promise<IAvatar> {
-    return this.single('avatars', id);
-  }
-
-  public async quests(): Promise<{
-    daily: IQuest,
-    weekly: IQuest,
-  }> {
-    return this.listAdSingle('quests');
   }
 
   public async list<T>(resource: string): Promise<T[]> {

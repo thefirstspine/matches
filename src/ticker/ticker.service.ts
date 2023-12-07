@@ -42,15 +42,6 @@ export class TickerService {
       }
     }
 
-    // Look for spawn bots every 10 tick
-    if (this.tickCount % 10 === 0) {
-      try {
-        await this.queueService.processBotSpawns();
-      } catch (e) {
-        this.logsService.error(`Ticker bots spawn error`, {name: e.name, message: e.message, stack: e.stack});
-      }
-    }
-
     // Manages matchmaking every 30 ticks
     if (this.tickCount % 30 === 0) {
       try {

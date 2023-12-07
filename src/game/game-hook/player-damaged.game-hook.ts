@@ -1,6 +1,6 @@
 import { IGameHook } from './game-hook.interface';
 import { Injectable } from '@nestjs/common';
-import { IGameInstance, IGameUser, IGameResult, IGameCard, IWizard, IWizardHistoryItem } from '@thefirstspine/types-arena';
+import { IGameInstance, IGameUser, IGameResult, IGameCard } from '@thefirstspine/types-matches';
 
 /**
  * This subscriber is executed once a 'card:lifeChanged:damaged:{player}' event is thrown and look for dead
@@ -19,8 +19,8 @@ export class PlayerDamagedGameHook implements IGameHook {
        && gameInstance.status === 'active') { // Guard here in case of multiple hook called
       // TODO: In a game instance with more than two player this does NOT work
       // Get the players
-      const losers: IGameUser[] = gameInstance.users.filter((u: IGameUser) => u.user === params.gameCard.user);
-      const winners: IGameUser[] = gameInstance.users.filter((u: IGameUser) => u.user !== params.gameCard.user);
+      const losers: IGameUser[] = gameInstance.gameUsers.filter((u: IGameUser) => u.user === params.gameCard.user);
+      const winners: IGameUser[] = gameInstance.gameUsers.filter((u: IGameUser) => u.user !== params.gameCard.user);
 
       // Generate results & register history
       const result: IGameResult[] = [];
@@ -64,7 +64,6 @@ export class PlayerDamagedGameHook implements IGameHook {
     result.push({
       user: gameUser.user,
       result: victory ? 'win' : 'lose',
-      loot: [],
     });
   }
 

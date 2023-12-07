@@ -1,8 +1,8 @@
 import { IGameHook } from './game-hook.interface';
 import { Injectable } from '@nestjs/common';
-import { IGameInstance, IGameCard, IGameAction } from '@thefirstspine/types-arena';
+import { IGameInstance, IGameCard, IGameAction } from '@thefirstspine/types-matches';
 import { GameHookService } from './game-hook.service';
-import { ICard } from '@thefirstspine/types-rest';
+import { ICard } from '@thefirstspine/types-game';
 import { RestService } from '../../rest/rest.service';
 import { randBetween } from '../../utils/maths.utils';
 import { Modifiers } from '../modifiers';

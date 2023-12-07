@@ -1,4 +1,4 @@
-import { IGameInstance } from '@thefirstspine/types-arena';
+import { IGameInstance } from '@thefirstspine/types-matches';
 
 /**
  * Main game hook interface. A game hook is an event-based method triggered by calling the GameHookService.

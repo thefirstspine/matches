@@ -1,7 +1,7 @@
 import { IGameHook } from './game-hook.interface';
 import { Injectable } from '@nestjs/common';
-import { IGameInstance, IGameCard, IGameAction, IWizard } from '@thefirstspine/types-arena';
-import { ICardCoords } from '@thefirstspine/types-rest';
+import { IGameInstance, IGameCard, IGameAction } from '@thefirstspine/types-matches';
+import { ICardCoords } from '@thefirstspine/types-game';
 import { rotateCard } from '../../utils/game.utils';
 
 @Injectable()

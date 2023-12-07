@@ -1,8 +1,8 @@
 import { IGameHook } from './game-hook.interface';
 import { Injectable } from '@nestjs/common';
-import { IGameInstance, IGameUser } from '@thefirstspine/types-arena';
+import { IGameInstance, IGameUser } from '@thefirstspine/types-matches';
 import { RestService } from '../../rest/rest.service';
-import { ICard, ICardCoords } from '@thefirstspine/types-rest';
+import { ICard, ICardCoords } from '@thefirstspine/types-game';
 import { randBetween } from '../../utils/maths.utils';
 import { shuffle } from '../../utils/array.utils';
 import { Modifiers } from '../modifiers';
@@ -19,7 +19,7 @@ export class GameCreatedGameHook implements IGameHook {
       // Get the "golden-galleon" card
       const goldenGalleonCard: ICard = await this.restService.card('golden-galleon');
       // Add the cards "golden-galleon"
-      gameInstance.users.forEach((u: IGameUser) => {
+      gameInstance.gameUsers.forEach((u: IGameUser) => {
         for (let i = 0; i < 6; i ++) {
           const randomId: number = randBetween(0, Number.MAX_SAFE_INTEGER);
           gameInstance.cards.push({
@@ -40,7 +40,7 @@ export class GameCreatedGameHook implements IGameHook {
       // Get the "great-ancient-egg" card
       const greatAncientCard: ICard = await this.restService.card('great-ancient-egg');
       // Add the cards "great-ancient-egg"
-      gameInstance.users.forEach((u: IGameUser) => {
+      gameInstance.gameUsers.forEach((u: IGameUser) => {
         for (let i = 0; i < 4; i ++) {
           const randomId: number = randBetween(0, Number.MAX_SAFE_INTEGER);
           gameInstance.cards.push({
@@ -50,38 +50,6 @@ export class GameCreatedGameHook implements IGameHook {
             user: u.user,
             metadata: {},
             currentStats: JSON.parse(JSON.stringify(greatAncientCard.stats)),
-          });
-        }
-      });
-      // Shuffle the cards
-      gameInstance.cards = shuffle(gameInstance.cards);
-    }
-
-    if (gameInstance.modifiers.includes(Modifiers.SOUVENIRS_FROM_YOUR_ENEMY)) {
-      // Get the "great-ancient-egg" card
-      const hunterSouvenirCard: ICard = await this.restService.card('hunter-souvenir');
-      const conjurerSouvenirCard: ICard = await this.restService.card('conjurer-souvenir');
-      const summonerSouvenirCard: ICard = await this.restService.card('summoner-souvenir');
-      const sorcererSouvenirCard: ICard = await this.restService.card('sorcerer-souvenir');
-      const souvenirs = {
-        hunter: hunterSouvenirCard,
-        conjurer: conjurerSouvenirCard,
-        summoner: summonerSouvenirCard,
-        sorcerer: sorcererSouvenirCard,
-      };
-      // Add the cards "great-ancient-egg"
-      gameInstance.users.forEach((u: IGameUser) => {
-        // Get the opponent
-        const opponent = gameInstance.users.find((potentialOpponent: IGameUser) => potentialOpponent !== u);
-        for (let i = 0; i < 4; i ++) {
-          const randomId: number = randBetween(0, Number.MAX_SAFE_INTEGER);
-          gameInstance.cards.push({
-            card: souvenirs[opponent.destiny],
-            id: `${gameInstance.id}_${randomId}`,
-            location: 'deck',
-            user: u.user,
-            metadata: {},
-            currentStats: JSON.parse(JSON.stringify(souvenirs[opponent.destiny].stats)),
           });
         }
       });
@@ -145,135 +113,11 @@ export class GameCreatedGameHook implements IGameHook {
       gameInstance.cards = shuffle(gameInstance.cards);
     }
 
-    if (gameInstance.modifiers.includes(Modifiers.DRIFTER)) {
-      // Get all the cards
-      const maraFoxCard: ICard = await this.restService.card('mara-fox');
-      const maraBansheeCard: ICard = await this.restService.card('mara-banshee');
-      const argentoBarbedWiresCard: ICard = await this.restService.card('argento-barbed-wires');
-      const argentoTowerCard: ICard = await this.restService.card('argento-tower');
-      const insanePutrefactionCard: ICard = await this.restService.card('insane-putrefaction');
-      const insaneRuinCard: ICard = await this.restService.card('insane-ruin');
-      gameInstance.users.forEach((u: IGameUser) => {
-        if (u.destiny === 'summoner') {
-          for (let i = 0; i < 3; i ++) {
-            gameInstance.cards.push({
-              card: maraFoxCard,
-              id: `${gameInstance.id}_${randBetween(0, Number.MAX_SAFE_INTEGER)}`,
-              location: 'deck',
-              user: u.user,
-              metadata: {},
-              currentStats: JSON.parse(JSON.stringify(maraFoxCard.stats)),
-            });
-            gameInstance.cards.push({
-              card: maraBansheeCard,
-              id: `${gameInstance.id}_${randBetween(0, Number.MAX_SAFE_INTEGER)}`,
-              location: 'deck',
-              user: u.user,
-              metadata: {},
-              currentStats: JSON.parse(JSON.stringify(maraBansheeCard.stats)),
-            });
-          }
-        }
-        if (u.destiny === 'conjurer') {
-          for (let i = 0; i < 3; i ++) {
-            gameInstance.cards.push({
-              card: argentoBarbedWiresCard,
-              id: `${gameInstance.id}_${randBetween(0, Number.MAX_SAFE_INTEGER)}`,
-              location: 'deck',
-              user: u.user,
-              metadata: {},
-              currentStats: JSON.parse(JSON.stringify(argentoBarbedWiresCard.stats)),
-            });
-            gameInstance.cards.push({
-              card: argentoTowerCard,
-              id: `${gameInstance.id}_${randBetween(0, Number.MAX_SAFE_INTEGER)}`,
-              location: 'deck',
-              user: u.user,
-              metadata: {},
-              currentStats: JSON.parse(JSON.stringify(argentoTowerCard.stats)),
-            });
-          }
-        }
-        if (u.destiny === 'sorcerer') {
-          for (let i = 0; i < 3; i ++) {
-            gameInstance.cards.push({
-              card: insanePutrefactionCard,
-              id: `${gameInstance.id}_${randBetween(0, Number.MAX_SAFE_INTEGER)}`,
-              location: 'deck',
-              user: u.user,
-              metadata: {},
-              currentStats: undefined,
-            });
-            gameInstance.cards.push({
-              card: insaneRuinCard,
-              id: `${gameInstance.id}_${randBetween(0, Number.MAX_SAFE_INTEGER)}`,
-              location: 'deck',
-              user: u.user,
-              metadata: {},
-              currentStats: undefined,
-            });
-          }
-        }
-        if (u.destiny === 'hunter') {
-          gameInstance.cards.push({
-            card: insanePutrefactionCard,
-            id: `${gameInstance.id}_${randBetween(0, Number.MAX_SAFE_INTEGER)}`,
-            location: 'deck',
-            user: u.user,
-            metadata: {},
-            currentStats: undefined,
-          });
-          gameInstance.cards.push({
-            card: insaneRuinCard,
-            id: `${gameInstance.id}_${randBetween(0, Number.MAX_SAFE_INTEGER)}`,
-            location: 'deck',
-            user: u.user,
-            metadata: {},
-            currentStats: undefined,
-          });
-          gameInstance.cards.push({
-            card: argentoBarbedWiresCard,
-            id: `${gameInstance.id}_${randBetween(0, Number.MAX_SAFE_INTEGER)}`,
-            location: 'deck',
-            user: u.user,
-            metadata: {},
-            currentStats: JSON.parse(JSON.stringify(argentoBarbedWiresCard.stats)),
-          });
-          gameInstance.cards.push({
-            card: argentoTowerCard,
-            id: `${gameInstance.id}_${randBetween(0, Number.MAX_SAFE_INTEGER)}`,
-            location: 'deck',
-            user: u.user,
-            metadata: {},
-            currentStats: JSON.parse(JSON.stringify(argentoTowerCard.stats)),
-          });
-          gameInstance.cards.push({
-            card: maraFoxCard,
-            id: `${gameInstance.id}_${randBetween(0, Number.MAX_SAFE_INTEGER)}`,
-            location: 'deck',
-            user: u.user,
-            metadata: {},
-            currentStats: JSON.parse(JSON.stringify(maraFoxCard.stats)),
-          });
-          gameInstance.cards.push({
-            card: maraBansheeCard,
-            id: `${gameInstance.id}_${randBetween(0, Number.MAX_SAFE_INTEGER)}`,
-            location: 'deck',
-            user: u.user,
-            metadata: {},
-            currentStats: JSON.parse(JSON.stringify(maraBansheeCard.stats)),
-          });
-        }
-      });
-      // Shuffle the cards
-      gameInstance.cards = shuffle(gameInstance.cards);
-    }
-
     if (gameInstance.modifiers.includes(Modifiers.TRICK_OR_TREAT)) {
       // Get the "trick-or-treat" card
       const trickOrTreatCard: ICard = await this.restService.card('trick-or-treat');
       // Add the cards "trick-or-treat"
-      gameInstance.users.forEach((u: IGameUser) => {
+      gameInstance.gameUsers.forEach((u: IGameUser) => {
         for (let i = 0; i < 6; i ++) {
           const randomId: number = randBetween(0, Number.MAX_SAFE_INTEGER);
           gameInstance.cards.push({
@@ -294,7 +138,7 @@ export class GameCreatedGameHook implements IGameHook {
       // Get the "great-ancient-egg" card
       const bloodStrength: ICard = await this.restService.card('blood-strength');
       // Add the cards "great-ancient-egg"
-      gameInstance.users.forEach((u: IGameUser) => {
+      gameInstance.gameUsers.forEach((u: IGameUser) => {
         for (let i = 0; i < 4; i ++) {
           const randomId: number = randBetween(0, Number.MAX_SAFE_INTEGER);
           gameInstance.cards.push({
@@ -315,7 +159,7 @@ export class GameCreatedGameHook implements IGameHook {
       const mutateBanshee: ICard = await this.restService.card('mutate-banshee');
       const mutateTower: ICard = await this.restService.card('mutate-tower');
       const mutateBarbedWires: ICard = await this.restService.card('mutate-barbed-wires');
-      gameInstance.users.forEach((u: IGameUser) => {
+      gameInstance.gameUsers.forEach((u: IGameUser) => {
         for (let i = 0; i < 2; i ++) {
           gameInstance.cards.push({
             card: mutateFox,

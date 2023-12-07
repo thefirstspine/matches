@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { shuffle } from '../utils/array.utils';
 import { randBetween } from '../utils/maths.utils';
-import { IGameInstance, IGameUser, IGameCard, IGameAction, IWizardItem, IGameInteraction } from '@thefirstspine/types-arena';
+import { IGameInstance, IGameUser, IGameCard, IGameAction, IGameInteraction } from '@thefirstspine/types-matches';
 import { RestService } from '../rest/rest.service';
-import { ICard } from '@thefirstspine/types-rest';
-import { IGameType, IDeck } from '@thefirstspine/types-rest';
+import { ICard } from '@thefirstspine/types-game';
+import { IGameType, IDeck } from '@thefirstspine/types-game';
 import { ArenaRoomsService } from '../rooms/arena-rooms.service';
 import { GameWorkerService } from './game-worker/game-worker.service';
 import { GameHookService } from './game-hook/game-hook.service';
@@ -44,13 +44,11 @@ export class GameService {
   /**
    * Creates a game instance & store it in the hot memory
    * @param gameTypeId
-   * @param users
+   * @param gameUsers
    */
   async createGameInstance(
-    gameTypeId: string,
-    users: IGameUser[],
+    gameUsers: IGameUser[],
     modifiers: string[],
-    theme: string,
     expirationTimeModifier: number): Promise<IGameInstance> {
     // Generate a numeric ID to ensure retrocompatibility
     const gameInstanceId = Date.now();
@@ -61,47 +59,32 @@ export class GameService {
     }
 
     // Create the decks
-    const decks: IDeck[] = await this.restService.decks();
-    const gameType: IGameType = await this.restService.gameType(gameTypeId);
+    const coords = [{
+        x: 3,
+        y: 0
+    },
+    {
+        x: 3,
+        y: 6
+    }];
     const cards: IGameCard[] = [];
-    users.forEach((gameUser: IGameUser, index: number) => {
-      const decksToMix: string[] = [gameUser.destiny];
-      if (gameUser.origin) {
-        decksToMix.push(gameUser.origin);
-      }
-      decksToMix.forEach((deckToMix: string) => {
-        const deck: IDeck = decks.find((d: IDeck) => d.id === deckToMix);
-        deck.cards.forEach((card: ICard) => {
-          const randomId: number = randBetween(0, Number.MAX_SAFE_INTEGER);
-          cards.push({
-            user: gameUser.user,
-            location: card.type === 'player' ? 'board' : 'deck',
-            coords: card.type === 'player' ? gameType.players[index] : undefined,
-            id: `${gameInstanceId}_${randomId}`,
-            currentStats: card.stats ? JSON.parse(JSON.stringify(card.stats)) : undefined,
-            metadata: {},
-            card: JSON.parse(JSON.stringify(card)),
-          });
+    gameUsers.forEach((gameUser: IGameUser, index: number) => {
+      gameUser.cards.forEach((card: ICard) => {
+        const randomId: number = randBetween(0, Number.MAX_SAFE_INTEGER);
+        cards.push({
+          user: gameUser.user,
+          location: card.type === 'player' ? 'board' : 'deck',
+          coords: card.type === 'player' ? coords[index] : undefined,
+          id: `${gameInstanceId}_${randomId}`,
+          currentStats: card.stats ? JSON.parse(JSON.stringify(card.stats)) : undefined,
+          metadata: {},
+          card: JSON.parse(JSON.stringify(card)),
         });
       });
     });
 
     // Add setup cards
-    const cardsSetup = Object.keys(gameType.setup).map((coords: string): IGameCard => {
-      const randomId: number = randBetween(0, Number.MAX_SAFE_INTEGER);
-      const xy = coords.split('-').map((i) => parseInt(i, 10));
-      return {
-        card: gameType.setup[coords],
-        user: 0,
-        location: 'board',
-        id: `${gameInstanceId}_${randomId}`,
-        coords: {
-          x: xy[0],
-          y: xy[1],
-        },
-      };
-    });
-    cards.push(...cardsSetup);
+    // TODO: Do with modifiers
 
     // Shuffle cards
     const shuffledCards: IGameCard[] = shuffle(cards);
@@ -109,7 +92,7 @@ export class GameService {
     // Get curse card
     const curseCard: ICard = await this.restService.card('curse-of-mara');
 
-    await Promise.all(users.map(async (gameUser: IGameUser, index: number) => {
+    await Promise.all(gameUsers.map(async (gameUser: IGameUser, index: number) => {
       // Get the first 6 cards in the hand of each player
       let cardsTook: number = 0;
       shuffledCards.forEach((card: IGameCard) => {
@@ -121,16 +104,14 @@ export class GameService {
     }));
 
     // Get the first user
-    const firstUserToPlay = randBetween(0, users.length);
+    const firstUserToPlay = randBetween(0, gameUsers.length);
 
     // Create the instance
     const gameInstance: IGameInstance = {
       status: 'active',
       id: gameInstanceId,
       modifiers,
-      theme,
-      gameTypeId,
-      users,
+      gameUsers,
       expirationTimeModifier,
       cards: shuffledCards,
       actions: {
@@ -142,7 +123,7 @@ export class GameService {
 
     // Create the first action
     const action: IGameAction<IGameInteraction> = await this.gameWorkerService.getWorker('throw-cards')
-      .create(gameInstance, {user: users[firstUserToPlay].user});
+      .create(gameInstance, {user: gameUsers[firstUserToPlay].user});
     gameInstance.actions.current.push(action);
 
     // Save it
@@ -150,7 +131,7 @@ export class GameService {
     this.gameInstances[gameInstanceId] = gameInstance;
 
     // Dispatch event with the created instance
-    await this.gameHookService.dispatch(gameInstance, `game:created:${gameTypeId}`, {gameInstance});
+    await this.gameHookService.dispatch(gameInstance, `game:created:standard:${gameInstance.id}`, {gameInstance});
 
     // Create the room in the rooms service
     this.arenaRoomsService.createRoomForGame(gameInstance);
