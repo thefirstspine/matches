@@ -17,6 +17,7 @@ import { LogsService } from '@thefirstspine/logs-nest';
 import { MessagingService } from '@thefirstspine/messaging-nest';
 import { MongooseModule } from '@nestjs/mongoose';
 import { GameInstance, GameInstanceSchema } from './game/game-instance.schema';
+import { NetworkRoomsDriver } from './rooms/drivers/network.rooms.driver';
 
 @Module({
   controllers: [ApiController, TickerController, IndexController],
@@ -28,7 +29,13 @@ import { GameInstance, GameInstanceSchema } from './game/game-instance.schema';
     AuthService,
     LogsService,
     RestService,
-    RoomsService,
+    {
+      provide: RoomsService,
+      useFactory: (logsService: LogsService) => {
+        return new RoomsService(new NetworkRoomsDriver(), logsService);
+      },
+      inject: [LogsService],
+    },
     ArenaRoomsService,
     MessagingService,
     GameWorkerService,

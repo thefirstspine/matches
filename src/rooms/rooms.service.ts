@@ -9,7 +9,7 @@ import axios from 'axios';
 @Injectable()
 export class RoomsService {
 
-  constructor(private readonly logsService: LogsService) {}
+  constructor(private readonly driver: IRoomsDriver, private readonly logsService: LogsService) {}
 
   /**
    * Create a room for a subject.
@@ -52,23 +52,13 @@ export class RoomsService {
    */
   protected async sendRequest<T>(endpoint: string, data: any, method: 'get'|'post'|'delete' = 'get'): Promise<T|null> {
     this.logsService.info('Send message to room service', {endpoint, data});
-    const url: string = `${process.env.ROOMS_URL}/api/${endpoint}`;
-    const response = await axios.post(
-        url,
-        data,
-        {
-          headers: {
-            'Content-Type': 'application/json',
-            'X-Client-Cert': Buffer.from(process.env.ROOMS_PUBLIC_KEY.replace(/\\n/gm, '\n')).toString('base64'),
-          },
-        });
-    const jsonResponse: any = response.data;
-    if (response.status >= 400) {
-      this.logsService.error('Error from rooms service', jsonResponse);
+    const response: IRoomsDriverResponse<T> = await this.driver.sendRequest<T>(endpoint, data, method);
+    if (response.error) {
+      this.logsService.error('Error from rooms service', response.data);
       return null;
     }
-    this.logsService.info('Response from rooms service', jsonResponse);
-    return jsonResponse as T;
+    this.logsService.info('Response from rooms service', response.data);
+    return response.data as T;
   }
 
 }
@@ -99,4 +89,13 @@ export interface IMessage {
 
 export interface IMessageCreated extends IMessage {
   timestamp: number;
+}
+
+export interface IRoomsDriver {
+  sendRequest<T>(endpoint: string, data: any, method: 'get'|'post'|'delete'): Promise<IRoomsDriverResponse<T>>;
+}
+
+export interface IRoomsDriverResponse<T> {
+  error: boolean;
+  data: T;
 }
