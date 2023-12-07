@@ -10,7 +10,6 @@ import { RoomsService } from './rooms/rooms.service';
 import { ArenaRoomsService } from './rooms/arena-rooms.service';
 import { GameWorkerService } from './game/game-worker/game-worker.service';
 import { GameHookService } from './game/game-hook/game-hook.service';
-import { BotsService } from './bots/bots.service';
 import { IndexController } from './index/index.controller';
 import { AuthService } from '@thefirstspine/auth-nest';
 import { LogsService } from '@thefirstspine/logs-nest';
@@ -40,7 +39,6 @@ import { NetworkRoomsDriver } from './rooms/drivers/network.rooms.driver';
     MessagingService,
     GameWorkerService,
     GameHookService,
-    BotsService,
   ],
 })
 export class AppModule {

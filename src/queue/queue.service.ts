@@ -3,11 +3,7 @@ import { GameService } from '../game/game.service';
 import { IGameUser, IGameInstance, IQueueInstance } from '@thefirstspine/types-matches';
 import { ICard, IGameType } from '@thefirstspine/types-game';
 import { RestService } from '../rest/rest.service';
-import { BotsService } from '../bots/bots.service';
 import { MessagingService } from '@thefirstspine/messaging-nest';
-import { Modifiers } from '../game/modifiers';
-import { Themes } from '../game/themes';
-import { randBetween } from '../utils/maths.utils';
 import { IQueueUser } from '@thefirstspine/types-matches/lib/queue-user.interface';
 
 /**
@@ -33,7 +29,6 @@ export class QueueService {
     private readonly messagingService: MessagingService,
     private readonly gameService: GameService,
     private readonly restService: RestService,
-    private readonly botsService: BotsService,
   ) {
     // Create base queues instances
     this.queueInstances.push(
