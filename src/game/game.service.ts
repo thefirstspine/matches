@@ -47,6 +47,7 @@ export class GameService {
    * @param gameUsers
    */
   async createGameInstance(
+    queueKey: string,
     gameUsers: IGameUser[],
     modifiers: string[],
     expirationTimeModifier: number): Promise<IGameInstance> {
@@ -83,14 +84,8 @@ export class GameService {
       });
     });
 
-    // Add setup cards
-    // TODO: Do with modifiers
-
     // Shuffle cards
     const shuffledCards: IGameCard[] = shuffle(cards);
-
-    // Get curse card
-    const curseCard: ICard = await this.restService.card('curse-of-mara');
 
     await Promise.all(gameUsers.map(async (gameUser: IGameUser, index: number) => {
       // Get the first 6 cards in the hand of each player
@@ -108,6 +103,7 @@ export class GameService {
 
     // Create the instance
     const gameInstance: IGameInstance = {
+      queueKey,
       status: 'active',
       id: gameInstanceId,
       modifiers,

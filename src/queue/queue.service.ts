@@ -218,6 +218,7 @@ export class QueueService {
 
       // Create a game
       const game: IGameInstance = await this.gameService.createGameInstance(
+        queueInstance.key,
         queueUsersNeeded,
         queueInstance.modifiers ? queueInstance.modifiers : [],
         queueInstance.expirationTimeModifier ? queueInstance.expirationTimeModifier : 1);
