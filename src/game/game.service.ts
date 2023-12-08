@@ -403,4 +403,10 @@ export class GameService {
 
   }
 
+  async getActiveGameInstanceForUser(user: number): Promise<IGameInstance | undefined> {
+    const instance: IGameInstance | undefined =
+      await this.gameInstanceModel.findOne({status: 'active', 'gameUsers.user': user}).exec();
+    return instance;
+  }
+
 }
