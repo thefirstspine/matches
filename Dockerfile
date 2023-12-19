@@ -1,6 +1,6 @@
 FROM node:16
 
-WORKDIR /arena
+WORKDIR /matches
 
 COPY . .
 
