@@ -17,7 +17,7 @@ export class ArenaRoomsService {
     this.roomsService.createRoom(
       ArenaRoomsService.SUBJECT,
       {
-        name: 'realm-' + process.env.REALM ? process.env.REALM : '',
+        name: 'realm-' + (process.env.REALM ? process.env.REALM : ''),
         senders: [],
       });
   }
