@@ -1,4 +1,4 @@
-# Install & run arena service
+# Install & run matches service
 
 <div id="main-content" class="wiki-content group">
                     <h2 id="Install&amp;runarenaservice-Installation">Installation</h2><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
