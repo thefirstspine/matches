@@ -26,19 +26,19 @@ export class GameAssetsService {
   }
 
   public async list<T>(resource: string): Promise<T[]> {
-    const response = await axios.get(`${process.env.REST_URL}/rest/${resource}`);
+    const response = await axios.get(`${process.env.GAME_ASSETS_URL}/rest/${resource}`);
     const json = await response.data;
     return json as T[];
   }
 
   public async single<T>(resource: string, id: string): Promise<T> {
-    const response = await axios.get(`${process.env.REST_URL}/rest/${resource}/${id}`);
+    const response = await axios.get(`${process.env.GAME_ASSETS_URL}/rest/${resource}/${id}`);
     const json = await response.data;
     return json as T;
   }
 
   public async listAdSingle<T>(resource: string): Promise<T> {
-    const response = await axios.get(`${process.env.REST_URL}/rest/${resource}`);
+    const response = await axios.get(`${process.env.GAME_ASSETS_URL}/rest/${resource}`);
     const json = await response.data;
     return json as T;
   }
