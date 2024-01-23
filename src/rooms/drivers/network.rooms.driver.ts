@@ -5,7 +5,8 @@ export class NetworkRoomsDriver implements IRoomsDriver {
 
   async sendRequest<T>(endpoint: string, data: any, method: "get" | "post" | "delete"): Promise<IRoomsDriverResponse<T>> {
     const url: string = `${process.env.ROOMS_URL}/api/${endpoint}`;
-    const response = await axios.post(
+    try {
+      const response = await axios.post(
         url,
         data,
         {
@@ -25,6 +26,12 @@ export class NetworkRoomsDriver implements IRoomsDriver {
         data: jsonResponse as T,
         error: false,
       };
+    } catch (error) {
+      return {
+        data: error.response.data as T,
+        error: true,
+      };
+    }
   }
 
 }
