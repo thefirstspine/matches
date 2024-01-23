@@ -3,7 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { IGameInstance, IGameCard, IGameAction } from '@thefirstspine/types-matches';
 import { GameHookService } from './game-hook.service';
 import { ICard } from '@thefirstspine/types-game';
-import { RestService } from '../../rest/rest.service';
+import { GameAssetsService } from '../../game-assets/game-assets.service';
 import { randBetween } from '../../utils/maths.utils';
 import { GameWorkerService } from '../game-worker/game-worker.service';
 
@@ -18,7 +18,7 @@ export class CardDestroyedGameHook implements IGameHook {
 
   constructor(
     private readonly gameHookService: GameHookService,
-    private readonly restService: RestService,
+    private readonly restService: GameAssetsService,
     private readonly gameWorkerService: GameWorkerService,
   ) {}
 

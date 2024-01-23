@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { shuffle } from '../utils/array.utils';
 import { randBetween } from '../utils/maths.utils';
 import { IGameInstance, IGameUser, IGameCard, IGameAction, IGameInteraction } from '@thefirstspine/types-matches';
-import { RestService } from '../rest/rest.service';
+import { GameAssetsService } from '../game-assets/game-assets.service';
 import { ICard } from '@thefirstspine/types-game';
 import { IGameType, IDeck } from '@thefirstspine/types-game';
 import { ArenaRoomsService } from '../rooms/arena-rooms.service';
@@ -32,7 +32,7 @@ export class GameService {
   constructor(
     private readonly messagingService: MessagingService,
     private readonly logsService: LogsService,
-    private readonly restService: RestService,
+    private readonly restService: GameAssetsService,
     private readonly arenaRoomsService: ArenaRoomsService,
     private readonly gameWorkerService: GameWorkerService,
     private readonly gameHookService: GameHookService,

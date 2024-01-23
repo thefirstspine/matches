@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { GameService } from '../game/game.service';
 import { IGameUser, IGameInstance, IQueueInstance } from '@thefirstspine/types-matches';
 import { ICard, IGameType } from '@thefirstspine/types-game';
-import { RestService } from '../rest/rest.service';
+import { GameAssetsService } from '../game-assets/game-assets.service';
 import { MessagingService } from '@thefirstspine/messaging-nest';
 import { IQueueUser } from '@thefirstspine/types-matches/lib/queue-user.interface';
 
@@ -28,7 +28,7 @@ export class QueueService {
   constructor(
     private readonly messagingService: MessagingService,
     private readonly gameService: GameService,
-    private readonly restService: RestService,
+    private readonly restService: GameAssetsService,
   ) {
     // Create base queues instances
     this.queueInstances.push(

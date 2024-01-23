@@ -5,7 +5,7 @@ import { GameHookService } from '../game-hook/game-hook.service';
 import { IHasGameHookService, IHasGameWorkerService } from '../injections.interface';
 import { ArenaRoomsService } from '../../rooms/arena-rooms.service';
 import { GameWorkerService } from './game-worker.service';
-import { RestService } from '../../rest/rest.service';
+import { GameAssetsService } from '../../game-assets/game-assets.service';
 import { ICard } from '@thefirstspine/types-game';
 
 /**
@@ -20,7 +20,7 @@ export class EndTurnGameWorker implements IGameWorker, IHasGameHookService, IHas
   public readonly type: string = 'end-turn';
 
   constructor(
-    private readonly restService: RestService,
+    private readonly restService: GameAssetsService,
     private readonly arenaRoomsService: ArenaRoomsService,
   ) {}
 

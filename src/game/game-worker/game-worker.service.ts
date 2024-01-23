@@ -1,6 +1,6 @@
 import { Injectable, forwardRef, Inject } from '@nestjs/common';
 import { ArenaRoomsService } from '../../rooms/arena-rooms.service';
-import { RestService } from '../../rest/rest.service';
+import { GameAssetsService } from '../../game-assets/game-assets.service';
 import { IGameWorker } from './game-worker.interface';
 import { ThrowCardsGameWorker } from './throw-cards.game-worker';
 import { MoveCreatureGameWorker } from './move-creature.game-worker';
@@ -53,7 +53,7 @@ export class GameWorkerService extends BaseGameService<IGameWorker> {
   constructor(
     private readonly messagingService: MessagingService,
     private readonly logsService: LogsService,
-    private readonly restService: RestService,
+    private readonly restService: GameAssetsService,
     private readonly arenaRoomsService: ArenaRoomsService,
     @Inject(forwardRef(() => GameHookService)) private readonly gameHookService: GameHookService,
   ) {

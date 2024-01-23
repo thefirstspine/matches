@@ -1,6 +1,6 @@
 import { Injectable, Inject, forwardRef } from '@nestjs/common';
 import { ArenaRoomsService } from '../../rooms/arena-rooms.service';
-import { RestService } from '../../rest/rest.service';
+import { GameAssetsService } from '../../game-assets/game-assets.service';
 import { BaseGameService } from '../base.game.service';
 import { IGameHook } from './game-hook.interface';
 import { IGameInstance } from '@thefirstspine/types-matches';
@@ -30,7 +30,7 @@ export class GameHookService extends BaseGameService<IGameHook> {
   constructor(
     private readonly messagingService: MessagingService,
     private readonly logsService: LogsService,
-    private readonly restService: RestService,
+    private readonly restService: GameAssetsService,
     private readonly arenaRoomsService: ArenaRoomsService,
     @Inject(forwardRef(() => GameWorkerService)) public readonly gameWorkerService: GameWorkerService,
   ) {

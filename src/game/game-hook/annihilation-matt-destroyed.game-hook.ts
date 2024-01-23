@@ -1,7 +1,7 @@
 import { IGameHook } from './game-hook.interface';
 import { Injectable } from '@nestjs/common';
 import { IGameInstance, IGameCard } from '@thefirstspine/types-matches';
-import { RestService } from '../../rest/rest.service';
+import { GameAssetsService } from '../../game-assets/game-assets.service';
 import { IHasGameHookService } from '../injections.interface';
 import { GameHookService } from './game-hook.service';
 
@@ -15,7 +15,7 @@ export class AnnihilationMattDestroyedGameHook implements IGameHook, IHasGameHoo
 
   public gameHookService: GameHookService;
 
-  public constructor(private readonly restService: RestService) {}
+  public constructor(private readonly restService: GameAssetsService) {}
 
   async execute(gameInstance: IGameInstance, params: {gameCard: IGameCard, source: IGameCard}): Promise<boolean> {
     // Get the player associate with the source

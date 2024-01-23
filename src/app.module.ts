@@ -5,7 +5,7 @@ import { GameService } from './game/game.service';
 import { QueueService } from './queue/queue.service';
 import { TickerController } from './ticker/ticker.controller';
 import { TickerService } from './ticker/ticker.service';
-import { RestService } from './rest/rest.service';
+import { GameAssetsService } from './game-assets/game-assets.service';
 import { RoomsService } from './rooms/rooms.service';
 import { ArenaRoomsService } from './rooms/arena-rooms.service';
 import { GameWorkerService } from './game/game-worker/game-worker.service';
@@ -27,7 +27,7 @@ import { NetworkRoomsDriver } from './rooms/drivers/network.rooms.driver';
     TickerService,
     AuthService,
     LogsService,
-    RestService,
+    GameAssetsService,
     {
       provide: RoomsService,
       useFactory: (logsService: LogsService) => {

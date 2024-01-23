@@ -3,7 +3,7 @@ import { ICard, IGameType, IDeck } from '@thefirstspine/types-game';
 import axios from 'axios';
 
 @Injectable()
-export class RestService {
+export class GameAssetsService {
 
   public async gameTypes(): Promise<IGameType[]> {
     return this.list('game-types');
