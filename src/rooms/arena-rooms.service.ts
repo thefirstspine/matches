@@ -1,8 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { IWizard, IGameInstance, IGameUser } from '@thefirstspine/types-arena';
+import { IGameInstance, IGameUser } from '@thefirstspine/types-matches';
 import { RoomsService, IRoom, IRoomCreated, ISender } from './rooms.service';
-import { WizardService } from '../wizard/wizard.service';
-import { ILocalized } from '@thefirstspine/types-rest';
+import { ILocalized } from '@thefirstspine/types-game';
 
 /**
  * Manages rooms for games inside the rooms service
@@ -14,12 +13,11 @@ export class ArenaRoomsService {
 
   constructor(
       private readonly roomsService: RoomsService,
-      private readonly wizardService: WizardService,
   ) {
     this.roomsService.createRoom(
       ArenaRoomsService.SUBJECT,
       {
-        name: 'realm-' + process.env.REALM,
+        name: 'realm-' + (process.env.REALM ? process.env.REALM : ''),
         senders: [],
       });
   }
@@ -29,11 +27,10 @@ export class ArenaRoomsService {
    * @param game
    */
   async createRoomForGame(game: IGameInstance): Promise<IRoomCreated> {
-    const senders: ISender[] = await Promise.all(game.users.map(async (user: IGameUser) => {
-      const wizzard: IWizard = await this.wizardService.getOrCreateWizard(user.user);
+    const senders: ISender[] = await Promise.all(game.gameUsers.map(async (user: IGameUser) => {
       return {
         user: user.user,
-        displayName: wizzard.name,
+        displayName: "#" + user.user,
       };
     }));
     const room: IRoom = {

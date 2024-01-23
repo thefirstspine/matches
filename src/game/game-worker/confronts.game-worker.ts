@@ -3,10 +3,10 @@ import { IGameInstance,
   IGameAction,
   IInteractionMoveCardOnBoardPossibility,
   IInteractionSelectCoupleOnBoard,
-  IGameCard } from '@thefirstspine/types-arena';
+  IGameCard } from '@thefirstspine/types-matches';
 import { Injectable } from '@nestjs/common';
 import { GameWorkerService } from './game-worker.service';
-import { cardSide, ICardCoords } from '@thefirstspine/types-rest';
+import { cardSide, ICardCoords } from '@thefirstspine/types-game';
 import { GameHookService } from '../game-hook/game-hook.service';
 import { IHasGameHookService, IHasGameWorkerService } from '../injections.interface';
 import { ArenaRoomsService } from '../../rooms/arena-rooms.service';

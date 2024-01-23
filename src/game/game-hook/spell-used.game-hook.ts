@@ -1,10 +1,8 @@
 import { IGameHook } from './game-hook.interface';
 import { Injectable } from '@nestjs/common';
-import { IGameInstance, IGameCard, IGameAction, IGameActionPassed, IWizard } from '@thefirstspine/types-arena';
+import { IGameInstance, IGameCard, IGameAction } from '@thefirstspine/types-matches';
 import { IHasGameWorkerService } from '../injections.interface';
 import { GameWorkerService } from '../game-worker/game-worker.service';
-import { TriumphService } from '../../wizard/triumph/triumph.service';
-import { QuestService } from '../../wizard/quest/quest.service';
 
 /**
  * This subscriber is executed once a 'card:spell:used' event is thrown. It wil delete old spells actions.
@@ -15,8 +13,6 @@ import { QuestService } from '../../wizard/quest/quest.service';
 export class SpellUsedGameHook implements IGameHook, IHasGameWorkerService {
 
   constructor(
-    private readonly triumphService: TriumphService,
-    private readonly questService: QuestService,
   ) {}
 
   public gameWorkerService: GameWorkerService;
@@ -39,11 +35,6 @@ export class SpellUsedGameHook implements IGameHook, IHasGameWorkerService {
       playerCard.metadata.remainedSpells --;
     }
 
-    if (playerCard?.metadata?.remainedSpells >= 3) {
-      // Unlock title "repeater"
-      await this.triumphService.unlockTriumph(params.gameCard.user, 'repeater');
-    }
-
     // No spell remaining
     if (!playerCard?.metadata?.remainedSpells) {
       // Get the spells in the hand & delete the associated actions
@@ -64,12 +55,6 @@ export class SpellUsedGameHook implements IGameHook, IHasGameWorkerService {
           });
         });
     }
-
-    // Quest progression
-    await this.questService.progressQuest(
-      params.gameCard.user,
-      'play:spells',
-      1);
 
     return true;
   }

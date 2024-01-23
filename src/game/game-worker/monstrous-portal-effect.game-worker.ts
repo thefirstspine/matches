@@ -1,7 +1,7 @@
 import { IGameWorker } from './game-worker.interface';
-import { IGameInstance, IGameAction, IGameCard, IInteractionPutCardOnBoard } from '@thefirstspine/types-arena';
+import { IGameInstance, IGameAction, IGameCard, IInteractionPutCardOnBoard } from '@thefirstspine/types-matches';
 import { Injectable } from '@nestjs/common';
-import { ICardCoords } from '@thefirstspine/types-rest';
+import { ICardCoords } from '@thefirstspine/types-game';
 import { GameHookService } from '../game-hook/game-hook.service';
 import { IHasGameHookService } from '../injections.interface';
 import { ArenaRoomsService } from '../../rooms/arena-rooms.service';

@@ -1,11 +1,11 @@
 import { IGameWorker } from './game-worker.interface';
-import { IGameInstance, IGameAction, IGameCard, IInteractionChoseSquareOnBoard } from '@thefirstspine/types-arena';
+import { IGameInstance, IGameAction, IGameCard, IInteractionChoseSquareOnBoard } from '@thefirstspine/types-matches';
 import { Injectable } from '@nestjs/common';
 import { GameHookService } from '../game-hook/game-hook.service';
 import { IHasGameHookService, IHasGameWorkerService } from '../injections.interface';
 import { ArenaRoomsService } from '../../rooms/arena-rooms.service';
 import { GameWorkerService } from './game-worker.service';
-import { ICardCoords } from '@thefirstspine/types-rest';
+import { ICardCoords } from '@thefirstspine/types-game';
 import { randBetween } from '../../utils/maths.utils';
 import { LogsService } from '@thefirstspine/logs-nest';
 
@@ -93,7 +93,7 @@ export class VolkaEffectGameWorker implements IGameWorker, IHasGameHookService, 
     const y: number = parseInt(responseBoardCoords.split('-')[1], 10);
 
     // Get the first Volk'ha card in the user's deck & place it on the board to the desired position
-    const volkhaCard: IGameCard = gameInstance.cards.find((c) => c.card.id === 'volkha' && c.user === gameAction.user);
+    const volkhaCard: IGameCard = gameInstance.cards.find((c) => c.currentStats?.effects?.includes('volkha') && c.user === gameAction.user);
     volkhaCard.currentStats = JSON.parse(JSON.stringify(volkhaCard.card.stats));
     volkhaCard.location = 'board';
     volkhaCard.coords = {x, y};

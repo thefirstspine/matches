@@ -1,13 +1,13 @@
 export class Modifiers {
 
   static readonly GREAT_ANCIENTS_EGGS: string = 'great-ancients-eggs';
-  static readonly SOUVENIRS_FROM_YOUR_ENEMY: string = 'souvenirs-from-your-enemy';
+  static readonly SOUVENIRS_FROM_YOUR_ENEMY: string = 'souvenirs-from-your-enemy'; // Removed
   static readonly HARVESTING_SOULS: string = 'harvesting-souls';
   static readonly ANNIHILATION_MATTS: string = 'annihilation-matts';
   static readonly FROZEN_STATUES: string = 'frozen-statues';
   static readonly MUTATIONS: string = 'mutations';
   static readonly GOLDEN_GALLEONS: string = 'golden-galleons';
-  static readonly DRIFTER: string = 'drifter';
+  static readonly DRIFTER: string = 'drifter'; // Removed
   static readonly TRICK_OR_TREAT: string = 'trick-or-treat';
   static readonly TRIPLE_SHARDS: string = 'triple-shards';
   static readonly IMMEDIATE: string = 'immediate';

@@ -12,6 +12,10 @@ export class ApiCreateQueueDto {
   @IsIn(Themes.user)
   theme?: string;
 
+  @IsString()
+  @IsOptional()
+  key?: string;
+
   @IsArray()
   @IsString({ each: true })
   @IsIn(Modifiers.user, { each: true })

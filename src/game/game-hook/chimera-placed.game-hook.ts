@@ -1,6 +1,6 @@
 import { IGameHook } from './game-hook.interface';
 import { Injectable } from '@nestjs/common';
-import { IGameInstance, IGameCard } from '@thefirstspine/types-arena';
+import { IGameInstance, IGameCard } from '@thefirstspine/types-matches';
 
 /**
  * This subscriber is executed once an event is thrown.

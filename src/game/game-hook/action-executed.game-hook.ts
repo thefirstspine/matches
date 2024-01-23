@@ -1,15 +1,13 @@
 import { IGameHook } from './game-hook.interface';
 import { Injectable } from '@nestjs/common';
-import { IGameInstance, IGameCard, IGameAction, IWizard } from '@thefirstspine/types-arena';
-import { ICardCoords } from '@thefirstspine/types-rest';
+import { IGameInstance, IGameCard, IGameAction } from '@thefirstspine/types-matches';
+import { ICardCoords } from '@thefirstspine/types-game';
 import { rotateCard } from '../../utils/game.utils';
-import { TriumphService } from '../../wizard/triumph/triumph.service';
 
 @Injectable()
 export class ActionExecutedGameHook implements IGameHook {
 
   constructor(
-    private readonly triumphService: TriumphService,
   ) {}
 
   async execute(gameInstance: IGameInstance, params: {user: number, action: IGameAction<any>}): Promise<boolean> {
@@ -49,22 +47,18 @@ export class ActionExecutedGameHook implements IGameHook {
     });
 
     // Count the jesters
-    const jesters: number = cardsOnBoard.filter((c) => c.card.id === 'jester').length;
-    if (jesters >= 5) {
-      // Unlock the "comic" title
-      await this.triumphService.unlockTriumph(params.user, 'comic');
-    }
+    const jesters: number = cardsOnBoard.filter((c) => c.currentStats?.effects?.includes('jester')).length;
 
     // Count the hammers & anvils
     const hammersPerUsers: {[key: number]: number} = {};
     const anvilsPerUsers: {[key: number]: number} = {};
     gameInstance.cards.forEach((c: IGameCard) => {
       hammersPerUsers[c.user] = hammersPerUsers[c.user] ? hammersPerUsers[c.user] : 0;
-      if (c.card.id === 'flesh-hammer' && c.location === 'board') {
+      if (c.currentStats?.effects?.includes('flesh-hammer') && c.location === 'board') {
         hammersPerUsers[c.user] ++;
       }
       anvilsPerUsers[c.user] = anvilsPerUsers[c.user] ? anvilsPerUsers[c.user] : 0;
-      if (c.card.id === 'anvil-of-xiarmha' && c.location === 'board') {
+      if (c.currentStats?.effects?.includes('anvil-of-xiarmha') && c.location === 'board') {
         anvilsPerUsers[c.user] ++;
       }
     });
@@ -78,7 +72,7 @@ export class ActionExecutedGameHook implements IGameHook {
       }
 
       // Increase jester's strength
-      if (gameCard.card.id === 'jester') {
+      if (gameCard.currentStats?.effects?.includes('jester')) {
         gameCard.currentStats.bottom.strength += jesters * 2;
         gameCard.currentStats.left.strength += jesters * 2;
         gameCard.currentStats.right.strength += jesters * 2;
