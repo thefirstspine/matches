@@ -49,7 +49,6 @@ export class GameService {
   async createGameInstance(
     queueKey: string,
     gameUsers: IGameUser[],
-    modifiers: string[],
     expirationTimeModifier: number): Promise<IGameInstance> {
     // Generate a numeric ID to ensure retrocompatibility
     const gameInstanceId = Date.now();
@@ -106,7 +105,6 @@ export class GameService {
       queueKey,
       status: 'active',
       id: gameInstanceId,
-      modifiers,
       gameUsers,
       expirationTimeModifier,
       cards: shuffledCards,

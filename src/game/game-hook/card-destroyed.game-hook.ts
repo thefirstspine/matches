@@ -5,7 +5,6 @@ import { GameHookService } from './game-hook.service';
 import { ICard } from '@thefirstspine/types-game';
 import { RestService } from '../../rest/rest.service';
 import { randBetween } from '../../utils/maths.utils';
-import { Modifiers } from '../modifiers';
 import { GameWorkerService } from '../game-worker/game-worker.service';
 
 /**
@@ -64,20 +63,6 @@ export class CardDestroyedGameHook implements IGameHook {
         params.gameCard.currentStats = JSON.parse(JSON.stringify(params.gameCard.card.stats));
         if (params.gameCard.currentStats.capacities) {
           params.gameCard.currentStats.capacities = params.gameCard.currentStats.capacities.filter(c => c !== 'treason');
-        }
-      }
-    }
-
-    if (params.gameCard?.card?.type === 'creature') {
-      if (gameInstance.modifiers.includes(Modifiers.HARVESTING_SOULS)) {
-        // Get the player card
-        const playerCard: IGameCard = gameInstance.cards.find((c: IGameCard) => c.card.type === 'player' && c.user === params.source?.user);
-        if (playerCard) {
-          playerCard.currentStats.life += 1;
-          await this.gameHookService.dispatch(
-            gameInstance,
-            `card:lifeChanged:healed:${playerCard.card.id}`,
-            {gameCard: playerCard, source: null, lifeChanged: 1});
         }
       }
     }

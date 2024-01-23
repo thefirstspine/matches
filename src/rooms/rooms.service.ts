@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { LogsService } from '@thefirstspine/logs-nest';
-import axios from 'axios';
 
 /**
  * Service to interact with the TFS' service Rooms. They are public chat

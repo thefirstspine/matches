@@ -59,7 +59,6 @@ export class ApiService {
       key,
       request.params.gameTypeId,
       request.params.theme ? request.params.theme : Themes.DEAD_FOREST,
-      request.params.modifiers ? request.params.modifiers : [],
       request.params.expirationTimeModifier ? request.params.expirationTimeModifier : 1,
     );
 
@@ -118,7 +117,6 @@ export class ApiService {
       id: gameInstance.id,
       status: gameInstance.status,
       result: gameInstance.result,
-      modifiers: gameInstance.modifiers,
       stats,
       users: gameInstance.gameUsers.map((u) => u.user),
     }
@@ -234,7 +232,6 @@ export class ApiService {
       id: gameInstance.id,
       status: gameInstance.status,
       result: gameInstance.result,
-      modifiers: gameInstance.modifiers,
       stats,
       users: gameInstance.gameUsers.map((u) => u.user),
     };

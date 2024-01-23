@@ -35,7 +35,6 @@ export class QueueService {
       {
         key: 'default',
         queueUsers: [],
-        modifiers: [],
         createdAt: Date.now(),
       },
     );
@@ -50,7 +49,6 @@ export class QueueService {
     key: string,
     gameTypeId: string,
     theme: string,
-    modifiers: string[],
     expirationTimeModifier: number,
   ): Promise<IQueueInstance> {
     const gameType: IGameType = await this.restService.gameType(gameTypeId);
@@ -61,7 +59,6 @@ export class QueueService {
     const instance: IQueueInstance = {
       key,
       queueUsers: [],
-      modifiers,
       expirationTimeModifier,
       createdAt: Date.now(),
       expiresAt: Date.now() + (60 * 30 * 1000),
@@ -215,7 +212,6 @@ export class QueueService {
       const game: IGameInstance = await this.gameService.createGameInstance(
         queueInstance.key,
         queueUsersNeeded,
-        queueInstance.modifiers ? queueInstance.modifiers : [],
         queueInstance.expirationTimeModifier ? queueInstance.expirationTimeModifier : 1);
 
       // Make them quit from the queue
@@ -296,20 +292,6 @@ export class QueueService {
     return this.queueInstances.reduce((acc: boolean, queueInstance: IQueueInstance) => {
       return acc || this.isUserInQueue(queueInstance.key, user);
     }, false);
-  }
-
-  /**
-   * Get the current events in the website service
-   */
-  protected async getEvents(): Promise<string[]> {
-    try {
-      const date = (new Date()).toISOString();
-      const result = await fetch(`${process.env.CALENDAR_URL}/events?filter=datetimeFrom||lt||${date}&filter=datetimeTo||gt||${date}`);
-      const jsonResult = await result.json();
-      return jsonResult ? jsonResult.map((e: any) => e.type) : [];
-    } catch (e) {
-      return [];
-    }
   }
 
 }
