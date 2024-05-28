@@ -36,3 +36,4 @@ node configurator.js create matches --conf-path [local copy of ansible volume]/c
 Queues & game instances are the core concepts in the Matches service. Queues instances can be created through the API and can be joined by every players. It is used to create game instance based on the parameters provided during the creation of the queue, and when a player is joining a queue.
 
 A game instance cannot be created or deleted though the API.
+
