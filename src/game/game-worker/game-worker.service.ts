@@ -1,7 +1,6 @@
 import { Injectable, forwardRef, Inject } from '@nestjs/common';
 import { ArenaRoomsService } from '../../rooms/arena-rooms.service';
-import { RestService } from '../../rest/rest.service';
-import { WizardService } from '../../wizard/wizard.service';
+import { GameAssetsService } from '../../game-assets/game-assets.service';
 import { IGameWorker } from './game-worker.interface';
 import { ThrowCardsGameWorker } from './throw-cards.game-worker';
 import { MoveCreatureGameWorker } from './move-creature.game-worker';
@@ -23,21 +22,10 @@ import { InsanesRunEffectGameWorker } from './insanes-run-effect.game-worker';
 import { MonstrousPortalEffectGameWorker } from './monstrous-portal-effect.game-worker';
 import { EndTurnGameWorker } from './end-turn.game-worker';
 import { VolkaEffectGameWorker } from './volka-effect.game-worker';
-import { Fpe2GameWorker } from './fpe/fpe-2';
 import { SpellAlterTheFateGameWorker } from './spell-alter-the-fate.game-worker';
 import { SpellEtherGameWorker } from './spell-ether.game-worker';
 import { SpellFireGameWorker } from './spell-fire.game-worker';
 import { SpellAchieveGameWorker } from './spell-achieve.game-worker';
-import { Fpe4GameWorker } from './fpe/fpe-4';
-import { Fpe6GameWorker } from './fpe/fpe-6';
-import { Fpe8GameWorker } from './fpe/fpe-8';
-import { Fpe9GameWorker } from './fpe/fpe-9';
-import { Fpe11GameWorker } from './fpe/fpe-11';
-import { Fpe15GameWorker } from './fpe/fpe-15';
-import { Fpe17GameWorker } from './fpe/fpe-17';
-import { Fpe18GameWorker } from './fpe/fpe-18';
-import { Fpe19GameWorker } from './fpe/fpe-19';
-import { Fpe20GameWorker } from './fpe/fpe-20';
 import { SpellCureGameWorker } from './spell-cure.game-worker';
 import { SpellTheVoidGameWorker } from './spell-the-void.game-worker';
 import { SpellPainGameWorker } from './spell-pain.game-worker';
@@ -45,8 +33,6 @@ import { LogsService } from '@thefirstspine/logs-nest';
 import { MessagingService } from '@thefirstspine/messaging-nest';
 import { SpellReinforcementGameWorker } from './spell-reinforcement.game-worker';
 import { SpellTrickOrTreatGameWorker } from './spell-trick-or-treat.game-worker';
-import { QuestService } from '../../wizard/quest/quest.service';
-import { TriumphService } from '../../wizard/triumph/triumph.service';
 import { SpellBloodStrengthGameWorker } from './spell-blood-strength.game-worker';
 import { SpellMutateFoxGameWorker } from './spell-mutate-fox.game-worker';
 import { SpellMutateBansheeGameWorker } from './spell-mutate-banshee.game-worker';
@@ -67,11 +53,8 @@ export class GameWorkerService extends BaseGameService<IGameWorker> {
   constructor(
     private readonly messagingService: MessagingService,
     private readonly logsService: LogsService,
-    private readonly wizardService: WizardService,
-    private readonly restService: RestService,
+    private readonly restService: GameAssetsService,
     private readonly arenaRoomsService: ArenaRoomsService,
-    private readonly questService: QuestService,
-    private readonly triumphService: TriumphService,
     @Inject(forwardRef(() => GameHookService)) private readonly gameHookService: GameHookService,
   ) {
     super();
@@ -86,12 +69,9 @@ export class GameWorkerService extends BaseGameService<IGameWorker> {
     // Defer injections for game workers constructions
     this.deferInjection(this.messagingService);
     this.deferInjection(this.logsService);
-    this.deferInjection(this.wizardService);
     this.deferInjection(this.restService);
     this.deferInjection(this.arenaRoomsService);
     this.deferInjection(this.gameHookService);
-    this.deferInjection(this.questService);
-    this.deferInjection(this.triumphService);
     this.deferInjection(this); // haya!
 
     // Create workers
@@ -120,17 +100,6 @@ export class GameWorkerService extends BaseGameService<IGameWorker> {
     this.createInjectable(SpellEtherGameWorker, injectedProps);
     this.createInjectable(SpellFireGameWorker, injectedProps);
     this.createInjectable(SpellAchieveGameWorker, injectedProps);
-    this.createInjectable(Fpe2GameWorker, injectedProps);
-    this.createInjectable(Fpe4GameWorker, injectedProps);
-    this.createInjectable(Fpe6GameWorker, injectedProps);
-    this.createInjectable(Fpe8GameWorker, injectedProps);
-    this.createInjectable(Fpe9GameWorker, injectedProps);
-    this.createInjectable(Fpe11GameWorker, injectedProps);
-    this.createInjectable(Fpe15GameWorker, injectedProps);
-    this.createInjectable(Fpe17GameWorker, injectedProps);
-    this.createInjectable(Fpe18GameWorker, injectedProps);
-    this.createInjectable(Fpe19GameWorker, injectedProps);
-    this.createInjectable(Fpe20GameWorker, injectedProps);
     this.createInjectable(SpellCureGameWorker, injectedProps);
     this.createInjectable(SpellTheVoidGameWorker, injectedProps);
     this.createInjectable(SpellPainGameWorker, injectedProps);

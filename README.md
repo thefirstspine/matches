@@ -1,14 +1,38 @@
-# Install & run matches service
+# Matches
 
-<div id="main-content" class="wiki-content group">
-                    <h2 id="Install&amp;runarenaservice-Installation">Installation</h2><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
-<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">npm install</pre>
-</div></div><h2 id="Install&amp;runarenaservice-Configuring">Configuring</h2><p>The service needs a dotenv file to run. This dotenv file will be loaded in the environment variables. Here’s what the app needs:</p><div class="table-wrap"><table data-layout="default" class="confluenceTable"><colgroup><col style="width: 226.67px;"><col style="width: 226.67px;"><col style="width: 226.67px;"></colgroup><tbody><tr><th class="confluenceTh"><p><strong>Environement key</strong></p></th><th class="confluenceTh"><p><strong>Summary</strong></p></th><th class="confluenceTh"><p><strong>Required by</strong></p></th></tr><tr><td class="confluenceTd"><p><code>ARENA_URL</code></p></td><td class="confluenceTd"><p>Arena net service URL</p></td><td class="confluenceTd"><p>App</p></td></tr><tr><td class="confluenceTd"><p><code>BOTS_PUBLIC_KEY</code></p></td><td class="confluenceTd"><p>Public key to interact with bots net service</p></td><td class="confluenceTd"><p>App</p></td></tr><tr><td class="confluenceTd"><p><code>BOTS_URL</code></p></td><td class="confluenceTd"><p>Bots net service URL</p></td><td class="confluenceTd"><p>App</p></td></tr><tr><td class="confluenceTd"><p><code>AUTH_URL</code></p></td><td class="confluenceTd"><p>Auth net service URL</p></td><td class="confluenceTd"><p><code>@thefirstspine/auth-nest</code></p></td></tr><tr><td class="confluenceTd"><p><code>MESSAGING_PUBLIC_KEY</code></p></td><td class="confluenceTd"><p>Public key to interact with messaging net service</p></td><td class="confluenceTd"><p><code>@thefirstspine/messaging-nest</code></p></td></tr><tr><td class="confluenceTd"><p><code>MESSAGING_URL</code></p></td><td class="confluenceTd"><p>Messaging net service URL</p></td><td class="confluenceTd"><p><code>@thefirstspine/messaging-nest</code></p></td></tr><tr><td class="confluenceTd"><p><code>PRIVATE_KEY</code></p></td><td class="confluenceTd"><p>Private key to validate protected incoming requests</p></td><td class="confluenceTd"><p><code>@thefirstspine/certificate-authority</code></p></td></tr><tr><td class="confluenceTd"><p><code>PORT</code></p></td><td class="confluenceTd"><p>The port where to serve the app</p></td><td class="confluenceTd"><p>App</p></td></tr><tr><td class="confluenceTd"><p><code>REST_URL</code></p></td><td class="confluenceTd"><p>Rest net service URL</p></td><td class="confluenceTd"><p>App</p></td></tr><tr><td class="confluenceTd"><p><code>ROOMS_PUBLIC_KEY</code></p></td><td class="confluenceTd"><p>Public key to interact with rooms net service</p></td><td class="confluenceTd"><p>App</p></td></tr><tr><td class="confluenceTd"><p><code>ROOMS_URL</code></p></td><td class="confluenceTd"><p>Rooms net service URL</p></td><td class="confluenceTd"><p>App</p></td></tr><tr><td class="confluenceTd"><p><code>SHOP_PUBLIC_KEY</code></p></td><td class="confluenceTd"><p>Public key to interact with shops net service</p></td><td class="confluenceTd"><p>App</p></td></tr><tr><td class="confluenceTd"><p><code>SHOP_URL</code></p></td><td class="confluenceTd"><p>Shop net service URL</p></td><td class="confluenceTd"><p>App</p></td></tr><tr><td class="confluenceTd"><p><code>CALENDAR_URL</code></p></td><td class="confluenceTd"><p>Calendar net service URL</p></td><td class="confluenceTd"><p>App</p></td></tr></tbody></table></div><h2 id="Install&amp;runarenaservice-Runningtheapp">Running the app</h2><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
-<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">npm run start</pre>
-</div></div><h2 id="Install&amp;runarenaservice-Build&amp;runforproduction">Build &amp; run for production</h2><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
-<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">npm run build
-node dist/main.js</pre>
-</div></div><h2 id="Install&amp;runarenaservice-Test">Test</h2><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
-<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Confluence" data-theme="Confluence">npm run test:game</pre>
-</div></div><p>
-                    </p></div>
+The matches service is the service that will manage all the games in the TFS products.
+
+## Installation
+
+```
+npm ci
+```
+
+## Running the app
+
+```
+npm run start
+```
+
+## Build & run for production
+
+```
+npm run build
+node dist/main.js
+```
+
+## Configuration
+
+See the configuration keys with the [Ansible playbook](https://github.com/thefirstspine/ansible/blob/master/volume/playbooks/deploy-matches.yaml)
+
+To help you configure your local environment to generate a dotenv file you can use the [configurator](https://github.com/thefirstspine/configurator) using this command:
+
+```
+node configurator.js create matches --conf-path [local copy of ansible volume]/conf --force-http true
+```
+
+## About queue and game instances
+
+Queues & game instances are the core concepts in the Matches service. Queues instances can be created through the API and can be joined by every players. It is used to create game instance based on the parameters provided during the creation of the queue, and when a player is joining a queue.
+
+A game instance cannot be created or deleted though the API.

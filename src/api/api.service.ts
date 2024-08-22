@@ -15,7 +15,7 @@ import { IGameUser,
          IApiQuitQueueParams,
          IGameInteraction,
          IApiGetQueueParams,
-         IQueueInstance} from '@thefirstspine/types-arena';
+         IQueueInstance} from '@thefirstspine/types-matches';
 import { randBetween } from '../utils/maths.utils';
 import { validate, ValidationError } from 'class-validator';
 import { ApiCreateQueueDto } from './api-create-queue.dto';
@@ -52,14 +52,13 @@ export class ApiService {
     }
 
     // Generate key
-    const key: string = randBetween(1111, 9999).toString(10);
+    const key: string = request.params.key ? request.params.key : randBetween(1111, 9999).toString(10);
 
     // Create the the instance
     const queue: IQueueInstance = await this.queueService.create(
       key,
       request.params.gameTypeId,
       request.params.theme ? request.params.theme : Themes.DEAD_FOREST,
-      request.params.modifiers ? request.params.modifiers : [],
       request.params.expirationTimeModifier ? request.params.expirationTimeModifier : 1,
     );
 
@@ -89,6 +88,40 @@ export class ApiService {
     };
   }
 
+  async getUserGame(request: IApiRequest<undefined>): Promise<IApiGetGameResponse> {
+    const gameInstance: IGameInstance | undefined = await this.gameService.getActiveGameInstanceForUser(request.user);
+    if (gameInstance === undefined) {
+      throw new ApiError('No game for this user', ApiError.CODE_INVALID_REQUEST);
+    }
+
+    // Get stats
+    const cardsInHand: {[key: number]: number} = {};
+    const cardsInDeck: {[key: number]: number} = {};
+    gameInstance.cards.forEach((c: IGameCard) => {
+      if (c.location === 'hand') {
+        cardsInHand[c.user] = cardsInHand[c.user] ? cardsInHand[c.user] + 1 : 1;
+      }
+      if (c.location === 'deck') {
+        cardsInDeck[c.user] = cardsInDeck[c.user] ? cardsInDeck[c.user] + 1 : 1;
+      }
+    });
+    const stats: {
+      cardsInHand: {[key: number]: number},
+      cardsInDeck: {[key: number]: number},
+    } = {
+      cardsInHand,
+      cardsInDeck,
+    };
+
+    return {
+      id: gameInstance.id,
+      status: gameInstance.status,
+      result: gameInstance.result,
+      stats,
+      users: gameInstance.gameUsers.map((u) => u.user),
+    }
+  }
+
   /**
    * Join a queue in the queue service for 60 seconds. This joining request should be
    * refreshed with the `refreshQueueAsk` method.
@@ -101,10 +134,7 @@ export class ApiService {
     const queue: IQueueInstance = await this.queueService.join(
       request.params.key,
       request.user,
-      request.params.destiny,
-      request.params.origin,
-      request.params.style,
-      request.params.cover,
+      request.params.cards,
     );
 
     return {
@@ -151,7 +181,7 @@ export class ApiService {
    */
   async getCurrentGame(request: IApiRequest<undefined>): Promise<IApiGetGameResponse> {
     const gameInstance: IGameInstance|undefined = this.gameService.getGameInstances().find(
-      (g: IGameInstance) => g.users.find((u: IGameUser) => u.user === request.user) !== undefined);
+      (g: IGameInstance) => g.gameUsers.find((u: IGameUser) => u.user === request.user) !== undefined);
 
     if (!gameInstance) {
       throw new ApiError('Not opened game instance found.', ApiError.CODE_METHOD_NOT_FOUND);
@@ -199,14 +229,11 @@ export class ApiService {
     };
 
     return {
-      gameType: gameInstance.gameTypeId,
       id: gameInstance.id,
       status: gameInstance.status,
       result: gameInstance.result,
-      users: gameInstance.users,
-      theme: gameInstance.theme,
-      modifiers: gameInstance.modifiers,
       stats,
+      users: gameInstance.gameUsers.map((u) => u.user),
     };
   }
 
@@ -332,7 +359,7 @@ export class ApiService {
     }
 
     // Is the user part of this instance?
-    if (gameInstance.users.find((u) => u.user === request.user) === undefined) {
+    if (gameInstance.gameUsers.find((u) => u.user === request.user) === undefined) {
       throw new ApiError('Not in a game instance.', ApiError.CODE_INVALID_REQUEST);
     }
 

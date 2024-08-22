@@ -1,5 +1,5 @@
 import { IGameWorker } from './game-worker.interface';
-import { IGameInstance, IGameAction, IGameCard, IInteractionPass } from '@thefirstspine/types-arena';
+import { IGameInstance, IGameAction, IGameCard, IInteractionPass } from '@thefirstspine/types-matches';
 import { Injectable } from '@nestjs/common';
 import { GameHookService } from '../game-hook/game-hook.service';
 import { IHasGameHookService, IHasGameWorkerService } from '../injections.interface';

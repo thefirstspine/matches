@@ -1,12 +1,12 @@
 import { IGameWorker } from './game-worker.interface';
-import { IGameInstance, IGameAction, IGameCard, IInteractionPass } from '@thefirstspine/types-arena';
+import { IGameInstance, IGameAction, IGameCard, IInteractionPass } from '@thefirstspine/types-matches';
 import { Injectable } from '@nestjs/common';
 import { GameHookService } from '../game-hook/game-hook.service';
 import { IHasGameHookService, IHasGameWorkerService } from '../injections.interface';
 import { ArenaRoomsService } from '../../rooms/arena-rooms.service';
 import { GameWorkerService } from './game-worker.service';
-import { RestService } from '../../rest/rest.service';
-import { ICard } from '@thefirstspine/types-rest';
+import { GameAssetsService } from '../../game-assets/game-assets.service';
+import { ICard } from '@thefirstspine/types-game';
 
 /**
  * Terminate the turn of the user.
@@ -20,7 +20,7 @@ export class EndTurnGameWorker implements IGameWorker, IHasGameHookService, IHas
   public readonly type: string = 'end-turn';
 
   constructor(
-    private readonly restService: RestService,
+    private readonly restService: GameAssetsService,
     private readonly arenaRoomsService: ArenaRoomsService,
   ) {}
 
@@ -68,9 +68,9 @@ export class EndTurnGameWorker implements IGameWorker, IHasGameHookService, IHas
       gameAction.user);
 
     // Get the next user
-    const foundIndex = gameInstance.users.findIndex((u) => u.user === gameAction.user);
-    const nextIndex = foundIndex === gameInstance.users.length - 1 ? 0 : foundIndex + 1;
-    const nextUser = gameInstance.users[nextIndex].user;
+    const foundIndex = gameInstance.gameUsers.findIndex((u) => u.user === gameAction.user);
+    const nextIndex = foundIndex === gameInstance.gameUsers.length - 1 ? 0 : foundIndex + 1;
+    const nextUser = gameInstance.gameUsers[nextIndex].user;
 
     // Send message to rooms
     this.arenaRoomsService.sendMessageForGame(
@@ -136,7 +136,7 @@ export class EndTurnGameWorker implements IGameWorker, IHasGameHookService, IHas
       }
 
       // Replace the "Great Old" cards
-      if (c.location === 'board' && c.user === nextUser && c.card.id === 'great-ancient-egg') {
+      if (c.location === 'board' && c.user === nextUser && c.currentStats?.effects?.includes('great-ancient-egg')) {
         const juvenilegreatAncientPromise: Promise<ICard> = this.restService.card('juvenile-great-ancient');
         juvenilegreatAncientPromise.then((replacement: ICard) => {
           c.card = replacement;
@@ -144,7 +144,7 @@ export class EndTurnGameWorker implements IGameWorker, IHasGameHookService, IHas
         });
         promisesEffects.push(juvenilegreatAncientPromise);
       }
-      if (c.location === 'board' && c.user === nextUser && c.card.id === 'juvenile-great-ancient') {
+      if (c.location === 'board' && c.user === nextUser && c.currentStats?.effects?.includes('juvenile-great-ancient')) {
         const greatAncientPromise: Promise<ICard> = this.restService.card('great-ancient');
         greatAncientPromise.then((replacement: ICard) => {
           c.card = replacement;

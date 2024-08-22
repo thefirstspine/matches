@@ -1,6 +1,6 @@
 import { IGameHook } from './game-hook.interface';
 import { Injectable } from '@nestjs/common';
-import { IGameInstance, IGameUser, IGameCard } from '@thefirstspine/types-arena';
+import { IGameInstance, IGameUser, IGameCard } from '@thefirstspine/types-matches';
 import { MessagingService } from '@thefirstspine/messaging-nest';
 
 /**
@@ -18,7 +18,7 @@ export class CardHealedGameHook implements IGameHook {
 
   async execute(gameInstance: IGameInstance, params: {gameCard: IGameCard, source: IGameCard|null, lifeChanged: number}): Promise<boolean> {
     await this.messagingService.sendMessage(
-      gameInstance.users.map((u: IGameUser) => u.user),
+      gameInstance.gameUsers.map((u: IGameUser) => u.user),
       `TheFirstSpine:game:${gameInstance.id}:cardChanged`,
       {
         changes: {
@@ -35,11 +35,11 @@ export class CardHealedGameHook implements IGameHook {
   }
 
   protected shouldLimitMaxLife(target: IGameCard, source: IGameCard|null): boolean {
-    if (target.card.id === 'anvil-of-xiarmha' && source === null) {
+    if (target?.currentStats?.effects?.includes('anvil-of-xiarmha') && source === null) {
       // Anvil of Xiarm'ha can have more than the starting value in case of new turn
       return false;
     }
-    if (target.card.id === 'anvil-of-xiarmha' && source?.card.id === 'reinforcement') {
+    if (target?.currentStats?.effects?.includes('anvil-of-xiarmha') && source?.card.id === 'reinforcement') {
       // Anvil of Xiarm'ha can have more than the starting value when reinforcement is used
       return false;
     }

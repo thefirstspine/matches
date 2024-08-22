@@ -1,11 +1,11 @@
 import { IGameWorker } from './game-worker.interface';
-import { IGameInstance, IGameAction, IInteractionPutCardOnBoard, IGameCard } from '@thefirstspine/types-arena';
+import { IGameInstance, IGameAction, IInteractionPutCardOnBoard, IGameCard } from '@thefirstspine/types-matches';
 import { Injectable } from '@nestjs/common';
 import { GameHookService } from '../game-hook/game-hook.service';
 import { IHasGameHookService } from '../injections.interface';
 import { ArenaRoomsService } from '../../rooms/arena-rooms.service';
-import { ICard } from '@thefirstspine/types-rest';
-import { RestService } from '../../rest/rest.service';
+import { ICard } from '@thefirstspine/types-game';
+import { GameAssetsService } from '../../game-assets/game-assets.service';
 import { randBetween } from '../../utils/maths.utils';
 import { LogsService } from '@thefirstspine/logs-nest';
 
@@ -22,7 +22,7 @@ export class SpellTheVoidGameWorker implements IGameWorker, IHasGameHookService 
   constructor(
     private readonly logsService: LogsService,
     private readonly arenaRoomsService: ArenaRoomsService,
-    private readonly restService: RestService,
+    private readonly restService: GameAssetsService,
   ) {}
 
   /**
