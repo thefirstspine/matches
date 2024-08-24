@@ -1,4 +1,4 @@
-import { IsString, IsOptional } from 'class-validator';
+import { IsString, IsOptional, IsNumber } from 'class-validator';
 
 export class ApiJoinQueueDto {
 
@@ -12,12 +12,7 @@ export class ApiJoinQueueDto {
   @IsOptional()
   origin?: string;
 
-  @IsString()
-  @IsOptional()
-  style?: string;
-
-  @IsString()
-  @IsOptional()
-  cover?: string;
+  @IsNumber()
+  score: number;
 
 }

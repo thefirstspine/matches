@@ -89,6 +89,7 @@ export class QueueService {
   async join(
     key: string,
     user: number,
+    score: number,
     cards: ICard[],
   ): Promise<IQueueInstance> {
     // Exit method if user is in a queue
@@ -111,6 +112,7 @@ export class QueueService {
     queue.queueUsers.push({
       cards,
       user,
+      score,
       queueExpiresAt: Date.now() + (QueueService.QUEUE__EXPIRATION_TIME * 1000),
     });
 
@@ -203,6 +205,15 @@ export class QueueService {
   async processMatchmakingFor(queueInstance: IQueueInstance): Promise<void> {
     // Get users in queue
     const queueUsers: IQueueUser[] = queueInstance.queueUsers;
+    queueUsers.sort((a, b) => {
+      if (a.score > b.score) {
+        return 1;
+      }
+      if (a.score < b.score) {
+        return -1;
+      }
+      return 0;
+    });
 
     if (queueUsers.length >= 2) {
       // Extract the users needed from the queue

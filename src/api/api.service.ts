@@ -134,6 +134,7 @@ export class ApiService {
     const queue: IQueueInstance = await this.queueService.join(
       request.params.key,
       request.user,
+      request.params.score,
       request.params.cards,
     );
 
