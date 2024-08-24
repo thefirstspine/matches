@@ -5,6 +5,7 @@ import { AuthGuard } from '@thefirstspine/auth-nest';
 import { JsonRpcRequestDto } from './json-rpc-request.dto';
 import { LogsService } from '@thefirstspine/logs-nest';
 import { ApiGuard } from './api.guard';
+import { CertificateGuard } from '@thefirstspine/certificate-nest';
 
 /**
  * Main API Controller. The controller does accept only one POST request.
@@ -23,6 +24,7 @@ export class ApiController {
    * @param body
    */
   @Post()
+  @UseGuards(CertificateGuard)
   @UseGuards(ApiGuard)
   async api(@Req() request, @Body() body: JsonRpcRequestDto): Promise<IJsonRpcResponse|IJsonRpcError> {
     // Does the method exist?
