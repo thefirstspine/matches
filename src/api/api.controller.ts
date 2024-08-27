@@ -32,6 +32,8 @@ export class ApiController {
       return this.outputError(new ApiError('The method does not exist / is not available', ApiError.CODE_METHOD_NOT_FOUND));
     }
 
+    this.logService.info('JSON RPC request incoming', body);
+
     try {
       // Try to execute the method on the service
       const result: any = await this.apiService[body.method]({
