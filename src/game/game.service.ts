@@ -198,6 +198,12 @@ export class GameService {
       acc[instance.id] = instance;
       return acc;
     }, {});
+    if (process.env.PURGE_GAMES_AT_STARTUP === "true") {
+      instances.forEach((i) => {
+        i.status = "closed";
+        this.purgeFromMemory(i);
+      })
+    }
   }
 
   /**
