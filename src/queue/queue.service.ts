@@ -109,15 +109,6 @@ export class QueueService {
     });
 
     // Send message
-    // This message is deprecated
-    this.messagingService.sendMessage(
-      '*',
-      'TheFirstSpine:queue',
-      {
-        event: 'joined',
-        queue: queue.queueUsers.length,
-      },
-    );
     this.messagingService.sendMessage(
       '*',
       `TheFirstSpine:queue:${key}:joined`,
@@ -221,15 +212,6 @@ export class QueueService {
       queueUsersNeeded.forEach((queueUser: IGameUser) => this.quit(queueInstance.key, queueUser.user));
 
       // Send message
-      // This message is deprecated
-      this.messagingService.sendMessage(
-        queueUsersNeeded.map(e => e.user),
-        'TheFirstSpine:game',
-        {
-          event: 'created',
-          gameId: game.id,
-        },
-      );
       this.messagingService.sendMessage(
         queueUsersNeeded.map(e => e.user),
         'TheFirstSpine:game:created',
@@ -257,11 +239,8 @@ export class QueueService {
       if (queueUser.queueExpiresAt < Date.now()) {
         this.messagingService.sendMessage(
           [queueUser.user],
-          'TheFirstSpine:queue',
-          {
-            event: 'expired',
-            queue: queueInstance.queueUsers.length,
-          },
+          'TheFirstSpine:queue:expired',
+          queueInstance,
         );
         return false;
       }
