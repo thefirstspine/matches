@@ -28,7 +28,6 @@ export class QueueService {
   constructor(
     private readonly messagingService: MessagingService,
     private readonly gameService: GameService,
-    private readonly restService: GameAssetsService,
   ) {
     // Create base queues instances
     this.queueInstances.push(
@@ -47,15 +46,8 @@ export class QueueService {
    */
   async create(
     key: string,
-    gameTypeId: string,
-    theme: string,
     expirationTimeModifier: number,
   ): Promise<IQueueInstance> {
-    const gameType: IGameType = await this.restService.gameType(gameTypeId);
-    if (!gameType) {
-      throw new Error('Cannot find user ID');
-    }
-
     const instance: IQueueInstance = {
       key,
       queueUsers: [],
