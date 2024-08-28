@@ -46,20 +46,13 @@ export class ApiService {
     // Validate input
     await this.validateAgainst(request.params, ApiCreateQueueDto);
 
-    // Validate allowed game types
-    if (!['standard', 'quick'].includes(request.params.gameTypeId)) {
-      throw new ApiError('Disalowed game type ID.', ApiError.CODE_INVALID_PARAMS);
-    }
-
     // Generate key
     const key: string = request.params.key ? request.params.key : randBetween(1111, 9999).toString(10);
 
     // Create the the instance
     const queue: IQueueInstance = await this.queueService.create(
       key,
-      request.params.gameTypeId,
-      request.params.theme ? request.params.theme : Themes.DEAD_FOREST,
-      request.params.expirationTimeModifier ? request.params.expirationTimeModifier : 1,
+      1, // TODO: Add time modifier to queue creation request
     );
 
     // Return response
@@ -134,6 +127,7 @@ export class ApiService {
     const queue: IQueueInstance = await this.queueService.join(
       request.params.key,
       request.user,
+      request.params.score,
       request.params.cards,
     );
 

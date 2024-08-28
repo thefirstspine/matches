@@ -28,7 +28,6 @@ export class QueueService {
   constructor(
     private readonly messagingService: MessagingService,
     private readonly gameService: GameService,
-    private readonly restService: GameAssetsService,
   ) {
     // Create base queues instances
     this.queueInstances.push(
@@ -47,15 +46,8 @@ export class QueueService {
    */
   async create(
     key: string,
-    gameTypeId: string,
-    theme: string,
     expirationTimeModifier: number,
   ): Promise<IQueueInstance> {
-    const gameType: IGameType = await this.restService.gameType(gameTypeId);
-    if (!gameType) {
-      throw new Error('Cannot find user ID');
-    }
-
     const instance: IQueueInstance = {
       key,
       queueUsers: [],
@@ -89,6 +81,7 @@ export class QueueService {
   async join(
     key: string,
     user: number,
+    score: number,
     cards: ICard[],
   ): Promise<IQueueInstance> {
     // Exit method if user is in a queue
@@ -111,19 +104,11 @@ export class QueueService {
     queue.queueUsers.push({
       cards,
       user,
+      score,
       queueExpiresAt: Date.now() + (QueueService.QUEUE__EXPIRATION_TIME * 1000),
     });
 
     // Send message
-    // This message is deprecated
-    this.messagingService.sendMessage(
-      '*',
-      'TheFirstSpine:queue',
-      {
-        event: 'joined',
-        queue: queue.queueUsers.length,
-      },
-    );
     this.messagingService.sendMessage(
       '*',
       `TheFirstSpine:queue:${key}:joined`,
@@ -203,6 +188,15 @@ export class QueueService {
   async processMatchmakingFor(queueInstance: IQueueInstance): Promise<void> {
     // Get users in queue
     const queueUsers: IQueueUser[] = queueInstance.queueUsers;
+    queueUsers.sort((a, b) => {
+      if (a.score > b.score) {
+        return 1;
+      }
+      if (a.score < b.score) {
+        return -1;
+      }
+      return 0;
+    });
 
     if (queueUsers.length >= 2) {
       // Extract the users needed from the queue
@@ -218,15 +212,6 @@ export class QueueService {
       queueUsersNeeded.forEach((queueUser: IGameUser) => this.quit(queueInstance.key, queueUser.user));
 
       // Send message
-      // This message is deprecated
-      this.messagingService.sendMessage(
-        queueUsersNeeded.map(e => e.user),
-        'TheFirstSpine:game',
-        {
-          event: 'created',
-          gameId: game.id,
-        },
-      );
       this.messagingService.sendMessage(
         queueUsersNeeded.map(e => e.user),
         'TheFirstSpine:game:created',
@@ -254,11 +239,8 @@ export class QueueService {
       if (queueUser.queueExpiresAt < Date.now()) {
         this.messagingService.sendMessage(
           [queueUser.user],
-          'TheFirstSpine:queue',
-          {
-            event: 'expired',
-            queue: queueInstance.queueUsers.length,
-          },
+          'TheFirstSpine:queue:expired',
+          queueInstance,
         );
         return false;
       }

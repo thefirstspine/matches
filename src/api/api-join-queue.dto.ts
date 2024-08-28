@@ -1,23 +1,15 @@
-import { IsString, IsOptional } from 'class-validator';
+import { IsString, IsOptional, IsNumber, IsArray, ValidateIf } from 'class-validator';
 
 export class ApiJoinQueueDto {
 
   @IsString()
   key: string;
 
-  @IsString()
-  destiny: string;
-
-  @IsString()
+  @IsArray()
   @IsOptional()
-  origin?: string;
+  cards?: any[];
 
-  @IsString()
-  @IsOptional()
-  style?: string;
-
-  @IsString()
-  @IsOptional()
-  cover?: string;
+  @IsNumber()
+  score: number;
 
 }
