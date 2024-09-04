@@ -1,11 +1,10 @@
 import { Controller, Post, Body, UseGuards, Req } from '@nestjs/common';
 import { ApiService } from './api.service';
 import { ApiError } from './api.error';
-import { AuthGuard } from '@thefirstspine/auth-nest';
 import { JsonRpcRequestDto } from './json-rpc-request.dto';
 import { LogsService } from '@thefirstspine/logs-nest';
-import { ApiGuard } from './api.guard';
 import { CertificateGuard } from '@thefirstspine/certificate-nest';
+import { AuthGuard } from './auth.guard';
 
 /**
  * Main API Controller. The controller does accept only one POST request.
@@ -25,7 +24,7 @@ export class ApiController {
    */
   @Post()
   @UseGuards(CertificateGuard)
-  @UseGuards(ApiGuard)
+  @UseGuards(AuthGuard)
   async api(@Req() request, @Body() body: JsonRpcRequestDto): Promise<IJsonRpcResponse|IJsonRpcError> {
     // Does the method exist?
     if (typeof this.apiService[body.method] === 'undefined') {

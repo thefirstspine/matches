@@ -28,7 +28,7 @@ export class NetworkRoomsDriver implements IRoomsDriver {
       };
     } catch (error) {
       return {
-        data: error.response.data as T,
+        data: error?.response?.data as T,
         error: true,
       };
     }
