@@ -222,9 +222,11 @@ export class GameService {
    * @param response
    */
   async respondToAction(gameInstanceId: number, actionType: string, user: number, response: {[key: string]: any}) {
+    this.logsService.info('Respond to action', { gameInstanceId, actionType, user, response });
     // Get game action
     const gameInstance = await this.getGameInstance(gameInstanceId);
     if (!gameInstance) {
+      this.logsService.error('Game instance not found.', { gameInstanceId, actionType, user, response });
       return false;
     }
 
@@ -233,6 +235,7 @@ export class GameService {
       return a.type === actionType && a.user === user;
     });
     if (!action) {
+      this.logsService.error('Action not found.', { gameInstanceId, actionType, user, response });
       return false;
     }
 
@@ -250,6 +253,7 @@ export class GameService {
    * @param gameInstance
    */
   async processActionsFor(gameInstance: IGameInstance): Promise<void> {
+    this.logsService.error('Process actions for', gameInstance);
     // Game instances should not be played if they are not active
     if (gameInstance.status !== 'active') {
       await this.purgeFromMemory(gameInstance);
@@ -297,6 +301,7 @@ export class GameService {
           this.gameHookService.dispatch(gameInstance, `action:deleted:${pendingGameAction.type}`, {user: pendingGameAction.user});
         } else {
           // Something's wrong, delete the response
+          this.logsService.error('Cannot execture game action', { gameAction: pendingGameAction });
           pendingGameAction.response = undefined;
         }
       } catch (e) {
