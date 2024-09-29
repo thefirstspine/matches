@@ -165,6 +165,11 @@ export class GameService {
     const gameInstance: IGameInstance = await this.gameInstanceModel.findOne({id}).exec();
     return gameInstance;
   }
+  async saveGameInstance(gameInstance: IGameInstance): Promise<IGameInstance> {
+    await this.gameInstanceModel.updateOne({id: gameInstance.id}, gameInstance);
+    this.gameInstances[gameInstance.id] = gameInstance;
+    return this.getGameInstance(gameInstance.id);
+  }
 
   /**
    * Get all game instances in hot memory
@@ -183,7 +188,7 @@ export class GameService {
    */
   async purgeFromMemory(gameInstance: IGameInstance) {
     // Ensure that the instance is written on the disk
-    await this.gameInstanceModel.updateOne({id: gameInstance.id}, gameInstance);
+    await this.saveGameInstance(gameInstance);
     // Deletes the instance from memory
     if (this.gameInstances[gameInstance.id]) {
       delete this.gameInstances[gameInstance.id];
@@ -243,7 +248,7 @@ export class GameService {
     action.response = response;
 
     // Save instance
-    await this.gameInstanceModel.updateOne({id: gameInstance.id}, gameInstance);
+    await this.saveGameInstance(gameInstance);
 
     return true;
   }
@@ -348,7 +353,7 @@ export class GameService {
     }
 
     // Save game instance
-    await this.gameInstanceModel.updateOne({id: gameInstance.id}, gameInstance);
+    await this.saveGameInstance(gameInstance);
 
     // Look for status at the end of this run and purge the game from memory if not opened
     if (gameInstance.status !== 'active') {
