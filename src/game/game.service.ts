@@ -308,7 +308,7 @@ export class GameService {
           this.gameHookService.dispatch(gameInstance, `action:deleted:${pendingGameAction.type}`, {user: pendingGameAction.user});
         } else {
           // Something's wrong, delete the response
-          this.logsService.error('Cannot execture game action', { gameAction: pendingGameAction });
+          this.logsService.error('Cannot execute game action', { gameAction: pendingGameAction });
           pendingGameAction.response = undefined;
         }
       } catch (e) {
