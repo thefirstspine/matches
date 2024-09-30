@@ -165,6 +165,11 @@ export class GameService {
     const gameInstance: IGameInstance = await this.gameInstanceModel.findOne({id}).exec();
     return gameInstance;
   }
+  async saveGameInstance(gameInstance: IGameInstance): Promise<IGameInstance> {
+    await this.gameInstanceModel.updateOne({id: gameInstance.id}, gameInstance);
+    this.gameInstances[gameInstance.id] = gameInstance;
+    return this.getGameInstance(gameInstance.id);
+  }
 
   /**
    * Get all game instances in hot memory
@@ -183,7 +188,7 @@ export class GameService {
    */
   async purgeFromMemory(gameInstance: IGameInstance) {
     // Ensure that the instance is written on the disk
-    await this.gameInstanceModel.updateOne({id: gameInstance.id}, gameInstance);
+    await this.saveGameInstance(gameInstance);
     // Deletes the instance from memory
     if (this.gameInstances[gameInstance.id]) {
       delete this.gameInstances[gameInstance.id];
@@ -222,9 +227,11 @@ export class GameService {
    * @param response
    */
   async respondToAction(gameInstanceId: number, actionType: string, user: number, response: {[key: string]: any}) {
+    this.logsService.info('Respond to action', { gameInstanceId, actionType, user, response });
     // Get game action
     const gameInstance = await this.getGameInstance(gameInstanceId);
     if (!gameInstance) {
+      this.logsService.error('Game instance not found.', { gameInstanceId, actionType, user, response });
       return false;
     }
 
@@ -233,6 +240,7 @@ export class GameService {
       return a.type === actionType && a.user === user;
     });
     if (!action) {
+      this.logsService.error('Action not found.', { gameInstanceId, actionType, user, response });
       return false;
     }
 
@@ -240,7 +248,7 @@ export class GameService {
     action.response = response;
 
     // Save instance
-    await this.gameInstanceModel.updateOne({id: gameInstance.id}, gameInstance);
+    await this.saveGameInstance(gameInstance);
 
     return true;
   }
@@ -250,8 +258,10 @@ export class GameService {
    * @param gameInstance
    */
   async processActionsFor(gameInstance: IGameInstance): Promise<void> {
+    this.logsService.info('Process actions for game instance.', { gameInstanceId: gameInstance.id });
     // Game instances should not be played if they are not active
     if (gameInstance.status !== 'active') {
+      this.logsService.info('Game instance not active.', { gameInstanceId: gameInstance.id });
       await this.purgeFromMemory(gameInstance);
       return;
     }
@@ -280,6 +290,7 @@ export class GameService {
 
     // Executes the game actions when exists
     if (pendingGameAction) {
+      this.logsService.info('Execute game action.', { gameAction: pendingGameAction });
       try {
         if (await this.gameWorkerService.getWorker(pendingGameAction.type).execute(gameInstance, pendingGameAction)) {
           // Dispatch event after each action
@@ -297,6 +308,7 @@ export class GameService {
           this.gameHookService.dispatch(gameInstance, `action:deleted:${pendingGameAction.type}`, {user: pendingGameAction.user});
         } else {
           // Something's wrong, delete the response
+          this.logsService.error('Cannot execute game action', { gameAction: pendingGameAction });
           pendingGameAction.response = undefined;
         }
       } catch (e) {
@@ -331,6 +343,7 @@ export class GameService {
 
     // Exit method when no changes
     if (JSON.stringify(gameInstance) === jsonHash) {
+      this.logsService.info('No changes in the game instance.', { gameAction: pendingGameAction });
       return;
     }
 
@@ -340,10 +353,11 @@ export class GameService {
     }
 
     // Save game instance
-    await this.gameInstanceModel.updateOne({id: gameInstance.id}, gameInstance);
+    await this.saveGameInstance(gameInstance);
 
     // Look for status at the end of this run and purge the game from memory if not opened
     if (gameInstance.status !== 'active') {
+      this.logsService.info('Game instance not active after execution.', { gameInstanceId: gameInstance.id });
       await this.purgeFromMemory(gameInstance);
     }
   }
