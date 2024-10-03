@@ -32,7 +32,6 @@ export class GameService {
   constructor(
     private readonly messagingService: MessagingService,
     private readonly logsService: LogsService,
-    private readonly restService: GameAssetsService,
     private readonly arenaRoomsService: ArenaRoomsService,
     private readonly gameWorkerService: GameWorkerService,
     private readonly gameHookService: GameHookService,
@@ -166,6 +165,7 @@ export class GameService {
     const gameInstance: IGameInstance = await this.gameInstanceModel.findOne({id}).exec();
     return gameInstance;
   }
+
   async saveGameInstance(gameInstance: IGameInstance): Promise<IGameInstance> {
     await this.gameInstanceModel.updateOne({id: gameInstance.id}, gameInstance);
     this.gameInstances[gameInstance.id] = gameInstance;
