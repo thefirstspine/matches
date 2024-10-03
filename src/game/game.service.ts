@@ -113,6 +113,7 @@ export class GameService {
         previous: [],
       },
       realm: process.env.REALM,
+      queue: queueKey,
     };
 
     // Create the first action
