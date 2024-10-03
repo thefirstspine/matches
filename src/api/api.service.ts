@@ -194,7 +194,7 @@ export class ApiService {
       result: gameInstance.result,
       stats,
       users: gameInstance.gameUsers.map((u) => u.user),
-      queue: gameInstance.queue,
+      queue: gameInstance.queueKey,
     };
   }
 
