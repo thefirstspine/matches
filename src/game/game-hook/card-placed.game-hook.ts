@@ -87,7 +87,7 @@ export class CardPlacedGameHook implements IGameHook {
       wizardCard.currentStats.life -= 1;
       this.gameHookService.dispatch(
         gameInstance,
-        `card:lifeChanged:damaged:${wizardCard.card.id}`,
+        `card:lifeChanged:damaged:${wizardCard.card.type}:${wizardCard.card.id}`,
         {gameCard: wizardCard, source: params.gameCard, lifeChanged: -1});
     }
 

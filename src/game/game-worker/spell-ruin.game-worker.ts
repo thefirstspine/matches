@@ -113,7 +113,7 @@ export class SpellRuinGameWorker implements IGameWorker, IHasGameHookService {
     // Dispatch event
     await this.gameHookService.dispatch(gameInstance, `card:spell:used:${cardUsed.card.id}`, {gameCard: cardUsed});
     await this.gameHookService
-      .dispatch(gameInstance, `card:lifeChanged:damaged:${cardDamaged.card.id}`, {gameCard: cardDamaged, source: cardUsed, lifeChanged: -2});
+      .dispatch(gameInstance, `card:lifeChanged:damaged:${cardDamaged.card.type}:${cardDamaged.card.id}`, {gameCard: cardDamaged, source: cardUsed, lifeChanged: -2});
 
     // Send message to rooms
     this.arenaRoomsService.sendMessageForGame(

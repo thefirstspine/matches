@@ -410,7 +410,7 @@ export class GameService {
     userCard.currentStats.life = 0;
     await this.gameHookService.dispatch(
       instance,
-      `card:lifeChanged:damaged:${userCard.card.id}`,
+      `card:lifeChanged:damaged:${userCard.card.type}:${userCard.card.id}`,
       {
         gameCard: userCard,
         source: enemyCard,

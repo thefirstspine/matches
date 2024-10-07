@@ -113,7 +113,7 @@ export class SpellPainGameWorker implements IGameWorker, IHasGameHookService {
     const promises = cardsDamaged.map(async (cardDamaged: IGameCard) => {
       cardDamaged.currentStats.life -= 1;
       await this.gameHookService.dispatch(gameInstance, `card:spell:used:${cardUsed.card.id}`, {gameCard: cardUsed});
-      await this.gameHookService.dispatch(gameInstance, `card:lifeChanged:damaged:${cardDamaged.card.id}`, {gameCard: cardDamaged, lifeChanged: -1});
+      await this.gameHookService.dispatch(gameInstance, `card:lifeChanged:damaged:${cardDamaged.card.type}:${cardDamaged.card.id}`, {gameCard: cardDamaged, lifeChanged: -1});
     });
     await Promise.all(promises);
 
