@@ -54,10 +54,7 @@ export class GameHookService extends BaseGameService<IGameHook> {
     const injectedProps = {gameWorkerService: this.gameWorkerService, gameHookService: this};
     this.subscribe('action:executed', this.createInjectable(ActionExecutedGameHook, injectedProps));
     this.subscribe('card:lifeChanged:damaged', this.createInjectable(CardDamagedGameHook, injectedProps));
-    this.subscribe('card:lifeChanged:damaged:hunter', this.createInjectable(PlayerDamagedGameHook, injectedProps));
-    this.subscribe('card:lifeChanged:damaged:sorcerer', this.createInjectable(PlayerDamagedGameHook, injectedProps));
-    this.subscribe('card:lifeChanged:damaged:conjurer', this.createInjectable(PlayerDamagedGameHook, injectedProps));
-    this.subscribe('card:lifeChanged:damaged:summoner', this.createInjectable(PlayerDamagedGameHook, injectedProps));
+    this.subscribe('card:lifeChanged:damaged:player', this.createInjectable(PlayerDamagedGameHook, injectedProps));
     this.subscribe('card:lifeChanged:healed', this.createInjectable(CardHealedGameHook, injectedProps));
     this.subscribe('card:spell:used', this.createInjectable(SpellUsedGameHook, injectedProps));
     this.subscribe('card:destroyed', this.createInjectable(CardDestroyedGameHook, injectedProps));

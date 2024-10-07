@@ -81,40 +81,6 @@ export class ApiService {
     };
   }
 
-  async getUserGame(request: IApiRequest<undefined>): Promise<IApiGetGameResponse> {
-    const gameInstance: IGameInstance | undefined = await this.gameService.getActiveGameInstanceForUser(request.user);
-    if (gameInstance === undefined) {
-      throw new ApiError('No game for this user', ApiError.CODE_INVALID_REQUEST);
-    }
-
-    // Get stats
-    const cardsInHand: {[key: number]: number} = {};
-    const cardsInDeck: {[key: number]: number} = {};
-    gameInstance.cards.forEach((c: IGameCard) => {
-      if (c.location === 'hand') {
-        cardsInHand[c.user] = cardsInHand[c.user] ? cardsInHand[c.user] + 1 : 1;
-      }
-      if (c.location === 'deck') {
-        cardsInDeck[c.user] = cardsInDeck[c.user] ? cardsInDeck[c.user] + 1 : 1;
-      }
-    });
-    const stats: {
-      cardsInHand: {[key: number]: number},
-      cardsInDeck: {[key: number]: number},
-    } = {
-      cardsInHand,
-      cardsInDeck,
-    };
-
-    return {
-      id: gameInstance.id,
-      status: gameInstance.status,
-      result: gameInstance.result,
-      stats,
-      users: gameInstance.gameUsers.map((u) => u.user),
-    }
-  }
-
   /**
    * Join a queue in the queue service for 60 seconds. This joining request should be
    * refreshed with the `refreshQueueAsk` method.
@@ -228,6 +194,7 @@ export class ApiService {
       result: gameInstance.result,
       stats,
       users: gameInstance.gameUsers.map((u) => u.user),
+      queue: gameInstance.queueKey,
     };
   }
 

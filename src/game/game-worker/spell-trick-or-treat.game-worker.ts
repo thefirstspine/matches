@@ -113,7 +113,7 @@ export class SpellTrickOrTreatGameWorker implements IGameWorker, IHasGameHookSer
 
     // Await for hooks
     await this.gameHookService.dispatch(gameInstance, `card:spell:used:${cardUsed.card.id}`, {gameCard: cardUsed});
-    await this.gameHookService.dispatch(gameInstance, `card:lifeChanged:damaged:${cardDamaged.card.id}`, {gameCard: cardDamaged, lifeChanged: -1});
+    await this.gameHookService.dispatch(gameInstance, `card:lifeChanged:damaged:${cardDamaged.card.type}:${cardDamaged.card.id}`, {gameCard: cardDamaged, lifeChanged: -1});
 
     // Send message to rooms
     this.arenaRoomsService.sendMessageForGame(

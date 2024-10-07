@@ -177,7 +177,7 @@ export class CardDestroyedGameHook implements IGameHook {
         player.currentStats.life -= 10;
         await this.gameHookService.dispatch(
           gameInstance,
-          `card:lifeChanged:damaged:${player.card.id}`,
+          `card:lifeChanged:damaged:${player.card.type}:${player.card.id}`,
           {gameCard: player, source: params.gameCard, lifeChanged: -10});
       }
     }

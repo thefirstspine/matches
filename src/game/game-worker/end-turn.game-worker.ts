@@ -132,7 +132,7 @@ export class EndTurnGameWorker implements IGameWorker, IHasGameHookService, IHas
           this.gameHookService
           .dispatch(
             gameInstance,
-            `card:lifeChanged:damaged:${c.card.id}`, {gameCard: c, source: square, lifeChanged: -1}));
+            `card:lifeChanged:damaged:${c.card.type}:${c.card.id}`, {gameCard: c, source: square, lifeChanged: -1}));
       }
 
       // Replace the "Great Old" cards

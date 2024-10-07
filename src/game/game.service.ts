@@ -32,7 +32,6 @@ export class GameService {
   constructor(
     private readonly messagingService: MessagingService,
     private readonly logsService: LogsService,
-    private readonly restService: GameAssetsService,
     private readonly arenaRoomsService: ArenaRoomsService,
     private readonly gameWorkerService: GameWorkerService,
     private readonly gameHookService: GameHookService,
@@ -113,6 +112,7 @@ export class GameService {
         previous: [],
       },
       realm: process.env.REALM,
+      queue: queueKey,
     };
 
     // Create the first action
@@ -165,6 +165,7 @@ export class GameService {
     const gameInstance: IGameInstance = await this.gameInstanceModel.findOne({id}).exec();
     return gameInstance;
   }
+
   async saveGameInstance(gameInstance: IGameInstance): Promise<IGameInstance> {
     await this.gameInstanceModel.updateOne({id: gameInstance.id}, gameInstance);
     this.gameInstances[gameInstance.id] = gameInstance;
@@ -409,7 +410,7 @@ export class GameService {
     userCard.currentStats.life = 0;
     await this.gameHookService.dispatch(
       instance,
-      `card:lifeChanged:damaged:${userCard.card.id}`,
+      `card:lifeChanged:damaged:${userCard.card.type}:${userCard.card.id}`,
       {
         gameCard: userCard,
         source: enemyCard,
