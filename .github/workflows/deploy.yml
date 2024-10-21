@@ -21,20 +21,7 @@ jobs:
     name: Deploy app
     runs-on: ubuntu-latest
     needs: [tests]
-    # For multi-realms purpose, uncomment
-    # strategy:
-    #   max-parallel: 1
-    #   matrix:
-    #     realm: ['anhinga:9000', 'brubru:9001', 'chowchilla:9002']
     steps:
-      # For multi-realms purpose, uncomment
-      # - name: Get realm name & port
-      #   uses: jungwinter/split@master
-      #   id: split
-      #   with:
-      #     msg: ${{ matrix.realm }}
-      #     separator: ':'
-      #     maxsplit: -1
       - name: Checkout Ansible
         uses: actions/checkout@v3
         with:
@@ -53,11 +40,6 @@ jobs:
           rm -rf volume/keys
           mv tmp/conf volume/conf
           mv tmp/keys volume/keys
-      # For multi-realms purpose, uncomment
-      # - name: Map realm ${{ steps.split.outputs._0 }}
-      #   run: |
-      #     sed -i 's/service_matches_domain: matches.thefirstspine.fr/service_matches_domain: ${{ steps.split.outputs._0 }}.matches.thefirstspine.fr/g' volume/conf/inventory.yaml
-      #     sed -i 's/service_matches_internal_port: 8081/service_matches_internal_port: ${{ steps.split.outputs._1 }}/g' volume/conf/inventory.yaml
       - name: Build Docker image
         run: |
           docker build -t thefirstspine/ansible .
