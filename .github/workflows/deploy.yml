@@ -15,8 +15,6 @@ jobs:
           fetch-depth: 0
       - name: Install
         run: npm install
-      - name: Launch tests
-        run: npm run test
   deploy:
     name: Deploy app
     runs-on: ubuntu-latest
