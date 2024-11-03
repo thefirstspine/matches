@@ -24,7 +24,7 @@ export class ArenaRoomsService {
     const senders: ISender[] = await Promise.all(game.gameUsers.map(async (user: IGameUser) => {
       return {
         user: user.user,
-        displayName: "#" + user.user,
+        displayName: game.cards.find((c) => c.user == user.user && c.card.type == 'player').card.name.en,
       };
     }));
     const room: IRoom = {
