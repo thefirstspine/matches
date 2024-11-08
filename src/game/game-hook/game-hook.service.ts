@@ -85,7 +85,7 @@ export class GameHookService extends BaseGameService<IGameHook> {
     if (!this.initialized) {
       this.init();
     }
-    this.logsService.info('Dispatch event hook in game instance', { gameInstanceId: gameInstance.id, event, params });
+    // this.logsService.info('Dispatch event hook in game instance', { gameInstanceId: gameInstance.id, event, params });
     const promises: Array<Promise<boolean>> = [];
     event.split(':').reduce((acc: string, current: string) => {
       acc = (acc === '') ? current : acc + ':' + current;

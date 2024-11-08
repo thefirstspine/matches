@@ -259,7 +259,7 @@ export class GameService {
    * @param gameInstance
    */
   async processActionsFor(gameInstance: IGameInstance): Promise<void> {
-    this.logsService.info('Process actions for game instance.', { gameInstanceId: gameInstance.id });
+    // this.logsService.info('Process actions for game instance.', { gameInstanceId: gameInstance.id });
     // Game instances should not be played if they are not active
     if (gameInstance.status !== 'active') {
       this.logsService.info('Game instance not active.', { gameInstanceId: gameInstance.id });
@@ -291,7 +291,7 @@ export class GameService {
 
     // Executes the game actions when exists
     if (pendingGameAction) {
-      this.logsService.info('Execute game action.', { gameAction: pendingGameAction });
+      // this.logsService.info('Execute game action.', { gameAction: pendingGameAction });
       try {
         if (await this.gameWorkerService.getWorker(pendingGameAction.type).execute(gameInstance, pendingGameAction)) {
           // Dispatch event after each action
@@ -344,7 +344,7 @@ export class GameService {
 
     // Exit method when no changes
     if (JSON.stringify(gameInstance) === jsonHash) {
-      this.logsService.info('No changes in the game instance.', { gameAction: pendingGameAction });
+      // this.logsService.info('No changes in the game instance.', { gameAction: pendingGameAction });
       return;
     }
 

@@ -53,7 +53,7 @@ export class GameWorkerService extends BaseGameService<IGameWorker> {
   constructor(
     private readonly messagingService: MessagingService,
     private readonly logsService: LogsService,
-    private readonly restService: GameAssetsService,
+    private readonly gameAssetsService: GameAssetsService,
     private readonly arenaRoomsService: ArenaRoomsService,
     @Inject(forwardRef(() => GameHookService)) private readonly gameHookService: GameHookService,
   ) {
@@ -69,7 +69,7 @@ export class GameWorkerService extends BaseGameService<IGameWorker> {
     // Defer injections for game workers constructions
     this.deferInjection(this.messagingService);
     this.deferInjection(this.logsService);
-    this.deferInjection(this.restService);
+    this.deferInjection(this.gameAssetsService);
     this.deferInjection(this.arenaRoomsService);
     this.deferInjection(this.gameHookService);
     this.deferInjection(this); // haya!
