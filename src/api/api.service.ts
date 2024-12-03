@@ -181,11 +181,11 @@ export class ApiService {
       }
     });
     const stats: {
-      cardsInHand: {[key: number]: number},
-      cardsInDeck: {[key: number]: number},
+      cardsInHand: {user: number, value: number}[],
+      cardsInDeck: {user: number, value: number}[],
     } = {
-      cardsInHand,
-      cardsInDeck,
+      cardsInHand: Object.keys(cardsInHand).map((k) => { return {user: parseInt(k, 10), value: cardsInHand[k]} }),
+      cardsInDeck: Object.keys(cardsInDeck).map((k) => { return {user: parseInt(k, 10), value: cardsInDeck[k]} }),
     };
 
     return {
