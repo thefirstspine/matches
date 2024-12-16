@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { GameService } from '../game/game.service';
-import { IGameUser, IGameInstance, IQueueInstance } from '@thefirstspine/types-matches';
+import { IGameUser, IGameInstance, IQueueInstance, IGameCard } from '@thefirstspine/types-matches';
 import { ICard, IGameType } from '@thefirstspine/types-game';
 import { GameAssetsService } from '../game-assets/game-assets.service';
 import { MessagingService } from '@thefirstspine/messaging-nest';
@@ -35,6 +35,7 @@ export class QueueService {
         key: 'default',
         queueUsers: [],
         createdAt: Date.now(),
+        cards: [],
       },
     );
   }
@@ -47,6 +48,7 @@ export class QueueService {
   async create(
     key: string,
     expirationTimeModifier: number,
+    cards: IGameCard[],
   ): Promise<IQueueInstance> {
     const instance: IQueueInstance = {
       key,
@@ -54,6 +56,7 @@ export class QueueService {
       expirationTimeModifier,
       createdAt: Date.now(),
       expiresAt: Date.now() + (60 * 30 * 1000),
+      cards,
     };
 
     this.queueInstances.push(instance);
@@ -206,7 +209,9 @@ export class QueueService {
       const game: IGameInstance = await this.gameService.createGameInstance(
         queueInstance.key,
         queueUsersNeeded,
-        queueInstance.expirationTimeModifier ? queueInstance.expirationTimeModifier : 1);
+        queueInstance.expirationTimeModifier ? queueInstance.expirationTimeModifier : 1,
+        queueInstance.cards,
+      );
 
       // Make them quit from the queue
       queueUsersNeeded.forEach((queueUser: IGameUser) => this.quit(queueInstance.key, queueUser.user));
