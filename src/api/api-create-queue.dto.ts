@@ -1,5 +1,6 @@
-import { IsString, IsOptional, IsIn, IsNumber, Min, Max } from 'class-validator';
+import { IsString, IsOptional, IsIn, IsNumber, Min, Max, IsArray } from 'class-validator';
 import { Themes } from '../game/themes';
+import { IGameCard } from '@thefirstspine/types-matches';
 
 export class ApiCreateQueueDto {
   @IsString()
@@ -17,4 +18,7 @@ export class ApiCreateQueueDto {
   @IsOptional()
   expirationTimeModifier?: number;
 
+  @IsArray()
+  @IsOptional()
+  cards?: IGameCard[];
 }

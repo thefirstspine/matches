@@ -52,7 +52,8 @@ export class ApiService {
     // Create the the instance
     const queue: IQueueInstance = await this.queueService.create(
       key,
-      1, // TODO: Add time modifier to queue creation request
+      request.params.expirationTimeModifier ? request.params.expirationTimeModifier : 1,
+      request.params.cards ? request.params.cards : [],
     );
 
     // Return response
