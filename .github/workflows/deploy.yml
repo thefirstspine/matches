@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
       - name: Install
@@ -21,12 +21,12 @@ jobs:
     needs: [tests]
     steps:
       - name: Checkout Ansible
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
           repository: thefirstspine/ansible
       - name: Get config
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
           repository: thefirstspine/ansible-secrets
@@ -38,9 +38,16 @@ jobs:
           rm -rf volume/keys
           mv tmp/conf volume/conf
           mv tmp/keys volume/keys
-      - name: Build Docker image
-        run: |
-          docker build -t thefirstspine/ansible .
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      - name: Build thefirstspine/ansible image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: false
+          tags: thefirstspine/ansible
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
       - name: Run thefirstspine/ansible image
         run: |
           docker run --rm -v ./volume:/volume -e BRANCH=${GITHUB_REF#refs/*/} thefirstspine/ansible ansible-playbook -i /volume/conf/inventory.yaml /volume/playbooks/deploy-matches.yaml

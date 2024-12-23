@@ -48,7 +48,9 @@ export class GameService {
   async createGameInstance(
     queueKey: string,
     gameUsers: IGameUser[],
-    expirationTimeModifier: number): Promise<IGameInstance> {
+    expirationTimeModifier: number,
+    startingCards: IGameCard[],
+  ): Promise<IGameInstance> {
     // Generate a numeric ID to ensure retrocompatibility
     const gameInstanceId = Date.now();
 
@@ -67,6 +69,7 @@ export class GameService {
         y: 6
     }];
     const cards: IGameCard[] = [];
+    cards.push(...startingCards);
     gameUsers.forEach((gameUser: IGameUser, index: number) => {
       gameUser.cards.forEach((card: ICard) => {
         const randomId: number = randBetween(0, Number.MAX_SAFE_INTEGER);
